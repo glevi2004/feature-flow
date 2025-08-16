@@ -1,11 +1,32 @@
 "use client";
 
 import { useAuth } from "@/contexts/AuthContext";
+import { OnboardingService } from "@/lib/services/onboarding";
 import { Button } from "@/components/ui/button";
 import { Zap, LogOut, User } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
   const { user, signOut } = useAuth();
+  const [onboardingData, setOnboardingData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchOnboardingData = async () => {
+      if (user) {
+        try {
+          const data = await OnboardingService.getOnboardingData(user.uid);
+          setOnboardingData(data);
+        } catch (error) {
+          console.error("Error fetching onboarding data:", error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchOnboardingData();
+  }, [user]);
 
   const handleSignOut = async () => {
     try {
@@ -60,6 +81,40 @@ export default function DashboardPage() {
             You're now signed in and ready to start collecting, organizing, and
             prioritizing customer feedback.
           </p>
+
+          {/* Display Onboarding Data */}
+          {loading ? (
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-4 text-gray-300">Loading your data...</p>
+            </div>
+          ) : onboardingData ? (
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-8 max-w-2xl mx-auto mb-8">
+              <h2 className="text-2xl font-semibold text-white mb-4">
+                Your Onboarding Information
+              </h2>
+              <div className="grid md:grid-cols-2 gap-4 text-left">
+                <div>
+                  <h3 className="font-semibold text-white mb-2">Company</h3>
+                  <p className="text-gray-300">{onboardingData.companyName}</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white mb-2">Team Size</h3>
+                  <p className="text-gray-300">{onboardingData.teamSize}</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white mb-2">Goals</h3>
+                  <p className="text-gray-300">
+                    {onboardingData.goals.join(", ")}
+                  </p>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white mb-2">Access Type</h3>
+                  <p className="text-gray-300">{onboardingData.accessType}</p>
+                </div>
+              </div>
+            </div>
+          ) : null}
 
           <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-8 max-w-2xl mx-auto">
             <h2 className="text-2xl font-semibold text-white mb-4">

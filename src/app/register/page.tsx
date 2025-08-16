@@ -86,8 +86,8 @@ export default function RegisterPage() {
 
   const handleGoogleSignup = async () => {
     try {
-      await signInWithGoogle();
-      // After successful sign in, redirect to dashboard
+      // Pass the form data to the sign-in function
+      await signInWithGoogle(formData);
       router.push("/dashboard");
     } catch (error) {
       console.error("Error signing in with Google:", error);
