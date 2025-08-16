@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/navbar";
 import DarkVeil from "@/components/DarkVeil";
+import Link from "next/link";
 import {
   MessageSquare,
   Users,
@@ -47,12 +48,14 @@ export default function Home() {
               collect, organize, and prioritize customer feedback effectively.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8 py-3"
-              >
-                Start Free Trial
-              </Button>
+              <Link href="/register">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8 py-3"
+                >
+                  Start Free Trial
+                </Button>
+              </Link>
               <Button size="lg" variant="outline" className="text-lg px-8 py-3">
                 Watch Demo
               </Button>
@@ -293,13 +296,15 @@ export default function Home() {
               products based on real customer feedback.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                variant="secondary"
-                className="text-lg px-8 py-3"
-              >
-                Start Free Trial
-              </Button>
+              <Link href="/register">
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  className="text-lg px-8 py-3"
+                >
+                  Start Free Trial
+                </Button>
+              </Link>
               <Button
                 size="lg"
                 variant="outline"
