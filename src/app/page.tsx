@@ -10,11 +10,6 @@ import {
   Zap,
   CheckCircle,
   ArrowRight,
-  Star,
-  TrendingUp,
-  Shield,
-  Globe,
-  Smartphone,
 } from "lucide-react";
 
 export default function Home() {
@@ -308,7 +303,7 @@ export default function Home() {
               <Button
                 size="lg"
                 variant="outline"
-                className="text-lg px-8 py-3 border-white text-white hover:bg-white hover:text-blue-600"
+                className="text-lg px-8 py-3 border-white text-white hover:bg-white"
               >
                 Schedule Demo
               </Button>

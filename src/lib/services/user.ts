@@ -35,6 +35,16 @@ export class UserService {
   // Update last login time
   static async updateLastLogin(uid: string) {
     try {
+      // First check if the user document exists
+      const userDoc = await getDoc(doc(db, "users", uid));
+
+      if (!userDoc.exists()) {
+        // User doesn't exist yet (likely during signup), don't update lastLogin
+        // The user data will be created with correct lastLoginAt in saveUserData
+        return;
+      }
+
+      // User exists, update the last login time
       await updateDoc(doc(db, "users", uid), {
         lastLoginAt: new Date(),
       });

@@ -50,19 +50,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Save user data first
       if (result.user) {
-        await UserService.saveUserData({
-          uid: result.user.uid,
-          email: result.user.email || "",
-          displayName: result.user.displayName || "",
-          photoURL: result.user.photoURL || undefined,
-        });
+        try {
+          await UserService.saveUserData({
+            uid: result.user.uid,
+            email: result.user.email || "",
+            displayName: result.user.displayName || "",
+            photoURL: result.user.photoURL || undefined,
+          });
 
-        // If onboarding data is provided, save it to subcollection
-        if (onboardingData) {
-          await OnboardingService.saveOnboardingData(
-            result.user.uid,
-            onboardingData
-          );
+          // If onboarding data is provided, save it to subcollection
+          if (onboardingData) {
+            console.log("Saving onboarding data:", onboardingData);
+            console.log("User ID:", result.user.uid);
+            // // Add a 1-second delay to ensure user document is fully created
+            // await new Promise((resolve) => setTimeout(resolve, 1000));
+            await OnboardingService.saveOnboardingData(
+              result.user.uid,
+              onboardingData
+            );
+            console.log("Onboarding data saved successfully");
+          }
+        } catch (userError) {
+          console.error("Error saving user or onboarding data:", userError);
+          // Still return the auth result even if data saving fails
         }
       }
 
