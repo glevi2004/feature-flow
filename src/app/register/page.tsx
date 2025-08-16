@@ -15,6 +15,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Zap, ArrowRight } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 interface FormData {
   goals: string[];
@@ -26,6 +28,8 @@ interface FormData {
 }
 
 export default function RegisterPage() {
+  const { signInWithGoogle } = useAuth();
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     goals: [],
@@ -80,9 +84,15 @@ export default function RegisterPage() {
     }
   };
 
-  const handleGoogleSignup = () => {
-    // Handle Google signup logic here
-    console.log("Google signup clicked", formData);
+  const handleGoogleSignup = async () => {
+    try {
+      await signInWithGoogle();
+      // After successful sign in, redirect to protected homepage
+      router.push("/(protected)");
+    } catch (error) {
+      console.error("Error signing in with Google:", error);
+      // You can add error handling here (show toast, etc.)
+    }
   };
 
   const renderStep = () => {
