@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -16,7 +17,7 @@ import {
 import { Zap, ArrowRight } from "lucide-react";
 
 interface FormData {
-  goal: string;
+  goals: string[];
   accessType: string;
   companyName: string;
   teamSize: string;
@@ -27,7 +28,7 @@ interface FormData {
 export default function RegisterPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
-    goal: "",
+    goals: [],
     accessType: "",
     companyName: "",
     teamSize: "",
@@ -35,8 +36,17 @@ export default function RegisterPage() {
     companyWebsite: "",
   });
 
-  const updateFormData = (field: keyof FormData, value: string) => {
+  const updateFormData = (field: keyof FormData, value: string | string[]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const toggleGoal = (goal: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      goals: prev.goals.includes(goal)
+        ? prev.goals.filter((g) => g !== goal)
+        : [...prev.goals, goal],
+    }));
   };
 
   const nextStep = () => {
@@ -54,7 +64,7 @@ export default function RegisterPage() {
   const canProceed = () => {
     switch (currentStep) {
       case 1:
-        return formData.goal !== "";
+        return formData.goals.length > 0;
       case 2:
         return formData.accessType !== "";
       case 3:
@@ -88,40 +98,44 @@ export default function RegisterPage() {
                 Help us understand how you'll use Feature Flow
               </p>
             </div>
-            <RadioGroup
-              value={formData.goal}
-              onValueChange={(value) => updateFormData("goal", value)}
-            >
-              <div className="space-y-3">
-                <div className="flex items-center space-x-3 p-3 border border-gray-300/20 rounded-lg hover:bg-gray-50/5 hover:border-gray-300/30 transition-all duration-150 cursor-pointer">
-                  <RadioGroupItem value="feedback" id="feedback" />
-                  <Label
-                    htmlFor="feedback"
-                    className="text-base font-medium cursor-pointer"
-                  >
-                    Get feedback
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-3 p-3 border border-gray-300/20 rounded-lg hover:bg-gray-50/5 hover:border-gray-300/30 transition-all duration-150 cursor-pointer">
-                  <RadioGroupItem value="updates" id="updates" />
-                  <Label
-                    htmlFor="updates"
-                    className="text-base font-medium cursor-pointer"
-                  >
-                    Publish product updates
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-3 p-3 border border-gray-300/20 rounded-lg hover:bg-gray-50/5 hover:border-gray-300/30 transition-all duration-150 cursor-pointer">
-                  <RadioGroupItem value="support" id="support" />
-                  <Label
-                    htmlFor="support"
-                    className="text-base font-medium cursor-pointer"
-                  >
-                    Run & manage customer support
-                  </Label>
-                </div>
+            <div className="space-y-3">
+              <div
+                className="flex items-center space-x-3 p-3 border border-gray-300/20 rounded-lg hover:bg-gray-50/5 hover:border-gray-300/30 transition-all duration-150 cursor-pointer"
+                onClick={() => toggleGoal("feedback")}
+              >
+                <Checkbox
+                  checked={formData.goals.includes("feedback")}
+                  onCheckedChange={() => toggleGoal("feedback")}
+                />
+                <Label className="text-base font-medium cursor-pointer">
+                  Get feedback
+                </Label>
               </div>
-            </RadioGroup>
+              <div
+                className="flex items-center space-x-3 p-3 border border-gray-300/20 rounded-lg hover:bg-gray-50/5 hover:border-gray-300/30 transition-all duration-150 cursor-pointer"
+                onClick={() => toggleGoal("updates")}
+              >
+                <Checkbox
+                  checked={formData.goals.includes("updates")}
+                  onCheckedChange={() => toggleGoal("updates")}
+                />
+                <Label className="text-base font-medium cursor-pointer">
+                  Publish product updates
+                </Label>
+              </div>
+              <div
+                className="flex items-center space-x-3 p-3 border border-gray-300/20 rounded-lg hover:bg-gray-50/5 hover:border-gray-300/30 transition-all duration-150 cursor-pointer"
+                onClick={() => toggleGoal("support")}
+              >
+                <Checkbox
+                  checked={formData.goals.includes("support")}
+                  onCheckedChange={() => toggleGoal("support")}
+                />
+                <Label className="text-base font-medium cursor-pointer">
+                  Run & manage customer support
+                </Label>
+              </div>
+            </div>
             <Button
               onClick={nextStep}
               disabled={!canProceed()}
