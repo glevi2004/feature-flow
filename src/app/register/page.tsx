@@ -158,31 +158,34 @@ export default function RegisterPage() {
                 Choose the access level for your Feature Flow module
               </p>
             </div>
-            <RadioGroup
-              value={formData.accessType}
-              onValueChange={(value) => updateFormData("accessType", value)}
-            >
-              <div className="space-y-3">
-                <div className="flex items-center space-x-3 p-3 border border-gray-300/20 rounded-lg hover:bg-gray-50/5 hover:border-gray-300/30 transition-all duration-150 cursor-pointer">
-                  <RadioGroupItem value="public" id="public" />
-                  <Label
-                    htmlFor="public"
-                    className="text-base font-medium cursor-pointer"
-                  >
-                    Public
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-3 p-3 border border-gray-300/20 rounded-lg hover:bg-gray-50/5 hover:border-gray-300/30 transition-all duration-150 cursor-pointer">
-                  <RadioGroupItem value="private" id="private" />
-                  <Label
-                    htmlFor="private"
-                    className="text-base font-medium cursor-pointer"
-                  >
-                    Private
-                  </Label>
-                </div>
+            <div className="space-y-3">
+              <div
+                className="flex items-center space-x-3 p-3 border border-gray-300/20 rounded-lg hover:bg-gray-50/5 hover:border-gray-300/30 transition-all duration-150 cursor-pointer"
+                onClick={() => updateFormData("accessType", "public")}
+              >
+                <Checkbox
+                  checked={formData.accessType === "public"}
+                  onCheckedChange={() => updateFormData("accessType", "public")}
+                />
+                <Label className="text-base font-medium cursor-pointer">
+                  Public
+                </Label>
               </div>
-            </RadioGroup>
+              <div
+                className="flex items-center space-x-3 p-3 border border-gray-300/20 rounded-lg hover:bg-gray-50/5 hover:border-gray-300/30 transition-all duration-150 cursor-pointer"
+                onClick={() => updateFormData("accessType", "private")}
+              >
+                <Checkbox
+                  checked={formData.accessType === "private"}
+                  onCheckedChange={() =>
+                    updateFormData("accessType", "private")
+                  }
+                />
+                <Label className="text-base font-medium cursor-pointer">
+                  Private
+                </Label>
+              </div>
+            </div>
             <div className="flex space-x-4">
               <Button onClick={prevStep} variant="outline" className="flex-1">
                 Back
