@@ -87,8 +87,8 @@ export default function RegisterPage() {
   const handleGoogleSignup = async () => {
     try {
       await signInWithGoogle();
-      // After successful sign in, redirect to protected homepage
-      router.push("/(protected)");
+      // After successful sign in, redirect to dashboard
+      router.push("/dashboard");
     } catch (error) {
       console.error("Error signing in with Google:", error);
       // You can add error handling here (show toast, etc.)

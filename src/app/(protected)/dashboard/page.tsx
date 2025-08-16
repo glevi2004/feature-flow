@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Zap, LogOut, User } from "lucide-react";
 
-export default function ProtectedHomePage() {
+export default function DashboardPage() {
   const { user, signOut } = useAuth();
 
   const handleSignOut = async () => {
