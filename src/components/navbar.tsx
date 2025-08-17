@@ -43,7 +43,7 @@ export function Navbar() {
             <Link href="/login">
               <Button
                 variant="ghost"
-                className="text-white hover:text-white/80 hover:bg-white/10 border border-white/20 rounded-full px-6 py-2 transition-all"
+                className="text-white hover:text-white/90 hover:bg-white/5 px-6 py-2 transition-all duration-200"
               >
                 Login
               </Button>
