@@ -16,6 +16,7 @@ import {
 import { Zap, ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface FormData {
   goals: string[];
@@ -407,6 +408,15 @@ export default function RegisterPage() {
             <div className="text-center text-sm text-gray-500">
               By continuing, you agree to our Terms of Service and Privacy
               Policy
+            </div>
+            <div className="text-center text-sm text-gray-500">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="text-blue-600 hover:text-blue-700 font-medium"
+              >
+                Sign in
+              </Link>
             </div>
           </div>
         );
