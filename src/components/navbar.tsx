@@ -40,6 +40,14 @@ export function Navbar() {
               </a>
             </nav>
             <ModeToggle />
+            <Link href="/login">
+              <Button
+                variant="ghost"
+                className="text-white hover:text-white/80 hover:bg-white/10 border border-white/20 rounded-full px-6 py-2 transition-all"
+              >
+                Login
+              </Button>
+            </Link>
             <Link href="/register">
               <Button className="bg-white/20 hover:bg-white/30 text-white border border-white/30 rounded-full px-6 py-2 transition-all">
                 Get Started
