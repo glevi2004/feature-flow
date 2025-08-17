@@ -154,6 +154,15 @@ export default function RegisterPage() {
               Next Step
               <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
+            <div className="text-center text-sm text-gray-500">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="text-blue-600 hover:text-blue-700 font-medium"
+              >
+                Sign in
+              </Link>
+            </div>
           </div>
         );
 
