@@ -7,17 +7,30 @@ import { Zap } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { UserService } from "@/lib/services/user";
 
 export default function LoginPage() {
-  const { signInWithGoogle } = useAuth();
+  const { loginWithGoogle } = useAuth();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleGoogleLogin = async () => {
     try {
       setIsLoading(true);
-      await signInWithGoogle();
-      router.push("/dashboard");
+      const result = await loginWithGoogle();
+
+      // Check if user exists in our database
+      if (result.user) {
+        const userData = await UserService.getUserData(result.user.uid);
+
+        if (!userData) {
+          // User doesn't exist, redirect to register to complete onboarding
+          router.push("/register");
+        } else {
+          // User exists, go to dashboard
+          router.push("/dashboard");
+        }
+      }
     } catch (error) {
       console.error("Error signing in with Google:", error);
       // You can add error handling here (show toast, etc.)

@@ -16,6 +16,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   signInWithGoogle: (onboardingData?: any) => Promise<UserCredential>;
+  loginWithGoogle: () => Promise<UserCredential>;
   signOut: () => Promise<void>;
 }
 
@@ -83,6 +84,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const loginWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      return result;
+    } catch (error) {
+      console.error("Error logging in with Google:", error);
+      throw error;
+    }
+  };
+
   const signOut = async () => {
     try {
       await firebaseSignOut(auth);
@@ -96,6 +107,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     loading,
     signInWithGoogle,
+    loginWithGoogle,
     signOut,
   };
 
