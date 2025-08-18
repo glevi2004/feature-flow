@@ -1,14 +1,16 @@
 "use client";
 
 import { useAuth } from "@/contexts/AuthContext";
-import { OnboardingService } from "@/lib/services/onboarding";
+import { OnboardingService, OnboardingData } from "@/lib/services/onboarding";
 import { Button } from "@/components/ui/button";
 import { Zap, LogOut, User } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
   const { user, signOut } = useAuth();
-  const [onboardingData, setOnboardingData] = useState<any>(null);
+  const [onboardingData, setOnboardingData] = useState<OnboardingData | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -78,8 +80,8 @@ export default function DashboardPage() {
             Welcome to Feature Flow!
           </h1>
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            You're now signed in and ready to start collecting, organizing, and
-            prioritizing customer feedback.
+            You&apos;re now signed in and ready to start collecting, organizing,
+            and prioritizing customer feedback.
           </p>
 
           {/* Display Onboarding Data */}
@@ -121,8 +123,8 @@ export default function DashboardPage() {
               Getting Started
             </h2>
             <p className="text-gray-300 mb-6">
-              Your Feature Flow dashboard is being set up. Here's what you can
-              do next:
+              Your Feature Flow dashboard is being set up. Here&apos;s what you
+              can do next:
             </p>
 
             <div className="grid md:grid-cols-2 gap-6 text-left">

@@ -10,12 +10,14 @@ import {
 } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase/firebaseConfig";
 import { UserService } from "@/lib/services/user";
-import { OnboardingService } from "@/lib/services/onboarding";
+import { OnboardingService, OnboardingData } from "@/lib/services/onboarding";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signInWithGoogle: (onboardingData?: any) => Promise<UserCredential>;
+  signInWithGoogle: (
+    onboardingData?: Omit<OnboardingData, "createdAt">
+  ) => Promise<UserCredential>;
   loginWithGoogle: () => Promise<UserCredential>;
   signOut: () => Promise<void>;
 }
@@ -45,7 +47,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => unsubscribe();
   }, []);
 
-  const signInWithGoogle = async (onboardingData?: any) => {
+  const signInWithGoogle = async (
+    onboardingData?: Omit<OnboardingData, "createdAt">
+  ) => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
 

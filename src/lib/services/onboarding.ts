@@ -1,5 +1,5 @@
 import { db } from "@/lib/firebase/firebaseConfig";
-import { doc, setDoc, getDoc, collection } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 export interface OnboardingData {
   goals: string[];
