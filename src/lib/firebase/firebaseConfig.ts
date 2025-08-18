@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 // import { getAnalytics } from "firebase/analytics";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -30,4 +30,7 @@ googleProvider.setCustomParameters({
   prompt: "select_account",
 });
 
-export { auth, app, googleProvider, db };
+// Initialize GitHub Auth Provider
+const githubProvider = new GithubAuthProvider();
+
+export { auth, app, googleProvider, githubProvider, db };

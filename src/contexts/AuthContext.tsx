@@ -8,7 +8,11 @@ import {
   onAuthStateChanged,
   UserCredential,
 } from "firebase/auth";
-import { auth, googleProvider } from "@/lib/firebase/firebaseConfig";
+import {
+  auth,
+  googleProvider,
+  githubProvider,
+} from "@/lib/firebase/firebaseConfig";
 import { UserService } from "@/lib/services/user";
 import { OnboardingService, OnboardingData } from "@/lib/services/onboarding";
 
@@ -18,7 +22,11 @@ interface AuthContextType {
   signInWithGoogle: (
     onboardingData?: Omit<OnboardingData, "createdAt">
   ) => Promise<UserCredential>;
+  signInWithGitHub: (
+    onboardingData?: Omit<OnboardingData, "createdAt">
+  ) => Promise<UserCredential>;
   loginWithGoogle: () => Promise<UserCredential>;
+  loginWithGitHub: () => Promise<UserCredential>;
   signOut: () => Promise<void>;
 }
 
@@ -98,6 +106,55 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signInWithGitHub = async (
+    onboardingData?: Omit<OnboardingData, "createdAt">
+  ) => {
+    try {
+      const result = await signInWithPopup(auth, githubProvider);
+
+      // Save user data first
+      if (result.user) {
+        try {
+          await UserService.saveUserData({
+            uid: result.user.uid,
+            email: result.user.email || "",
+            displayName: result.user.displayName || "",
+            photoURL: result.user.photoURL || undefined,
+          });
+
+          // If onboarding data is provided, save it to subcollection
+          if (onboardingData) {
+            console.log("Saving onboarding data:", onboardingData);
+            console.log("User ID:", result.user.uid);
+            await OnboardingService.saveOnboardingData(
+              result.user.uid,
+              onboardingData
+            );
+            console.log("Onboarding data saved successfully");
+          }
+        } catch (userError) {
+          console.error("Error saving user or onboarding data:", userError);
+          // Still return the auth result even if data saving fails
+        }
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error signing in with GitHub:", error);
+      throw error;
+    }
+  };
+
+  const loginWithGitHub = async () => {
+    try {
+      const result = await signInWithPopup(auth, githubProvider);
+      return result;
+    } catch (error) {
+      console.error("Error logging in with GitHub:", error);
+      throw error;
+    }
+  };
+
   const signOut = async () => {
     try {
       await firebaseSignOut(auth);
@@ -111,7 +168,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     loading,
     signInWithGoogle,
+    signInWithGitHub,
     loginWithGoogle,
+    loginWithGitHub,
     signOut,
   };
 
