@@ -28,11 +28,14 @@ interface FormData {
 }
 
 export default function RegisterPage() {
-  const { signInWithGoogle, signInWithGitHub } = useAuth();
+  const { signInWithGoogle, signInWithGitHub, signInWithEmail } = useAuth();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showEmailForm, setShowEmailForm] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     goals: [],
     accessType: "",
@@ -120,6 +123,32 @@ export default function RegisterPage() {
         setError(
           "An account with this email already exists. Please try signing in with a different method."
         );
+      } else {
+        setError("An error occurred during sign up. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEmailSignup = async () => {
+    try {
+      setError(null);
+      setIsLoading(true);
+      // Pass the form data to the sign-in function
+      await signInWithEmail(email, password, formData);
+      // Redirect to verification page instead of dashboard
+      router.push("/verify-email");
+    } catch (error: any) {
+      console.error("Error signing in with email:", error);
+      if (error.code === "auth/email-already-in-use") {
+        setError(
+          "An account with this email already exists. Please try signing in instead."
+        );
+      } else if (error.code === "auth/weak-password") {
+        setError("Password should be at least 6 characters long.");
+      } else if (error.code === "auth/invalid-email") {
+        setError("Please enter a valid email address.");
       } else {
         setError("An error occurred during sign up. Please try again.");
       }
@@ -419,20 +448,67 @@ export default function RegisterPage() {
                 {isLoading ? "Signing up..." : "Continue with Google"}
               </Button>
 
-              <Button
-                onClick={() => console.log("Email signup clicked", formData)}
-                className="w-full bg-gray-900 text-white border border-gray-700 hover:bg-gray-800"
-              >
-                <svg
-                  className="w-5 h-5 mr-2"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
+              {!showEmailForm ? (
+                <Button
+                  onClick={() => setShowEmailForm(true)}
+                  className="w-full bg-gray-900 text-white border border-gray-700 hover:bg-gray-800"
                 >
-                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                </svg>
-                Continue with Email
-              </Button>
+                  <svg
+                    className="w-5 h-5 mr-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                  </svg>
+                  Continue with Email
+                </Button>
+              ) : (
+                <div className="space-y-3">
+                  <div>
+                    <Label htmlFor="email" className="text-sm font-medium">
+                      Email
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="password" className="text-sm font-medium">
+                      Password
+                    </Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Create a password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button
+                      onClick={() => setShowEmailForm(false)}
+                      variant="outline"
+                      className="flex-1"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleEmailSignup}
+                      disabled={isLoading || !email || !password}
+                      className="flex-1 bg-blue-500 hover:bg-blue-600 text-white"
+                    >
+                      {isLoading ? "Signing up..." : "Sign up"}
+                    </Button>
+                  </div>
+                </div>
+              )}
 
               <Button
                 onClick={handleGitHubSignup}

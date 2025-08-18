@@ -4,6 +4,9 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   User,
   signInWithPopup,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendEmailVerification,
   signOut as firebaseSignOut,
   onAuthStateChanged,
   UserCredential,
@@ -25,8 +28,14 @@ interface AuthContextType {
   signInWithGitHub: (
     onboardingData?: Omit<OnboardingData, "createdAt">
   ) => Promise<UserCredential>;
+  signInWithEmail: (
+    email: string,
+    password: string,
+    onboardingData?: Omit<OnboardingData, "createdAt">
+  ) => Promise<UserCredential>;
   loginWithGoogle: () => Promise<UserCredential>;
   loginWithGitHub: () => Promise<UserCredential>;
+  loginWithEmail: (email: string, password: string) => Promise<UserCredential>;
   signOut: () => Promise<void>;
 }
 
@@ -64,12 +73,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Save user data first
       if (result.user) {
         try {
-          await UserService.saveUserData({
+          const userData: any = {
             uid: result.user.uid,
             email: result.user.email || "",
             displayName: result.user.displayName || "",
-            photoURL: result.user.photoURL || undefined,
-          });
+          };
+
+          // Only add photoURL if it exists
+          if (result.user.photoURL) {
+            userData.photoURL = result.user.photoURL;
+          }
+
+          await UserService.saveUserData(userData);
 
           // If onboarding data is provided, save it to subcollection
           if (onboardingData) {
@@ -115,12 +130,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Save user data first
       if (result.user) {
         try {
-          await UserService.saveUserData({
+          const userData: any = {
             uid: result.user.uid,
             email: result.user.email || "",
             displayName: result.user.displayName || "",
-            photoURL: result.user.photoURL || undefined,
-          });
+          };
+
+          // Only add photoURL if it exists
+          if (result.user.photoURL) {
+            userData.photoURL = result.user.photoURL;
+          }
+
+          await UserService.saveUserData(userData);
 
           // If onboarding data is provided, save it to subcollection
           if (onboardingData) {
@@ -155,6 +176,85 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signInWithEmail = async (
+    email: string,
+    password: string,
+    onboardingData?: Omit<OnboardingData, "createdAt">
+  ) => {
+    try {
+      const result = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      // Send verification email immediately after account creation
+      if (result.user) {
+        try {
+          console.log(
+            "Attempting to send verification email to:",
+            result.user.email
+          );
+          try {
+            await sendEmailVerification(result.user);
+            console.log("Verification email sent successfully");
+          } catch (verificationError) {
+            console.error(
+              "Error sending verification email:",
+              verificationError
+            );
+            // Continue with user data saving even if verification email fails
+          }
+
+          // Save user data with emailVerified: false
+          const userData: any = {
+            uid: result.user.uid,
+            email: result.user.email || "",
+            displayName: result.user.displayName || "",
+            emailVerified: false,
+          };
+
+          // Only add photoURL if it exists
+          if (result.user.photoURL) {
+            userData.photoURL = result.user.photoURL;
+          }
+
+          await UserService.saveUserData(userData);
+
+          // Store onboarding data temporarily in localStorage instead of saving to Firestore
+          if (onboardingData) {
+            console.log("Storing onboarding data temporarily:", onboardingData);
+            localStorage.setItem(
+              "pendingOnboarding",
+              JSON.stringify(onboardingData)
+            );
+          }
+        } catch (userError) {
+          console.error(
+            "Error sending verification email or saving user data:",
+            userError
+          );
+          // Still return the auth result even if verification fails
+        }
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error signing in with email:", error);
+      throw error;
+    }
+  };
+
+  const loginWithEmail = async (email: string, password: string) => {
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      return result;
+    } catch (error) {
+      console.error("Error logging in with email:", error);
+      throw error;
+    }
+  };
+
   const signOut = async () => {
     try {
       await firebaseSignOut(auth);
@@ -169,8 +269,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading,
     signInWithGoogle,
     signInWithGitHub,
+    signInWithEmail,
     loginWithGoogle,
     loginWithGitHub,
+    loginWithEmail,
     signOut,
   };
 
