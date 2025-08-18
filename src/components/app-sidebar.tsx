@@ -17,8 +17,11 @@ import {
   Settings,
   User,
   LogOut,
+  House,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useState, useEffect } from "react";
+import { OnboardingService } from "@/lib/services/onboarding";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +31,26 @@ import {
 
 export function AppSidebar() {
   const { user, signOut } = useAuth();
+  const [companyName, setCompanyName] = useState("");
+
+  useEffect(() => {
+    if (user) {
+      loadCompanyName();
+    }
+  }, [user]);
+
+  const loadCompanyName = async () => {
+    try {
+      const onboardingData = await OnboardingService.getOnboardingData(
+        user!.uid
+      );
+      if (onboardingData?.companyName) {
+        setCompanyName(onboardingData.companyName);
+      }
+    } catch (error) {
+      console.error("Error loading company name:", error);
+    }
+  };
 
   return (
     <Sidebar>
@@ -35,6 +58,14 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu className="mt-15">
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link href="/dashboard">
+                  <House className="h-4 w-4" />
+                  Home
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <Link href="/feedback">
@@ -45,7 +76,10 @@ export function AppSidebar() {
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link href="/live-portal">
+                <Link
+                  href={`/${encodeURIComponent(companyName || "")}`}
+                  target="_blank"
+                >
                   <Globe className="h-4 w-4" />
                   Live Portal
                 </Link>
