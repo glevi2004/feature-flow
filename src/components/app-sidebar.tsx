@@ -9,9 +9,19 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { MessageSquare, Globe, Bell, BarChart3, Settings } from "lucide-react";
+import {
+  MessageSquare,
+  Globe,
+  Bell,
+  BarChart3,
+  Settings,
+  User,
+} from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function AppSidebar() {
+  const { user } = useAuth();
+
   return (
     <Sidebar>
       <SidebarHeader />
@@ -65,7 +75,27 @@ export function AppSidebar() {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter>
+        <div className="flex items-center gap-3 px-3 py-2">
+          {user?.photoURL ? (
+            <img
+              src={user.photoURL}
+              alt={user.displayName || "User"}
+              className="h-8 w-8 rounded-full"
+            />
+          ) : (
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+              <User className="h-4 w-4" />
+            </div>
+          )}
+          <div className="flex flex-col">
+            <span className="text-sm font-medium">
+              {user?.displayName || "User"}
+            </span>
+            <span className="text-xs text-muted-foreground">{user?.email}</span>
+          </div>
+        </div>
+      </SidebarFooter>
     </Sidebar>
   );
 }
