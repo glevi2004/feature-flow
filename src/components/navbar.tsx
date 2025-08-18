@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ModeToggle } from "@/components/mode-toggle";
+// import { ModeToggle } from "@/components/mode-toggle";
 import { Zap, Menu, X } from "lucide-react";
 import Link from "next/link";
 
@@ -22,29 +22,33 @@ export function Navbar() {
             </span>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6">
+          {/* Desktop Navigation - Centered */}
+          <div className="hidden lg:flex items-center justify-center flex-1 ml-12">
             <nav className="flex space-x-6">
               <a
                 href="#features"
-                className="text-white hover:text-white/80 transition-colors font-medium"
+                className="text-white hover:text-white/80 transition-colors text-sm"
               >
                 Features
               </a>
               <a
                 href="#workflow"
-                className="text-white hover:text-white/80 transition-colors font-medium"
+                className="text-white hover:text-white/80 transition-colors text-sm"
               >
                 Workflow
               </a>
               <a
                 href="#integrations"
-                className="text-white hover:text-white/80 transition-colors font-medium"
+                className="text-white hover:text-white/80 transition-colors text-sm"
               >
                 Integrations
               </a>
             </nav>
-            <ModeToggle />
+          </div>
+
+          {/* Desktop Auth Buttons */}
+          <div className="hidden lg:flex items-center space-x-4">
+            {/* <ModeToggle /> */}
             <Link href="/login">
               <Button
                 variant="ghost"
@@ -61,8 +65,8 @@ export function Navbar() {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center space-x-2">
-            <ModeToggle />
+          <div className="lg:hidden flex items-center space-x-2">
+            {/* <ModeToggle /> */}
             <Button
               variant="ghost"
               size="icon"
@@ -80,35 +84,35 @@ export function Navbar() {
 
         {/* Mobile Dropdown Menu */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4 space-y-3">
+          <div className="md:hidden mt-4 bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg p-4 space-y-3">
             <nav className="space-y-3">
               <a
                 href="#features"
-                className="block text-white hover:text-white/80 transition-colors font-medium py-2"
+                className="block text-white hover:!bg-white/10 hover:!text-white/90 rounded-md px-4 transition-colors font-medium py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Features
               </a>
               <a
                 href="#workflow"
-                className="block text-white hover:text-white/80 transition-colors font-medium py-2"
+                className="block text-white hover:!bg-white/10 hover:!text-white/90 rounded-md px-4 transition-colors font-medium py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Workflow
               </a>
               <a
                 href="#integrations"
-                className="text-white hover:text-white/80 transition-colors font-medium py-2 block"
+                className="text-white hover:!bg-white/10 hover:!text-white/90 rounded-md px-4 transition-colors font-medium py-2 block"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Integrations
               </a>
             </nav>
-            <div className="pt-3 border-t border-white/20 space-y-2">
+            <div className="pt-3 border-t border-white/20 space-y-2 ">
               <Link href="/login" onClick={() => setIsMenuOpen(false)}>
                 <Button
                   variant="ghost"
-                  className="w-full text-white hover:!bg-white/10 hover:!text-white/90 justify-start"
+                  className="mb-2 w-full text-white hover:!bg-white/10 hover:!text-white/90 justify-start"
                 >
                   Login
                 </Button>
