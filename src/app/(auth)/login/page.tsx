@@ -30,11 +30,15 @@ export default function LoginPage() {
           // User doesn't exist, redirect to register to complete onboarding
           router.push("/register");
         } else {
-          // User exists, get company name and redirect to company page
+          // User exists, get company name and redirect to dashboard
           try {
-            const onboardingData = await OnboardingService.getOnboardingData(result.user.uid);
+            const onboardingData = await OnboardingService.getOnboardingData(
+              result.user.uid
+            );
             if (onboardingData?.companyName) {
-              router.push(`/${encodeURIComponent(onboardingData.companyName)}`);
+              router.push(
+                `/${encodeURIComponent(onboardingData.companyName)}/dashboard`
+              );
             } else {
               // Fallback to dashboard if no company name
               router.push("/dashboard");
@@ -73,11 +77,15 @@ export default function LoginPage() {
           // User doesn't exist, redirect to register to complete onboarding
           router.push("/register");
         } else {
-          // User exists, get company name and redirect to company page
+          // User exists, get company name and redirect to dashboard
           try {
-            const onboardingData = await OnboardingService.getOnboardingData(result.user.uid);
+            const onboardingData = await OnboardingService.getOnboardingData(
+              result.user.uid
+            );
             if (onboardingData?.companyName) {
-              router.push(`/${encodeURIComponent(onboardingData.companyName)}`);
+              router.push(
+                `/${encodeURIComponent(onboardingData.companyName)}/dashboard`
+              );
             } else {
               // Fallback to dashboard if no company name
               router.push("/dashboard");
