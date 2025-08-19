@@ -5,7 +5,11 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  SidebarProvider,
+  SidebarTrigger,
+  SidebarInset,
+} from "@/components/ui/sidebar";
 import { Header } from "@/components/header";
 
 export default function DashboardLayout({
@@ -46,10 +50,14 @@ export default function DashboardLayout({
     >
       <SidebarProvider>
         <Header />
-        <div className="flex h-screen bg-background mt-20">
+        <div className="flex h-screen bg-background mt-20 w-full">
           <AppSidebar />
-          <SidebarTrigger />
-          <main className="flex-1 overflow-auto">{children}</main>
+          <SidebarInset className="flex-1 overflow-auto bg-background">
+            <div className="p-4">
+              <SidebarTrigger />
+            </div>
+            {children}
+          </SidebarInset>
         </div>
       </SidebarProvider>
     </ThemeProvider>

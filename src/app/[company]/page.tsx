@@ -296,7 +296,7 @@ export default function PublicFeedbackPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex w-full">
       {/* Main Content Area */}
       <div className="flex-1 max-w-4xl mx-auto p-6">
         {/* Header/Navigation */}
