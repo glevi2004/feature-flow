@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { Header } from "@/components/header";
 
 export default function DashboardLayout({
   children,
@@ -44,7 +45,8 @@ export default function DashboardLayout({
       disableTransitionOnChange
     >
       <SidebarProvider>
-        <div className="flex h-screen bg-background">
+        <Header />
+        <div className="flex h-screen bg-background mt-20">
           <AppSidebar />
           <SidebarTrigger />
           <main className="flex-1 overflow-auto">{children}</main>
