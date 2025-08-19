@@ -95,9 +95,9 @@ export default function RegisterPage() {
       setIsLoading(true);
       // Pass the form data to the sign-in function
       await signInWithGoogle(formData);
-      // Redirect to company page after successful registration
+      // Redirect to dashboard after successful registration
       if (formData.companyName) {
-        router.push(`/${encodeURIComponent(formData.companyName)}`);
+        router.push(`/${encodeURIComponent(formData.companyName)}/dashboard`);
       } else {
         router.push("/dashboard");
       }
@@ -121,9 +121,9 @@ export default function RegisterPage() {
       setIsLoading(true);
       // Pass the form data to the sign-in function
       await signInWithGitHub(formData);
-      // Redirect to company page after successful registration
+      // Redirect to dashboard after successful registration
       if (formData.companyName) {
-        router.push(`/${encodeURIComponent(formData.companyName)}`);
+        router.push(`/${encodeURIComponent(formData.companyName)}/dashboard`);
       } else {
         router.push("/dashboard");
       }
