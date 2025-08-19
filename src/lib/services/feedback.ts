@@ -1,19 +1,19 @@
 import { db } from "@/lib/firebase/firebaseConfig";
-import { 
-  collection, 
-  doc, 
-  addDoc, 
-  getDocs, 
-  getDoc, 
-  updateDoc, 
-  deleteDoc, 
-  query, 
-  where, 
-  orderBy, 
+import {
+  collection,
+  doc,
+  addDoc,
+  getDocs,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
   serverTimestamp,
   arrayUnion,
   arrayRemove,
-  increment
+  increment,
 } from "firebase/firestore";
 
 export interface FeedbackPost {
@@ -23,8 +23,8 @@ export interface FeedbackPost {
   title: string;
   description: string;
   tags: string[];
-  likes: string[]; // Array of user IDs who liked the post
-  likesCount: number;
+  upvotes: string[]; // Array of user IDs who upvoted the post
+  upvotesCount: number;
   commentsCount: number;
   createdAt: any;
   updatedAt: any;
@@ -49,12 +49,22 @@ export interface FeedbackTag {
 
 export class FeedbackService {
   // Create a new feedback post
-  static async createPost(data: Omit<FeedbackPost, 'id' | 'createdAt' | 'updatedAt' | 'likes' | 'likesCount' | 'commentsCount'>) {
+  static async createPost(
+    data: Omit<
+      FeedbackPost,
+      | "id"
+      | "createdAt"
+      | "updatedAt"
+      | "upvotes"
+      | "upvotesCount"
+      | "commentsCount"
+    >
+  ) {
     try {
-      const postData: Omit<FeedbackPost, 'id'> = {
+      const postData: Omit<FeedbackPost, "id"> = {
         ...data,
-        likes: [],
-        likesCount: 0,
+        upvotes: [],
+        upvotesCount: 0,
         commentsCount: 0,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
@@ -76,14 +86,14 @@ export class FeedbackService {
         where("companyName", "==", companyName),
         orderBy("createdAt", "desc")
       );
-      
+
       const querySnapshot = await getDocs(q);
       const posts: FeedbackPost[] = [];
-      
+
       querySnapshot.forEach((doc) => {
         posts.push({ id: doc.id, ...doc.data() } as FeedbackPost);
       });
-      
+
       return posts;
     } catch (error) {
       console.error("Error getting company posts:", error);
@@ -96,7 +106,7 @@ export class FeedbackService {
     try {
       const docRef = doc(db, "feedback_posts", postId);
       const docSnap = await getDoc(docRef);
-      
+
       if (docSnap.exists()) {
         return { id: docSnap.id, ...docSnap.data() } as FeedbackPost;
       }
@@ -107,52 +117,55 @@ export class FeedbackService {
     }
   }
 
-  // Like/unlike a post
-  static async toggleLike(postId: string, userId: string) {
+  // Toggle upvote on a post
+  static async toggleUpvote(postId: string, userId: string) {
     try {
       const postRef = doc(db, "feedback_posts", postId);
       const postSnap = await getDoc(postRef);
-      
+
       if (!postSnap.exists()) {
         throw new Error("Post not found");
       }
-      
+
       const post = postSnap.data() as FeedbackPost;
-      const isLiked = post.likes.includes(userId);
-      
-      if (isLiked) {
-        // Unlike
+      const isUpvoted = post.upvotes.includes(userId);
+
+      if (isUpvoted) {
+        // Remove upvote
         await updateDoc(postRef, {
-          likes: arrayRemove(userId),
-          likesCount: increment(-1),
+          upvotes: arrayRemove(userId),
+          upvotesCount: increment(-1),
           updatedAt: serverTimestamp(),
         });
       } else {
-        // Like
+        // Add upvote
         await updateDoc(postRef, {
-          likes: arrayUnion(userId),
-          likesCount: increment(1),
+          upvotes: arrayUnion(userId),
+          upvotesCount: increment(1),
           updatedAt: serverTimestamp(),
         });
       }
-      
-      return { liked: !isLiked };
+
+      return { upvoted: !isUpvoted };
     } catch (error) {
-      console.error("Error toggling like:", error);
+      console.error("Error toggling upvote:", error);
       throw error;
     }
   }
 
   // Add a comment to a post
-  static async addComment(data: Omit<FeedbackComment, 'id' | 'createdAt'>) {
+  static async addComment(data: Omit<FeedbackComment, "id" | "createdAt">) {
     try {
-      const commentData: Omit<FeedbackComment, 'id'> = {
+      const commentData: Omit<FeedbackComment, "id"> = {
         ...data,
         createdAt: serverTimestamp(),
       };
 
-      const commentRef = await addDoc(collection(db, "feedback_comments"), commentData);
-      
+      const commentRef = await addDoc(
+        collection(db, "feedback_comments"),
+        commentData
+      );
+
       // Update post comment count
       const postRef = doc(db, "feedback_posts", data.postId);
       await updateDoc(postRef, {
@@ -175,14 +188,14 @@ export class FeedbackService {
         where("postId", "==", postId),
         orderBy("createdAt", "asc")
       );
-      
+
       const querySnapshot = await getDocs(q);
       const comments: FeedbackComment[] = [];
-      
+
       querySnapshot.forEach((doc) => {
         comments.push({ id: doc.id, ...doc.data() } as FeedbackComment);
       });
-      
+
       return comments;
     } catch (error) {
       console.error("Error getting comments:", error);
@@ -191,9 +204,9 @@ export class FeedbackService {
   }
 
   // Create a new tag for a company
-  static async createTag(data: Omit<FeedbackTag, 'id' | 'createdAt'>) {
+  static async createTag(data: Omit<FeedbackTag, "id" | "createdAt">) {
     try {
-      const tagData: Omit<FeedbackTag, 'id'> = {
+      const tagData: Omit<FeedbackTag, "id"> = {
         ...data,
         createdAt: serverTimestamp(),
       };
@@ -214,14 +227,14 @@ export class FeedbackService {
         where("companyName", "==", companyName),
         orderBy("createdAt", "asc")
       );
-      
+
       const querySnapshot = await getDocs(q);
       const tags: FeedbackTag[] = [];
-      
+
       querySnapshot.forEach((doc) => {
         tags.push({ id: doc.id, ...doc.data() } as FeedbackTag);
       });
-      
+
       return tags;
     } catch (error) {
       console.error("Error getting company tags:", error);

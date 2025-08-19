@@ -102,19 +102,54 @@ export default function PublicFeedbackPage() {
 
       // Apply sorting
       if (sortBy === "new") {
-        postsData.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
-      } else if (sortBy === "top") {
-        postsData.sort((a, b) => b.likesCount - a.likesCount);
-      } else if (sortBy === "trending") {
-        // Simple trending algorithm: likes + recency
         postsData.sort((a, b) => {
+          const dateA =
+            a.createdAt && typeof a.createdAt.toDate === "function"
+              ? a.createdAt.toDate()
+              : a.createdAt &&
+                typeof a.createdAt === "object" &&
+                "seconds" in a.createdAt
+              ? new Date(a.createdAt.seconds * 1000)
+              : new Date(a.createdAt || 0);
+          const dateB =
+            b.createdAt && typeof b.createdAt.toDate === "function"
+              ? b.createdAt.toDate()
+              : b.createdAt &&
+                typeof b.createdAt === "object" &&
+                "seconds" in b.createdAt
+              ? new Date(b.createdAt.seconds * 1000)
+              : new Date(b.createdAt || 0);
+          return dateB.getTime() - dateA.getTime();
+        });
+      } else if (sortBy === "top") {
+        postsData.sort((a, b) => b.upvotesCount - a.upvotesCount);
+      } else if (sortBy === "trending") {
+        // Simple trending algorithm: upvotes + recency
+        postsData.sort((a, b) => {
+          const dateA =
+            a.createdAt && typeof a.createdAt.toDate === "function"
+              ? a.createdAt.toDate()
+              : a.createdAt &&
+                typeof a.createdAt === "object" &&
+                "seconds" in a.createdAt
+              ? new Date(a.createdAt.seconds * 1000)
+              : new Date(a.createdAt || 0);
+          const dateB =
+            b.createdAt && typeof b.createdAt.toDate === "function"
+              ? b.createdAt.toDate()
+              : b.createdAt &&
+                typeof b.createdAt === "object" &&
+                "seconds" in b.createdAt
+              ? new Date(b.createdAt.seconds * 1000)
+              : new Date(b.createdAt || 0);
+
           const scoreA =
-            a.likesCount +
-            (new Date().getTime() - a.createdAt.toDate().getTime()) /
+            a.upvotesCount +
+            (new Date().getTime() - dateA.getTime()) /
               (1000 * 60 * 60 * 24 * 7);
           const scoreB =
-            b.likesCount +
-            (new Date().getTime() - b.createdAt.toDate().getTime()) /
+            b.upvotesCount +
+            (new Date().getTime() - dateB.getTime()) /
               (1000 * 60 * 60 * 24 * 7);
           return scoreB - scoreA;
         });
@@ -131,7 +166,7 @@ export default function PublicFeedbackPage() {
 
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !description.trim() || !userName.trim()) {
+    if (!title.trim() || !description.trim()) {
       alert("Please fill in all required fields");
       return;
     }
@@ -157,29 +192,31 @@ export default function PublicFeedbackPage() {
     }
   };
 
-  const handleToggleLike = async (postId: string) => {
+  const handleToggleUpvote = async (postId: string) => {
     try {
       const userId = `anonymous-${Date.now()}`;
-      await FeedbackService.toggleLike(postId, userId);
+      await FeedbackService.toggleUpvote(postId, userId);
 
       setPosts(
         posts.map((post) => {
           if (post.id === postId) {
-            const isLiked = post.likes.includes(userId);
+            const isUpvoted = post.upvotes.includes(userId);
             return {
               ...post,
-              likes: isLiked
-                ? post.likes.filter((id) => id !== userId)
-                : [...post.likes, userId],
-              likesCount: isLiked ? post.likesCount - 1 : post.likesCount + 1,
+              upvotes: isUpvoted
+                ? post.upvotes.filter((id: string) => id !== userId)
+                : [...post.upvotes, userId],
+              upvotesCount: isUpvoted
+                ? post.upvotesCount - 1
+                : post.upvotesCount + 1,
             };
           }
           return post;
         })
       );
     } catch (error) {
-      console.error("Error toggling like:", error);
-      alert("Failed to update like");
+      console.error("Error toggling upvote:", error);
+      alert("Failed to update upvote");
     }
   };
 
@@ -447,8 +484,17 @@ export default function PublicFeedbackPage() {
                       <div className="flex items-center space-x-2">
                         <Calendar className="h-4 w-4" />
                         <span>
-                          {post.createdAt
+                          {post.createdAt &&
+                          typeof post.createdAt.toDate === "function"
                             ? formatRelativeTime(post.createdAt.toDate())
+                            : post.createdAt &&
+                              typeof post.createdAt === "object" &&
+                              "seconds" in post.createdAt
+                            ? formatRelativeTime(
+                                new Date(post.createdAt.seconds * 1000)
+                              )
+                            : post.createdAt
+                            ? formatRelativeTime(new Date(post.createdAt))
                             : "Recently"}
                         </span>
                       </div>
@@ -458,10 +504,10 @@ export default function PublicFeedbackPage() {
                         variant="ghost"
                         size="sm"
                         className="flex items-center gap-1"
-                        onClick={() => handleToggleLike(post.id!)}
+                        onClick={() => handleToggleUpvote(post.id!)}
                       >
                         <ArrowUp className="h-4 w-4" />
-                        <span className="text-sm">{post.likesCount}</span>
+                        <span className="text-sm">{post.upvotesCount}</span>
                       </Button>
                       <Button
                         variant="ghost"
@@ -561,10 +607,21 @@ export default function PublicFeedbackPage() {
                                   {comment.userName}
                                 </span>
                                 <span className="text-xs text-muted-foreground">
-                                  {comment.createdAt?.toDate?.()
+                                  {comment.createdAt &&
+                                  typeof comment.createdAt.toDate === "function"
                                     ? comment.createdAt
                                         .toDate()
                                         .toLocaleDateString()
+                                    : comment.createdAt &&
+                                      typeof comment.createdAt === "object" &&
+                                      "seconds" in comment.createdAt
+                                    ? new Date(
+                                        comment.createdAt.seconds * 1000
+                                      ).toLocaleDateString()
+                                    : comment.createdAt
+                                    ? new Date(
+                                        comment.createdAt
+                                      ).toLocaleDateString()
                                     : "Recently"}
                                 </span>
                               </div>

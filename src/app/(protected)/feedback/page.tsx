@@ -27,7 +27,7 @@ import {
   FeedbackTag,
 } from "@/lib/services/feedback";
 import { OnboardingService } from "@/lib/services/onboarding";
-import { Plus, Tag, ExternalLink, MessageSquare, Heart } from "lucide-react";
+import { Plus, Tag, ExternalLink, MessageSquare, ArrowUp } from "lucide-react";
 
 export default function FeedbackPage() {
   const { user } = useAuth();
@@ -285,8 +285,8 @@ export default function FeedbackPage() {
                     <h3 className="font-semibold">{post.title}</h3>
                     <div className="flex items-center gap-2 text-sm text-gray-500">
                       <div className="flex items-center gap-1">
-                        <Heart className="h-4 w-4" />
-                        {post.likesCount}
+                        <ArrowUp className="h-4 w-4" />
+                        {post.upvotesCount}
                       </div>
                       <div className="flex items-center gap-1">
                         <MessageSquare className="h-4 w-4" />
@@ -313,8 +313,17 @@ export default function FeedbackPage() {
                   </div>
                   <p className="text-sm text-gray-500">
                     Posted{" "}
-                    {post.createdAt?.toDate?.()
+                    {post.createdAt &&
+                    typeof post.createdAt.toDate === "function"
                       ? post.createdAt.toDate().toLocaleDateString()
+                      : post.createdAt &&
+                        typeof post.createdAt === "object" &&
+                        "seconds" in post.createdAt
+                      ? new Date(
+                          post.createdAt.seconds * 1000
+                        ).toLocaleDateString()
+                      : post.createdAt
+                      ? new Date(post.createdAt).toLocaleDateString()
                       : "Recently"}
                   </p>
                 </div>
