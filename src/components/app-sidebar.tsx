@@ -9,6 +9,7 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import Image from "next/image";
 import {
   MessageSquare,
   Globe,
@@ -121,9 +122,11 @@ export function AppSidebar() {
           <DropdownMenuTrigger asChild>
             <button className="flex w-full items-center gap-3 px-3 py-2 hover:bg-accent hover:text-accent-foreground rounded-md transition-colors">
               {user?.photoURL ? (
-                <img
+                <Image
                   src={user.photoURL}
                   alt={user.displayName || "User"}
+                  width={32}
+                  height={32}
                   className="h-8 w-8 rounded-full"
                 />
               ) : (
