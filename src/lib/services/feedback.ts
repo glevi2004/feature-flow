@@ -23,6 +23,7 @@ export interface FeedbackPost {
   title: string;
   description: string;
   tags: string[];
+  status: string; // New status field
   upvotes: string[]; // Array of user IDs who upvoted the post
   upvotesCount: number;
   commentsCount: number;
@@ -63,6 +64,7 @@ export class FeedbackService {
     try {
       const postData: Omit<FeedbackPost, "id"> = {
         ...data,
+        status: "Under Review", // Set default status
         upvotes: [],
         upvotesCount: 0,
         commentsCount: 0,
@@ -238,6 +240,20 @@ export class FeedbackService {
       return tags;
     } catch (error) {
       console.error("Error getting company tags:", error);
+      throw error;
+    }
+  }
+
+  // Update post status
+  static async updatePostStatus(postId: string, status: string) {
+    try {
+      const postRef = doc(db, "feedback_posts", postId);
+      await updateDoc(postRef, {
+        status,
+        updatedAt: serverTimestamp(),
+      });
+    } catch (error) {
+      console.error("Error updating post status:", error);
       throw error;
     }
   }

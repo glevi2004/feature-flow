@@ -5,6 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Search,
   Filter,
   Clock,
@@ -14,6 +27,7 @@ import {
   ArrowUp,
   Lightbulb,
   Radio,
+  Check,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { OnboardingService } from "@/lib/services/onboarding";
@@ -23,6 +37,46 @@ import {
   FeedbackTag,
 } from "@/lib/services/feedback";
 
+// Status options
+const STATUS_OPTIONS = [
+  {
+    value: "Under Review",
+    label: "Under Review",
+    color: "bg-blue-900/20 text-blue-400 border border-blue-800/30",
+    dotColor: "bg-blue-400",
+  },
+  {
+    value: "In Progress",
+    label: "In Progress",
+    color: "bg-blue-900/20 text-blue-400 border border-blue-800/30",
+    dotColor: "bg-blue-400",
+  },
+  {
+    value: "Completed",
+    label: "Completed",
+    color: "bg-green-900/20 text-green-400 border border-green-800/30",
+    dotColor: "bg-green-400",
+  },
+  {
+    value: "Rejected",
+    label: "Rejected",
+    color: "bg-red-900/20 text-red-400 border border-red-800/30",
+    dotColor: "bg-red-400",
+  },
+  {
+    value: "Planning",
+    label: "Planning",
+    color: "bg-yellow-900/20 text-yellow-400 border border-yellow-800/30",
+    dotColor: "bg-yellow-400",
+  },
+  {
+    value: "Planned",
+    label: "Planned",
+    color: "bg-purple-900/20 text-purple-400 border border-purple-800/30",
+    dotColor: "bg-purple-400",
+  },
+];
+
 function DashboardPage() {
   const { user } = useAuth();
   const [posts, setPosts] = useState<FeedbackPost[]>([]);
@@ -31,6 +85,11 @@ function DashboardPage() {
   const [companyName, setCompanyName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
+  const [statusSearch, setStatusSearch] = useState("");
+  const [openStatusDropdown, setOpenStatusDropdown] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     if (user) {
@@ -81,6 +140,31 @@ function DashboardPage() {
 
   const clearAllFilters = () => {
     setActiveFilters([]);
+  };
+
+  const updatePostStatus = async (postId: string, newStatus: string) => {
+    try {
+      setUpdatingStatus(postId);
+      await FeedbackService.updatePostStatus(postId, newStatus);
+
+      // Update local state
+      setPosts(
+        posts.map((post) =>
+          post.id === postId ? { ...post, status: newStatus } : post
+        )
+      );
+    } catch (error) {
+      console.error("Error updating post status:", error);
+    } finally {
+      setUpdatingStatus(null);
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    const statusOption = STATUS_OPTIONS.find(
+      (option) => option.value === status
+    );
+    return statusOption?.color || "bg-gray-100 text-gray-800";
   };
 
   if (loading) {
@@ -208,9 +292,66 @@ function DashboardPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">
-                    In Review
-                  </Badge>
+                  <DropdownMenu
+                    open={openStatusDropdown === post.id}
+                    onOpenChange={(open) => {
+                      if (open) {
+                        setOpenStatusDropdown(post.id!);
+                        setStatusSearch("");
+                      } else {
+                        setOpenStatusDropdown(null);
+                      }
+                    }}
+                  >
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className={`h-auto px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${getStatusColor(
+                          post.status || "Under Review"
+                        )} hover:opacity-80 hover:scale-105`}
+                        disabled={updatingStatus === post.id}
+                      >
+                        {post.status || "Under Review"}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end">
+                      <div className="p-2">
+                        <div className="relative">
+                          <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            placeholder="Search status..."
+                            value={statusSearch}
+                            onChange={(e) => setStatusSearch(e.target.value)}
+                            className="pl-8"
+                          />
+                        </div>
+                      </div>
+                      <div className="max-h-48 overflow-y-auto">
+                        {STATUS_OPTIONS.filter((status) =>
+                          status.label
+                            .toLowerCase()
+                            .includes(statusSearch.toLowerCase())
+                        ).map((status) => (
+                          <DropdownMenuItem
+                            key={status.value}
+                            onClick={() => {
+                              updatePostStatus(post.id!, status.value);
+                              setOpenStatusDropdown(null);
+                            }}
+                            className="flex items-center gap-3 cursor-pointer"
+                          >
+                            <div
+                              className={`w-2 h-2 rounded-full ${status.dotColor}`}
+                            />
+                            <span>{status.label}</span>
+                            {post.status === status.value && (
+                              <Check className="h-4 w-4 ml-auto" />
+                            )}
+                          </DropdownMenuItem>
+                        ))}
+                      </div>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
             ))

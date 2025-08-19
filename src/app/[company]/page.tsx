@@ -178,6 +178,7 @@ export default function PublicFeedbackPage() {
         title: title.trim(),
         description: description.trim(),
         tags: selectedTags,
+        status: "Under Review",
       });
 
       setPosts([newPost, ...posts]);
