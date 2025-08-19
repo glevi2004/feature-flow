@@ -17,7 +17,7 @@ import {
   FeedbackService,
   FeedbackPost,
   FeedbackComment,
-  FeedbackTag,
+  FeedbackType,
   FeedbackStatus,
 } from "@/lib/services/feedback";
 import {
@@ -58,7 +58,7 @@ export default function PublicFeedbackPage() {
   const companyName = decodeURIComponent(params.company as string);
 
   const [posts, setPosts] = useState<FeedbackPost[]>([]);
-  const [tags, setTags] = useState<FeedbackTag[]>([]);
+  const [types, setTypes] = useState<FeedbackType[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [comments, setComments] = useState<FeedbackComment[]>([]);
@@ -67,7 +67,7 @@ export default function PublicFeedbackPage() {
   // Form states
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [commentContent, setCommentContent] = useState("");
   const [userName, setUserName] = useState("");
 
@@ -82,9 +82,9 @@ export default function PublicFeedbackPage() {
   const loadCompanyData = async () => {
     try {
       setLoading(true);
-      let [postsData, tagsData] = await Promise.all([
+      let [postsData, typesData] = await Promise.all([
         FeedbackService.getCompanyPosts(companyName),
-        FeedbackService.getCompanyTags(companyName),
+        FeedbackService.getCompanyTypes(companyName),
       ]);
 
       // Apply search filter
@@ -95,8 +95,8 @@ export default function PublicFeedbackPage() {
             post.description
               .toLowerCase()
               .includes(searchQuery.toLowerCase()) ||
-            post.tags.some((tag) =>
-              tag.toLowerCase().includes(searchQuery.toLowerCase())
+            post.types.some((type) =>
+              type.toLowerCase().includes(searchQuery.toLowerCase())
             )
         );
       }
@@ -157,7 +157,7 @@ export default function PublicFeedbackPage() {
       }
 
       setPosts(postsData);
-      setTags(tagsData);
+      setTypes(typesData);
     } catch (error) {
       console.error("Error loading company data:", error);
     } finally {
@@ -178,14 +178,14 @@ export default function PublicFeedbackPage() {
         userId: `anonymous-${Date.now()}`,
         title: title.trim(),
         description: description.trim(),
-        tags: selectedTags,
+        types: selectedTypes,
         status: "Under Review",
       });
 
       setPosts([newPost, ...posts]);
       setTitle("");
       setDescription("");
-      setSelectedTags([]);
+      setSelectedTypes([]);
       setShowCreateModal(false);
       alert("Post created successfully!");
     } catch (error) {
@@ -265,9 +265,9 @@ export default function PublicFeedbackPage() {
     }
   };
 
-  const getTagColor = (tagName: string) => {
-    const tag = tags.find((t) => t.name === tagName);
-    return tag?.color || "#6B7280";
+  const getTypeColor = (typeName: string) => {
+    const type = types.find((t) => t.name === typeName);
+    return type?.color || "#6B7280";
   };
 
   const formatRelativeTime = (date: Date) => {
@@ -355,32 +355,32 @@ export default function PublicFeedbackPage() {
                   <DialogTitle>Create a New Post</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleCreatePost} className="space-y-4">
-                  {/* Tags Selection */}
+                  {/* Types Selection */}
                   <div>
-                    <Label htmlFor="tags">Tags</Label>
+                    <Label htmlFor="types">Types</Label>
                     <div className="flex flex-wrap gap-2 p-2 border rounded-md min-h-[40px]">
-                      {tags.map((tag) => (
+                      {types.map((type) => (
                         <Badge
-                          key={tag.id}
+                          key={type.id}
                           className={`cursor-pointer ${
-                            selectedTags.includes(tag.name)
+                            selectedTypes.includes(type.name)
                               ? "bg-blue-600 text-white"
                               : "bg-muted hover:bg-muted/80"
                           }`}
                           style={{
-                            backgroundColor: selectedTags.includes(tag.name)
-                              ? tag.color
+                            backgroundColor: selectedTypes.includes(type.name)
+                              ? type.color
                               : undefined,
                           }}
                           onClick={() => {
-                            setSelectedTags((prev) =>
-                              prev.includes(tag.name)
-                                ? prev.filter((t) => t !== tag.name)
-                                : [...prev, tag.name]
+                            setSelectedTypes((prev) =>
+                              prev.includes(type.name)
+                                ? prev.filter((t) => t !== type.name)
+                                : [...prev, type.name]
                             );
                           }}
                         >
-                          {tag.name}
+                          {type.emoji} {type.name}
                         </Badge>
                       ))}
                     </div>
@@ -448,17 +448,20 @@ export default function PublicFeedbackPage() {
                   {/* Post Header with PINNED label for first post */}
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex flex-col">
-                      {post.tags.length > 0 && (
+                      {post.types.length > 0 && (
                         <div className="mb-2 flex flex-wrap gap-1">
-                          {post.tags.map((tag) => (
-                            <Badge
-                              key={tag}
-                              className="px-2 py-0.5 rounded-full text-xs font-medium"
-                              style={{ backgroundColor: getTagColor(tag) }}
-                            >
-                              {tag}
-                            </Badge>
-                          ))}
+                          {post.types.map((type) => {
+                            const typeData = types.find((t) => t.name === type);
+                            return (
+                              <Badge
+                                key={type}
+                                className="px-2 py-0.5 rounded-full text-xs font-medium"
+                                style={{ backgroundColor: getTypeColor(type) }}
+                              >
+                                {typeData?.emoji} {type}
+                              </Badge>
+                            );
+                          })}
                         </div>
                       )}
                       <CardTitle className="text-xl font-bold mb-2">

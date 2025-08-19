@@ -75,18 +75,6 @@ export function AppSidebar() {
                 <Link
                   href={`/${encodeURIComponent(
                     companyName || ""
-                  )}/dashboard/feedback`}
-                >
-                  <MessageSquare className="h-4 w-4" />
-                  Feedback
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link
-                  href={`/${encodeURIComponent(
-                    companyName || ""
                   )}/dashboard/board`}
                 >
                   <Kanban className="h-4 w-4" />

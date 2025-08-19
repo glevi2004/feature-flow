@@ -29,7 +29,7 @@ export interface FeedbackPost {
   userId: string;
   title: string;
   description: string;
-  tags: string[];
+  types: string[];
   status: FeedbackStatus; // Updated status field with specific options
   upvotes: string[]; // Array of user IDs who upvoted the post
   upvotesCount: number;
@@ -47,10 +47,11 @@ export interface FeedbackComment {
   createdAt: any;
 }
 
-export interface FeedbackTag {
+export interface FeedbackType {
   id?: string;
   companyName: string;
   name: string;
+  emoji: string;
   color?: string;
   createdAt: any;
 }
@@ -212,41 +213,41 @@ export class FeedbackService {
     }
   }
 
-  // Create a new tag for a company
-  static async createTag(data: Omit<FeedbackTag, "id" | "createdAt">) {
+  // Create a new type for a company
+  static async createType(data: Omit<FeedbackType, "id" | "createdAt">) {
     try {
-      const tagData: Omit<FeedbackTag, "id"> = {
+      const typeData: Omit<FeedbackType, "id"> = {
         ...data,
         createdAt: serverTimestamp(),
       };
 
-      const docRef = await addDoc(collection(db, "feedback_tags"), tagData);
-      return { id: docRef.id, ...tagData };
+      const docRef = await addDoc(collection(db, "feedback_types"), typeData);
+      return { id: docRef.id, ...typeData };
     } catch (error) {
-      console.error("Error creating tag:", error);
+      console.error("Error creating type:", error);
       throw error;
     }
   }
 
-  // Get all tags for a company
-  static async getCompanyTags(companyName: string) {
+  // Get all types for a company
+  static async getCompanyTypes(companyName: string) {
     try {
       const q = query(
-        collection(db, "feedback_tags"),
+        collection(db, "feedback_types"),
         where("companyName", "==", companyName),
         orderBy("createdAt", "asc")
       );
 
       const querySnapshot = await getDocs(q);
-      const tags: FeedbackTag[] = [];
+      const types: FeedbackType[] = [];
 
       querySnapshot.forEach((doc) => {
-        tags.push({ id: doc.id, ...doc.data() } as FeedbackTag);
+        types.push({ id: doc.id, ...doc.data() } as FeedbackType);
       });
 
-      return tags;
+      return types;
     } catch (error) {
-      console.error("Error getting company tags:", error);
+      console.error("Error getting company types:", error);
       throw error;
     }
   }
@@ -265,25 +266,23 @@ export class FeedbackService {
     }
   }
 
-  // Initialize default tags for a company
-  static async initializeDefaultTags(companyName: string) {
+  // Initialize default types for a company
+  static async initializeDefaultTypes(companyName: string) {
     try {
-      const defaultTags = [
-        { name: "Feature", color: "#3B82F6" },
-        { name: "Bug Fix", color: "#EF4444" },
-        { name: "Improvement", color: "#10B981" },
-        { name: "Question", color: "#F59E0B" },
+      const defaultTypes = [
+        { name: "Feature Request", emoji: "💡", color: "#3B82F6" },
       ];
 
-      for (const tag of defaultTags) {
-        await this.createTag({
+      for (const type of defaultTypes) {
+        await this.createType({
           companyName,
-          name: tag.name,
-          color: tag.color,
+          name: type.name,
+          emoji: type.emoji,
+          color: type.color,
         });
       }
     } catch (error) {
-      console.error("Error initializing default tags:", error);
+      console.error("Error initializing default types:", error);
       throw error;
     }
   }

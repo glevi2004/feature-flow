@@ -18,6 +18,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
   Search,
   Filter,
   Clock,
@@ -28,13 +36,14 @@ import {
   Lightbulb,
   Radio,
   Check,
+  Plus,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { OnboardingService } from "@/lib/services/onboarding";
 import {
   FeedbackService,
   FeedbackPost,
-  FeedbackTag,
+  FeedbackType,
   FeedbackStatus,
 } from "@/lib/services/feedback";
 
@@ -75,7 +84,7 @@ const STATUS_OPTIONS = [
 function DashboardPage() {
   const { user } = useAuth();
   const [posts, setPosts] = useState<FeedbackPost[]>([]);
-  const [tags, setTags] = useState<FeedbackTag[]>([]);
+  const [types, setTypes] = useState<FeedbackType[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyName, setCompanyName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -85,6 +94,10 @@ function DashboardPage() {
   const [openStatusDropdown, setOpenStatusDropdown] = useState<string | null>(
     null
   );
+  const [showCreateTypeModal, setShowCreateTypeModal] = useState(false);
+  const [newTypeName, setNewTypeName] = useState("");
+  const [newTypeEmoji, setNewTypeEmoji] = useState("");
+  const [newTypeColor, setNewTypeColor] = useState("#3B82F6");
 
   useEffect(() => {
     if (user) {
@@ -101,14 +114,14 @@ function DashboardPage() {
       if (onboardingData?.companyName) {
         setCompanyName(onboardingData.companyName);
 
-        // Load posts and tags
-        const [postsData, tagsData] = await Promise.all([
+        // Load posts and types
+        const [postsData, typesData] = await Promise.all([
           FeedbackService.getCompanyPosts(onboardingData.companyName),
-          FeedbackService.getCompanyTags(onboardingData.companyName),
+          FeedbackService.getCompanyTypes(onboardingData.companyName),
         ]);
 
         setPosts(postsData);
-        setTags(tagsData);
+        setTypes(typesData);
       }
     } catch (error) {
       console.error("Error loading company data:", error);
@@ -117,9 +130,9 @@ function DashboardPage() {
     }
   };
 
-  const getTagColor = (tagName: string) => {
-    const tag = tags.find((t) => t.name === tagName);
-    return tag?.color || "#6B7280";
+  const getTypeColor = (typeName: string) => {
+    const type = types.find((t) => t.name === typeName);
+    return type?.color || "#6B7280";
   };
 
   const formatDate = (date: Date) => {
@@ -165,6 +178,33 @@ function DashboardPage() {
     return statusOption?.color || "bg-gray-100 text-gray-800";
   };
 
+  const handleCreateType = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTypeName.trim() || !newTypeEmoji.trim()) {
+      alert("Please fill in all required fields");
+      return;
+    }
+
+    try {
+      const newType = await FeedbackService.createType({
+        companyName,
+        name: newTypeName.trim(),
+        emoji: newTypeEmoji.trim(),
+        color: newTypeColor,
+      });
+
+      setTypes([...types, newType]);
+      setNewTypeName("");
+      setNewTypeEmoji("");
+      setNewTypeColor("#3B82F6");
+      setShowCreateTypeModal(false);
+      alert("Type created successfully!");
+    } catch (error) {
+      console.error("Error creating type:", error);
+      alert("Failed to create type");
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -183,6 +223,57 @@ function DashboardPage() {
         <div className="flex items-center gap-8 mb-6">
           <h1 className="text-2xl font-bold">Posts ({posts.length})</h1>
           <div className="flex items-center gap-4">
+            <Dialog
+              open={showCreateTypeModal}
+              onOpenChange={setShowCreateTypeModal}
+            >
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Type
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Create New Feedback Type</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleCreateType} className="space-y-4">
+                  <div>
+                    <Label htmlFor="typeName">Type Name</Label>
+                    <Input
+                      id="typeName"
+                      value={newTypeName}
+                      onChange={(e) => setNewTypeName(e.target.value)}
+                      placeholder="e.g., Bug Report"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="typeEmoji">Emoji</Label>
+                    <Input
+                      id="typeEmoji"
+                      value={newTypeEmoji}
+                      onChange={(e) => setNewTypeEmoji(e.target.value)}
+                      placeholder="e.g., 🐛"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="typeColor">Color</Label>
+                    <Input
+                      id="typeColor"
+                      type="color"
+                      value={newTypeColor}
+                      onChange={(e) => setNewTypeColor(e.target.value)}
+                      className="h-10"
+                    />
+                  </div>
+                  <Button type="submit" className="w-full">
+                    Create Type
+                  </Button>
+                </form>
+              </DialogContent>
+            </Dialog>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -277,13 +368,13 @@ function DashboardPage() {
                           ? formatDate(new Date(post.createdAt))
                           : "Recently"}
                       </span>
-                      {post.tags.length > 0 && (
+                      {post.types.length > 0 && (
                         <Badge
                           variant="outline"
                           className="flex items-center gap-1 px-2 py-0.5 text-xs"
                         >
                           <Lightbulb className="h-3 w-3" />
-                          {post.tags[0]}
+                          {post.types[0]}
                         </Badge>
                       )}
                     </div>

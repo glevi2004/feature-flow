@@ -30,7 +30,7 @@ import { OnboardingService } from "@/lib/services/onboarding";
 import {
   FeedbackService,
   FeedbackPost,
-  FeedbackTag,
+  FeedbackType,
   FeedbackStatus,
 } from "@/lib/services/feedback";
 
@@ -78,7 +78,7 @@ const BOARD_COLUMNS = [
 function BoardPage() {
   const { user } = useAuth();
   const [posts, setPosts] = useState<FeedbackPost[]>([]);
-  const [tags, setTags] = useState<FeedbackTag[]>([]);
+  const [types, setTypes] = useState<FeedbackType[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyName, setCompanyName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -100,10 +100,10 @@ function BoardPage() {
       if (onboardingData?.companyName) {
         setCompanyName(onboardingData.companyName);
 
-        // Load posts and tags
-        const [postsData, tagsData] = await Promise.all([
+        // Load posts and types
+        const [postsData, typesData] = await Promise.all([
           FeedbackService.getCompanyPosts(onboardingData.companyName),
-          FeedbackService.getCompanyTags(onboardingData.companyName),
+          FeedbackService.getCompanyTypes(onboardingData.companyName),
         ]);
 
         // Filter out rejected posts
@@ -111,7 +111,7 @@ function BoardPage() {
           (post) => post.status !== "Rejected"
         );
         setPosts(filteredPosts);
-        setTags(tagsData);
+        setTypes(typesData);
       }
     } catch (error) {
       console.error("Error loading company data:", error);
@@ -120,9 +120,9 @@ function BoardPage() {
     }
   };
 
-  const getTagColor = (tagName: string) => {
-    const tag = tags.find((t) => t.name === tagName);
-    return tag?.color || "#6B7280";
+  const getTypeColor = (typeName: string) => {
+    const type = types.find((t) => t.name === typeName);
+    return type?.color || "#6B7280";
   };
 
   const formatDate = (date: Date) => {
@@ -182,8 +182,8 @@ function BoardPage() {
     return (
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.tags.some((tag) =>
-        tag.toLowerCase().includes(searchQuery.toLowerCase())
+      post.types.some((type) =>
+        type.toLowerCase().includes(searchQuery.toLowerCase())
       )
     );
   });
@@ -271,21 +271,28 @@ function BoardPage() {
                       onDragStart={(e) => handleDragStart(e, post)}
                     >
                       <CardContent className="p-3">
-                        {/* Post Tags */}
-                        {post.tags.length > 0 && (
+                        {/* Post Types */}
+                        {post.types.length > 0 && (
                           <div className="mb-2 flex flex-wrap gap-1">
-                            {post.tags.slice(0, 2).map((tag) => (
-                              <Badge
-                                key={tag}
-                                className="px-2 py-0.5 rounded-full text-xs font-medium"
-                                style={{ backgroundColor: getTagColor(tag) }}
-                              >
-                                {tag}
-                              </Badge>
-                            ))}
-                            {post.tags.length > 2 && (
+                            {post.types.slice(0, 2).map((type) => {
+                              const typeData = types.find(
+                                (t) => t.name === type
+                              );
+                              return (
+                                <Badge
+                                  key={type}
+                                  className="px-2 py-0.5 rounded-full text-xs font-medium"
+                                  style={{
+                                    backgroundColor: getTypeColor(type),
+                                  }}
+                                >
+                                  {typeData?.emoji} {type}
+                                </Badge>
+                              );
+                            })}
+                            {post.types.length > 2 && (
                               <Badge variant="outline" className="text-xs">
-                                +{post.tags.length - 2}
+                                +{post.types.length - 2}
                               </Badge>
                             )}
                           </div>
