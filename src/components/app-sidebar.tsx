@@ -19,6 +19,7 @@ import {
   User,
   LogOut,
   House,
+  Kanban,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
@@ -78,6 +79,18 @@ export function AppSidebar() {
                 >
                   <MessageSquare className="h-4 w-4" />
                   Feedback
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <Link
+                  href={`/${encodeURIComponent(
+                    companyName || ""
+                  )}/dashboard/board`}
+                >
+                  <Kanban className="h-4 w-4" />
+                  Board
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
