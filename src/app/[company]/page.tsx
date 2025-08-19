@@ -18,6 +18,7 @@ import {
   FeedbackPost,
   FeedbackComment,
   FeedbackTag,
+  FeedbackStatus,
 } from "@/lib/services/feedback";
 import {
   Heart,

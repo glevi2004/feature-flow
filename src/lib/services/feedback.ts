@@ -16,6 +16,13 @@ import {
   increment,
 } from "firebase/firestore";
 
+export type FeedbackStatus =
+  | "Under Review"
+  | "Accepted"
+  | "Rejected"
+  | "Planned"
+  | "Completed";
+
 export interface FeedbackPost {
   id?: string;
   companyName: string;
@@ -23,7 +30,7 @@ export interface FeedbackPost {
   title: string;
   description: string;
   tags: string[];
-  status: string; // New status field
+  status: FeedbackStatus; // Updated status field with specific options
   upvotes: string[]; // Array of user IDs who upvoted the post
   upvotesCount: number;
   commentsCount: number;
@@ -245,7 +252,7 @@ export class FeedbackService {
   }
 
   // Update post status
-  static async updatePostStatus(postId: string, status: string) {
+  static async updatePostStatus(postId: string, status: FeedbackStatus) {
     try {
       const postRef = doc(db, "feedback_posts", postId);
       await updateDoc(postRef, {

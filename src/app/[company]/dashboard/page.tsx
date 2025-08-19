@@ -35,6 +35,7 @@ import {
   FeedbackService,
   FeedbackPost,
   FeedbackTag,
+  FeedbackStatus,
 } from "@/lib/services/feedback";
 
 // Status options
@@ -46,14 +47,8 @@ const STATUS_OPTIONS = [
     dotColor: "bg-blue-400",
   },
   {
-    value: "In Progress",
-    label: "In Progress",
-    color: "bg-blue-900/20 text-blue-400 border border-blue-800/30",
-    dotColor: "bg-blue-400",
-  },
-  {
-    value: "Completed",
-    label: "Completed",
+    value: "Accepted",
+    label: "Accepted",
     color: "bg-green-900/20 text-green-400 border border-green-800/30",
     dotColor: "bg-green-400",
   },
@@ -64,16 +59,16 @@ const STATUS_OPTIONS = [
     dotColor: "bg-red-400",
   },
   {
-    value: "Planning",
-    label: "Planning",
-    color: "bg-yellow-900/20 text-yellow-400 border border-yellow-800/30",
-    dotColor: "bg-yellow-400",
-  },
-  {
     value: "Planned",
     label: "Planned",
     color: "bg-purple-900/20 text-purple-400 border border-purple-800/30",
     dotColor: "bg-purple-400",
+  },
+  {
+    value: "Completed",
+    label: "Completed",
+    color: "bg-emerald-900/20 text-emerald-400 border border-emerald-800/30",
+    dotColor: "bg-emerald-400",
   },
 ];
 
@@ -142,7 +137,10 @@ function DashboardPage() {
     setActiveFilters([]);
   };
 
-  const updatePostStatus = async (postId: string, newStatus: string) => {
+  const updatePostStatus = async (
+    postId: string,
+    newStatus: FeedbackStatus
+  ) => {
     try {
       setUpdatingStatus(postId);
       await FeedbackService.updatePostStatus(postId, newStatus);
@@ -335,7 +333,10 @@ function DashboardPage() {
                           <DropdownMenuItem
                             key={status.value}
                             onClick={() => {
-                              updatePostStatus(post.id!, status.value);
+                              updatePostStatus(
+                                post.id!,
+                                status.value as FeedbackStatus
+                              );
                               setOpenStatusDropdown(null);
                             }}
                             className="flex items-center gap-3 cursor-pointer"
