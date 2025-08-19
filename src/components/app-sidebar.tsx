@@ -61,7 +61,9 @@ export function AppSidebar() {
           <SidebarMenu className="mt-15">
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link href="/dashboard">
+                <Link
+                  href={`/${encodeURIComponent(companyName || "")}/dashboard`}
+                >
                   <House className="h-4 w-4" />
                   Home
                 </Link>
@@ -69,7 +71,11 @@ export function AppSidebar() {
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link href="/feedback">
+                <Link
+                  href={`/${encodeURIComponent(
+                    companyName || ""
+                  )}/dashboard/feedback`}
+                >
                   <MessageSquare className="h-4 w-4" />
                   Feedback
                 </Link>
@@ -92,7 +98,11 @@ export function AppSidebar() {
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link href="/notifications">
+                <Link
+                  href={`/${encodeURIComponent(
+                    companyName || ""
+                  )}/dashboard/notifications`}
+                >
                   <Bell className="h-4 w-4" />
                   Notifications
                 </Link>
@@ -100,7 +110,11 @@ export function AppSidebar() {
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link href="/analytics">
+                <Link
+                  href={`/${encodeURIComponent(
+                    companyName || ""
+                  )}/dashboard/analytics`}
+                >
                   <BarChart3 className="h-4 w-4" />
                   Analytics
                 </Link>
@@ -108,7 +122,11 @@ export function AppSidebar() {
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link href="/settings">
+                <Link
+                  href={`/${encodeURIComponent(
+                    companyName || ""
+                  )}/dashboard/settings`}
+                >
                   <Settings className="h-4 w-4" />
                   Settings
                 </Link>

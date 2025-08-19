@@ -1,13 +1,13 @@
 "use client";
 
-import { useAuth } from "@/contexts/AuthContext";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 import { AppSidebar } from "@/components/app-sidebar";
+import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { Header } from "@/components/header";
 
-export default function ProtectedLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -17,7 +17,7 @@ export default function ProtectedLayout({
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push("/");
+      router.push("/login");
     }
   }, [user, loading, router]);
 
@@ -33,21 +33,23 @@ export default function ProtectedLayout({
   }
 
   if (!user) {
-    return null; // Will redirect to register page
+    return null;
   }
 
   return (
-    <SidebarProvider>
-      <div className="flex flex-col min-h-screen">
-        <Header />
-        <div className="flex flex-1 pt-14">
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <SidebarProvider>
+        <div className="flex h-screen bg-background">
           <AppSidebar />
-          <main className="flex-1">
-            <SidebarTrigger />
-            {children}
-          </main>
+          <SidebarTrigger />
+          <main className="flex-1 overflow-auto">{children}</main>
         </div>
-      </div>
-    </SidebarProvider>
+      </SidebarProvider>
+    </ThemeProvider>
   );
 }

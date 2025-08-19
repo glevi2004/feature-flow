@@ -95,7 +95,12 @@ export default function RegisterPage() {
       setIsLoading(true);
       // Pass the form data to the sign-in function
       await signInWithGoogle(formData);
-      router.push("/dashboard");
+      // Redirect to company page after successful registration
+      if (formData.companyName) {
+        router.push(`/${encodeURIComponent(formData.companyName)}`);
+      } else {
+        router.push("/dashboard");
+      }
     } catch (error: any) {
       console.error("Error signing in with Google:", error);
       if (error.code === "auth/account-exists-with-different-credential") {
@@ -116,7 +121,12 @@ export default function RegisterPage() {
       setIsLoading(true);
       // Pass the form data to the sign-in function
       await signInWithGitHub(formData);
-      router.push("/dashboard");
+      // Redirect to company page after successful registration
+      if (formData.companyName) {
+        router.push(`/${encodeURIComponent(formData.companyName)}`);
+      } else {
+        router.push("/dashboard");
+      }
     } catch (error: any) {
       console.error("Error signing in with GitHub:", error);
       if (error.code === "auth/account-exists-with-different-credential") {

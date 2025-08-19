@@ -80,8 +80,12 @@ export default function VerifyEmailPage() {
         console.log("Onboarding data saved successfully after verification");
       }
 
-      // Redirect to dashboard
-      router.push("/dashboard");
+      // Redirect to company page after successful verification
+      if (onboardingData?.companyName) {
+        router.push(`/${encodeURIComponent(onboardingData.companyName)}`);
+      } else {
+        router.push("/dashboard");
+      }
     } catch (error) {
       console.error("Error saving onboarding data:", error);
       // Still redirect to dashboard even if onboarding save fails

@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { UserService } from "@/lib/services/user";
+import { OnboardingService } from "@/lib/services/onboarding";
 
 export default function LoginPage() {
   const { loginWithGoogle, loginWithGitHub } = useAuth();
@@ -29,8 +30,19 @@ export default function LoginPage() {
           // User doesn't exist, redirect to register to complete onboarding
           router.push("/register");
         } else {
-          // User exists, go to dashboard
-          router.push("/dashboard");
+          // User exists, get company name and redirect to company page
+          try {
+            const onboardingData = await OnboardingService.getOnboardingData(result.user.uid);
+            if (onboardingData?.companyName) {
+              router.push(`/${encodeURIComponent(onboardingData.companyName)}`);
+            } else {
+              // Fallback to dashboard if no company name
+              router.push("/dashboard");
+            }
+          } catch (error) {
+            console.error("Error getting company name:", error);
+            router.push("/dashboard");
+          }
         }
       }
     } catch (error: any) {
@@ -61,8 +73,19 @@ export default function LoginPage() {
           // User doesn't exist, redirect to register to complete onboarding
           router.push("/register");
         } else {
-          // User exists, go to dashboard
-          router.push("/dashboard");
+          // User exists, get company name and redirect to company page
+          try {
+            const onboardingData = await OnboardingService.getOnboardingData(result.user.uid);
+            if (onboardingData?.companyName) {
+              router.push(`/${encodeURIComponent(onboardingData.companyName)}`);
+            } else {
+              // Fallback to dashboard if no company name
+              router.push("/dashboard");
+            }
+          } catch (error) {
+            console.error("Error getting company name:", error);
+            router.push("/dashboard");
+          }
         }
       }
     } catch (error: any) {
