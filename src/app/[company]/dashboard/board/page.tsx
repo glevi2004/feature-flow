@@ -20,6 +20,10 @@ import {
   MessageSquare,
   User,
   Calendar,
+  Inbox,
+  CheckCircle,
+  Play,
+  CheckSquare,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { OnboardingService } from "@/lib/services/onboarding";
@@ -38,6 +42,8 @@ const BOARD_COLUMNS = [
     status: "Under Review" as FeedbackStatus,
     color: "bg-muted/30 border-border",
     headerColor: "bg-muted/50 border-border",
+    badgeColor: "bg-blue-900/20 text-blue-400 border border-blue-800/30",
+    icon: Inbox,
   },
   {
     id: "next-up",
@@ -45,6 +51,8 @@ const BOARD_COLUMNS = [
     status: "Accepted" as FeedbackStatus,
     color: "bg-muted/30 border-border",
     headerColor: "bg-muted/50 border-border",
+    badgeColor: "bg-green-900/20 text-green-400 border border-green-800/30",
+    icon: CheckCircle,
   },
   {
     id: "in-progress",
@@ -52,6 +60,8 @@ const BOARD_COLUMNS = [
     status: "Planned" as FeedbackStatus,
     color: "bg-muted/30 border-border",
     headerColor: "bg-muted/50 border-border",
+    badgeColor: "bg-purple-900/20 text-purple-400 border border-purple-800/30",
+    icon: Play,
   },
   {
     id: "done",
@@ -59,6 +69,9 @@ const BOARD_COLUMNS = [
     status: "Completed" as FeedbackStatus,
     color: "bg-muted/30 border-border",
     headerColor: "bg-muted/50 border-border",
+    badgeColor:
+      "bg-emerald-900/20 text-emerald-400 border border-emerald-800/30",
+    icon: CheckSquare,
   },
 ];
 
@@ -234,7 +247,12 @@ function BoardPage() {
                   className={`p-3 border-b ${column.headerColor} rounded-t-lg`}
                 >
                   <div className="flex items-center justify-between">
-                    <h3 className="font-medium text-sm">{column.title}</h3>
+                    <Badge
+                      className={`text-xs font-medium ${column.badgeColor}`}
+                    >
+                      <column.icon className="h-3 w-3 mr-1" />
+                      {column.title}
+                    </Badge>
                     <Badge variant="outline" className="text-xs">
                       {columnPosts.length}
                     </Badge>
