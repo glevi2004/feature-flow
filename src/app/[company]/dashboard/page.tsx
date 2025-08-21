@@ -7,13 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Loading } from "@/components/ui/loading";
 import { PostModal } from "@/components/ui/post-modal";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,

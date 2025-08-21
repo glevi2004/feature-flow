@@ -5,21 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Loading } from "@/components/ui/loading";
+import { PostModal } from "@/components/ui/post-modal";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Search,
   Filter,
-  Clock,
-  ChevronDown,
-  X,
-  Save,
   ArrowUp,
-  Lightbulb,
-  Radio,
-  Check,
-  Plus,
   MessageSquare,
-  User,
   Calendar,
   Inbox,
   CheckCircle,
@@ -85,6 +77,8 @@ function BoardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [draggedPost, setDraggedPost] = useState<FeedbackPost | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
+  const [selectedPost, setSelectedPost] = useState<FeedbackPost | null>(null);
+  const [showPostModal, setShowPostModal] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -178,6 +172,21 @@ function BoardPage() {
     }
   };
 
+  const handlePostClick = (post: FeedbackPost) => {
+    setSelectedPost(post);
+    setShowPostModal(true);
+  };
+
+  const handlePostUpdate = (updatedPost: FeedbackPost) => {
+    setPosts(
+      posts.map((post) => (post.id === updatedPost.id ? updatedPost : post))
+    );
+    // Also update the selected post if it's the same post
+    if (selectedPost && selectedPost.id === updatedPost.id) {
+      setSelectedPost(updatedPost);
+    }
+  };
+
   const filteredPosts = posts.filter((post) => {
     if (!searchQuery) return true;
     return (
@@ -267,6 +276,7 @@ function BoardPage() {
                       }`}
                       draggable={updatingStatus !== post.id}
                       onDragStart={(e) => handleDragStart(e, post)}
+                      onClick={() => handlePostClick(post)}
                     >
                       <CardContent className="p-3">
                         {/* Post Types */}
@@ -349,6 +359,15 @@ function BoardPage() {
           })}
         </div>
       </div>
+
+      {/* Post Modal */}
+      <PostModal
+        post={selectedPost}
+        types={types}
+        isOpen={showPostModal}
+        onClose={() => setShowPostModal(false)}
+        onPostUpdate={handlePostUpdate}
+      />
     </div>
   );
 }
