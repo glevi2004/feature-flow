@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Loading } from "@/components/ui/loading";
+import { PostModal } from "@/components/ui/post-modal";
 import {
   Select,
   SelectContent,
@@ -99,6 +100,8 @@ function DashboardPage() {
   const [newTypeName, setNewTypeName] = useState("");
   const [newTypeEmoji, setNewTypeEmoji] = useState("");
   const [newTypeColor, setNewTypeColor] = useState("#3B82F6");
+  const [selectedPost, setSelectedPost] = useState<FeedbackPost | null>(null);
+  const [showPostModal, setShowPostModal] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -204,6 +207,17 @@ function DashboardPage() {
       console.error("Error creating type:", error);
       alert("Failed to create type");
     }
+  };
+
+  const handlePostClick = (post: FeedbackPost) => {
+    setSelectedPost(post);
+    setShowPostModal(true);
+  };
+
+  const handlePostUpdate = (updatedPost: FeedbackPost) => {
+    setPosts(
+      posts.map((post) => (post.id === updatedPost.id ? updatedPost : post))
+    );
   };
 
   if (loading) {
@@ -340,7 +354,8 @@ function DashboardPage() {
             posts.map((post, index) => (
               <div
                 key={post.id}
-                className="flex items-center justify-between p-4 bg-card border rounded-lg hover:bg-muted/50 transition-colors"
+                className="flex items-center justify-between p-4 bg-card border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+                onClick={() => handlePostClick(post)}
               >
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-1 text-muted-foreground">
@@ -448,6 +463,15 @@ function DashboardPage() {
           )}
         </div>
       </div>
+
+      {/* Post Modal */}
+      <PostModal
+        post={selectedPost}
+        types={types}
+        isOpen={showPostModal}
+        onClose={() => setShowPostModal(false)}
+        onPostUpdate={handlePostUpdate}
+      />
     </div>
   );
 }
