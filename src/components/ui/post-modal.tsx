@@ -55,6 +55,7 @@ export function PostModal({
   onClose,
   onPostUpdate,
 }: PostModalProps) {
+  const [currentPost, setCurrentPost] = useState<FeedbackPost | null>(null);
   const [comments, setComments] = useState<FeedbackComment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [userName, setUserName] = useState("");
@@ -62,17 +63,26 @@ export function PostModal({
   const [submittingComment, setSubmittingComment] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
 
+  // Update currentPost when post prop changes
   useEffect(() => {
-    if (post && isOpen) {
+    if (post) {
+      setCurrentPost(post);
+    }
+  }, [post]);
+
+  useEffect(() => {
+    if (currentPost && isOpen) {
       loadComments();
     }
-  }, [post, isOpen]);
+  }, [currentPost, isOpen]);
 
   const loadComments = async () => {
-    if (!post) return;
+    if (!currentPost) return;
     try {
       setLoadingComments(true);
-      const commentsData = await FeedbackService.getPostComments(post.id!);
+      const commentsData = await FeedbackService.getPostComments(
+        currentPost.id!
+      );
       setComments(commentsData);
     } catch (error) {
       console.error("Error loading comments:", error);
@@ -82,7 +92,7 @@ export function PostModal({
   };
 
   const handleAddComment = async () => {
-    if (!post || !newComment.trim() || !userName.trim()) {
+    if (!currentPost || !newComment.trim() || !userName.trim()) {
       alert("Please enter your name and comment");
       return;
     }
@@ -90,7 +100,7 @@ export function PostModal({
     try {
       setSubmittingComment(true);
       const newCommentData = await FeedbackService.addComment({
-        postId: post.id!,
+        postId: currentPost.id!,
         userId: `anonymous-${Date.now()}`,
         userName: userName.trim(),
         content: newComment.trim(),
@@ -99,7 +109,11 @@ export function PostModal({
       setComments([...comments, newCommentData]);
       setNewComment("");
 
-      const updatedPost = { ...post, commentsCount: post.commentsCount + 1 };
+      const updatedPost = {
+        ...currentPost,
+        commentsCount: currentPost.commentsCount + 1,
+      };
+      setCurrentPost(updatedPost);
       onPostUpdate(updatedPost);
     } catch (error) {
       console.error("Error adding comment:", error);
@@ -110,12 +124,13 @@ export function PostModal({
   };
 
   const handleStatusChange = async (newStatus: FeedbackStatus) => {
-    if (!post) return;
+    if (!currentPost) return;
 
     try {
       setUpdatingStatus(true);
-      await FeedbackService.updatePostStatus(post.id!, newStatus);
-      const updatedPost = { ...post, status: newStatus };
+      await FeedbackService.updatePostStatus(currentPost.id!, newStatus);
+      const updatedPost = { ...currentPost, status: newStatus };
+      setCurrentPost(updatedPost);
       onPostUpdate(updatedPost);
     } catch (error) {
       console.error("Error updating status:", error);
@@ -146,7 +161,7 @@ export function PostModal({
     return `${Math.floor(diffInSeconds / 31536000)} years ago`;
   };
 
-  if (!post || !isOpen) return null;
+  if (!currentPost || !isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -160,7 +175,7 @@ export function PostModal({
       <div className="relative bg-background border rounded-lg shadow-lg max-w-4xl max-h-[90vh] w-full mx-4 overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-bold">{post.title}</h2>
+          <h2 className="text-xl font-bold">{currentPost.title}</h2>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-4 w-4" />
           </Button>
@@ -173,15 +188,15 @@ export function PostModal({
             {/* Post Description */}
             <div className="mb-6">
               <p className="text-muted-foreground leading-relaxed">
-                {post.description}
+                {currentPost.description}
               </p>
             </div>
 
             {/* Post Types */}
-            {post.types.length > 0 && (
+            {currentPost.types.length > 0 && (
               <div className="mb-6">
                 <div className="flex flex-wrap gap-2">
-                  {post.types.map((type) => (
+                  {currentPost.types.map((type) => (
                     <Badge
                       key={type}
                       className="px-3 py-1 rounded-full text-sm font-medium"
@@ -204,22 +219,23 @@ export function PostModal({
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
                 <span>
-                  {post.createdAt && typeof post.createdAt.toDate === "function"
-                    ? formatRelativeTime(post.createdAt.toDate())
-                    : post.createdAt &&
-                      typeof post.createdAt === "object" &&
-                      "seconds" in post.createdAt
+                  {currentPost.createdAt &&
+                  typeof currentPost.createdAt.toDate === "function"
+                    ? formatRelativeTime(currentPost.createdAt.toDate())
+                    : currentPost.createdAt &&
+                      typeof currentPost.createdAt === "object" &&
+                      "seconds" in currentPost.createdAt
                     ? formatRelativeTime(
-                        new Date(post.createdAt.seconds * 1000)
+                        new Date(currentPost.createdAt.seconds * 1000)
                       )
-                    : post.createdAt
-                    ? formatRelativeTime(new Date(post.createdAt))
+                    : currentPost.createdAt
+                    ? formatRelativeTime(new Date(currentPost.createdAt))
                     : "Recently"}
                 </span>
               </div>
               <div className="flex items-center gap-1">
                 <ArrowUp className="h-4 w-4" />
-                <span>{post.upvotesCount} upvotes</span>
+                <span>{currentPost.upvotesCount} upvotes</span>
               </div>
             </div>
 
@@ -330,7 +346,7 @@ export function PostModal({
               <div>
                 <Label className="text-sm font-medium">Status</Label>
                 <Select
-                  value={post.status || "Under Review"}
+                  value={currentPost.status || "Under Review"}
                   onValueChange={handleStatusChange}
                   disabled={updatingStatus}
                 >
@@ -358,7 +374,7 @@ export function PostModal({
                 <div className="mt-1 p-2 bg-muted rounded-md">
                   <div className="flex items-center justify-between">
                     <span className="text-lg font-semibold">
-                      {post.upvotesCount}
+                      {currentPost.upvotesCount}
                     </span>
                     <ArrowUp className="h-4 w-4 text-muted-foreground" />
                   </div>
@@ -371,7 +387,7 @@ export function PostModal({
                 <div className="mt-1 p-2 bg-muted rounded-md">
                   <div className="flex items-center justify-between">
                     <span className="text-lg font-semibold">
-                      {post.commentsCount}
+                      {currentPost.commentsCount}
                     </span>
                     <MessageSquare className="h-4 w-4 text-muted-foreground" />
                   </div>
@@ -385,17 +401,17 @@ export function PostModal({
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm">
-                      {post.createdAt &&
-                      typeof post.createdAt.toDate === "function"
-                        ? post.createdAt.toDate().toLocaleDateString()
-                        : post.createdAt &&
-                          typeof post.createdAt === "object" &&
-                          "seconds" in post.createdAt
+                      {currentPost.createdAt &&
+                      typeof currentPost.createdAt.toDate === "function"
+                        ? currentPost.createdAt.toDate().toLocaleDateString()
+                        : currentPost.createdAt &&
+                          typeof currentPost.createdAt === "object" &&
+                          "seconds" in currentPost.createdAt
                         ? new Date(
-                            post.createdAt.seconds * 1000
+                            currentPost.createdAt.seconds * 1000
                           ).toLocaleDateString()
-                        : post.createdAt
-                        ? new Date(post.createdAt).toLocaleDateString()
+                        : currentPost.createdAt
+                        ? new Date(currentPost.createdAt).toLocaleDateString()
                         : "Recently"}
                     </span>
                   </div>
