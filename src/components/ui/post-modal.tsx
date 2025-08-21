@@ -7,12 +7,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -21,7 +15,6 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import {
-  X,
   MessageSquare,
   ArrowUp,
   User,
@@ -29,10 +22,7 @@ import {
   Lightbulb,
   Send,
   Activity,
-  CheckCircle,
-  Play,
-  CheckSquare,
-  Inbox,
+  X,
 } from "lucide-react";
 import {
   FeedbackPost,
@@ -50,43 +40,12 @@ interface PostModalProps {
   onPostUpdate: (updatedPost: FeedbackPost) => void;
 }
 
-// Status options
 const STATUS_OPTIONS = [
-  {
-    value: "Under Review",
-    label: "Under Review",
-    color: "bg-blue-900/20 text-blue-400 border border-blue-800/30",
-    dotColor: "bg-blue-400",
-    icon: Inbox,
-  },
-  {
-    value: "Accepted",
-    label: "Accepted",
-    color: "bg-green-900/20 text-green-400 border border-green-800/30",
-    dotColor: "bg-green-400",
-    icon: CheckCircle,
-  },
-  {
-    value: "Rejected",
-    label: "Rejected",
-    color: "bg-red-900/20 text-red-400 border border-red-800/30",
-    dotColor: "bg-red-400",
-    icon: X,
-  },
-  {
-    value: "Planned",
-    label: "Planned",
-    color: "bg-purple-900/20 text-purple-400 border border-purple-800/30",
-    dotColor: "bg-purple-400",
-    icon: Play,
-  },
-  {
-    value: "Completed",
-    label: "Completed",
-    color: "bg-emerald-900/20 text-emerald-400 border border-emerald-800/30",
-    dotColor: "bg-emerald-400",
-    icon: CheckSquare,
-  },
+  { value: "Under Review", label: "Under Review", color: "bg-blue-400" },
+  { value: "Accepted", label: "Accepted", color: "bg-green-400" },
+  { value: "Rejected", label: "Rejected", color: "bg-red-400" },
+  { value: "Planned", label: "Planned", color: "bg-purple-400" },
+  { value: "Completed", label: "Completed", color: "bg-emerald-400" },
 ];
 
 export function PostModal({
@@ -111,7 +70,6 @@ export function PostModal({
 
   const loadComments = async () => {
     if (!post) return;
-
     try {
       setLoadingComments(true);
       const commentsData = await FeedbackService.getPostComments(post.id!);
@@ -141,11 +99,7 @@ export function PostModal({
       setComments([...comments, newCommentData]);
       setNewComment("");
 
-      // Update post comment count
-      const updatedPost = {
-        ...post,
-        commentsCount: post.commentsCount + 1,
-      };
+      const updatedPost = { ...post, commentsCount: post.commentsCount + 1 };
       onPostUpdate(updatedPost);
     } catch (error) {
       console.error("Error adding comment:", error);
@@ -161,11 +115,7 @@ export function PostModal({
     try {
       setUpdatingStatus(true);
       await FeedbackService.updatePostStatus(post.id!, newStatus);
-
-      const updatedPost = {
-        ...post,
-        status: newStatus,
-      };
+      const updatedPost = { ...post, status: newStatus };
       onPostUpdate(updatedPost);
     } catch (error) {
       console.error("Error updating status:", error);
@@ -196,21 +146,30 @@ export function PostModal({
     return `${Math.floor(diffInSeconds / 31536000)} years ago`;
   };
 
-  if (!post) return null;
+  if (!post || !isOpen) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
-        <DialogHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <DialogTitle className="text-xl font-bold">{post.title}</DialogTitle>
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div className="relative bg-background border rounded-lg shadow-lg max-w-4xl max-h-[90vh] w-full mx-4 overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b">
+          <h2 className="text-xl font-bold">{post.title}</h2>
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="h-4 w-4" />
           </Button>
-        </DialogHeader>
+        </div>
 
+        {/* Content */}
         <div className="flex gap-6 h-full overflow-hidden">
           {/* Left Column - Post Content and Comments */}
-          <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="flex-1 flex flex-col overflow-hidden p-6">
             {/* Post Description */}
             <div className="mb-6">
               <p className="text-muted-foreground leading-relaxed">
@@ -363,7 +322,7 @@ export function PostModal({
           </div>
 
           {/* Right Column - Manage Post */}
-          <div className="w-80 flex-shrink-0 border-l pl-6">
+          <div className="w-80 flex-shrink-0 border-l p-6">
             <h3 className="font-semibold mb-4">Manage Post</h3>
 
             <div className="space-y-4">
@@ -383,7 +342,7 @@ export function PostModal({
                       <SelectItem key={status.value} value={status.value}>
                         <div className="flex items-center gap-2">
                           <div
-                            className={`w-2 h-2 rounded-full ${status.dotColor}`}
+                            className={`w-2 h-2 rounded-full ${status.color}`}
                           />
                           <span>{status.label}</span>
                         </div>
@@ -445,7 +404,7 @@ export function PostModal({
             </div>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }
