@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { OnboardingService } from "@/lib/services/onboarding";
+import { CompanyService } from "@/lib/services/company";
 import {
   FeedbackService,
   FeedbackPost,
@@ -105,20 +106,47 @@ function DashboardPage() {
   const loadCompanyData = async () => {
     try {
       setLoading(true);
-      const onboardingData = await OnboardingService.getOnboardingData(
-        user!.uid
-      );
-      if (onboardingData?.companyName) {
-        setCompanyName(onboardingData.companyName);
 
-        // Load posts and types
+      // Get user's companies
+      const userCompanies = await CompanyService.getUserCompanies(user!.uid);
+
+      if (userCompanies.length > 0) {
+        // For now, use the first company. In the future, you might want to handle multiple companies
+        const companyId = userCompanies[0];
+
+        // Verify company exists and user has access
+        const companyData = await CompanyService.getCompany(companyId);
+        if (!companyData || !companyData.members.includes(user!.uid)) {
+          throw new Error("Access denied to company");
+        }
+
+        setCompanyName(companyData.name);
+
+        // Load posts and types using company name for backward compatibility
         const [postsData, typesData] = await Promise.all([
-          FeedbackService.getCompanyPosts(onboardingData.companyName),
-          FeedbackService.getCompanyTypes(onboardingData.companyName),
+          FeedbackService.getCompanyPosts(companyData.name),
+          FeedbackService.getCompanyTypes(companyData.name),
         ]);
 
         setPosts(postsData);
         setTypes(typesData);
+      } else {
+        // Fallback to onboarding data for backward compatibility
+        const onboardingData = await OnboardingService.getOnboardingData(
+          user!.uid
+        );
+        if (onboardingData?.companyName) {
+          setCompanyName(onboardingData.companyName);
+
+          // Load posts and types
+          const [postsData, typesData] = await Promise.all([
+            FeedbackService.getCompanyPosts(onboardingData.companyName),
+            FeedbackService.getCompanyTypes(onboardingData.companyName),
+          ]);
+
+          setPosts(postsData);
+          setTypes(typesData);
+        }
       }
     } catch (error) {
       console.error("Error loading company data:", error);

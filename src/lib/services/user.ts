@@ -7,6 +7,7 @@ export interface UserData {
   displayName: string;
   photoURL?: string;
   emailVerified?: boolean;
+  companies?: string[]; // Array of company IDs the user belongs to
   createdAt: Date;
   lastLoginAt: Date;
 }

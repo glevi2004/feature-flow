@@ -17,6 +17,7 @@ import { Zap, ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { OnboardingService } from "@/lib/services/onboarding";
 
 interface FormData {
   goals: string[];
@@ -44,9 +45,41 @@ export default function RegisterPage() {
     discoveryMethod: "",
     companyWebsite: "",
   });
+  const [companyNameError, setCompanyNameError] = useState<string | null>(null);
+  const [isCheckingCompany, setIsCheckingCompany] = useState(false);
+  const [companyNameTimeout, setCompanyNameTimeout] =
+    useState<NodeJS.Timeout | null>(null);
 
   const updateFormData = (field: keyof FormData, value: string | string[]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const checkCompanyNameAvailability = async (companyName: string) => {
+    if (!companyName.trim()) {
+      setCompanyNameError(null);
+      return;
+    }
+
+    setIsCheckingCompany(true);
+    setCompanyNameError(null);
+
+    try {
+      const isAvailable = await OnboardingService.checkCompanyNameAvailability(
+        companyName
+      );
+      if (!isAvailable) {
+        setCompanyNameError(
+          "This company name is already taken. Please choose a different name."
+        );
+      }
+    } catch (error) {
+      console.error("Error checking company name:", error);
+      setCompanyNameError(
+        "Error checking company name availability. Please try again."
+      );
+    } finally {
+      setIsCheckingCompany(false);
+    }
   };
 
   const toggleGoal = (goal: string) => {
@@ -77,7 +110,11 @@ export default function RegisterPage() {
       case 2:
         return formData.accessType !== "";
       case 3:
-        return formData.companyName.trim() !== "";
+        return (
+          formData.companyName.trim() !== "" &&
+          !companyNameError &&
+          !isCheckingCompany
+        );
       case 4:
         return (
           formData.teamSize !== "" &&
@@ -310,11 +347,33 @@ export default function RegisterPage() {
                   type="text"
                   placeholder="Enter your company name"
                   value={formData.companyName}
-                  onChange={(e) =>
-                    updateFormData("companyName", e.target.value)
+                  onChange={(e) => {
+                    updateFormData("companyName", e.target.value);
+                    // Clear previous timeout
+                    if (companyNameTimeout) {
+                      clearTimeout(companyNameTimeout);
+                    }
+                    // Check availability after a delay
+                    const timeoutId = setTimeout(() => {
+                      checkCompanyNameAvailability(e.target.value);
+                    }, 500);
+                    setCompanyNameTimeout(timeoutId);
+                  }}
+                  onBlur={() =>
+                    checkCompanyNameAvailability(formData.companyName)
                   }
-                  className="mt-1"
+                  className={`mt-1 ${companyNameError ? "border-red-500" : ""}`}
                 />
+                {isCheckingCompany && (
+                  <p className="text-sm text-blue-600 mt-1">
+                    Checking availability...
+                  </p>
+                )}
+                {companyNameError && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {companyNameError}
+                  </p>
+                )}
               </div>
             </div>
             <div className="flex space-x-4">
