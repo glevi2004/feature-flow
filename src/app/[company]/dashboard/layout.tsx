@@ -5,11 +5,6 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { SideNav } from "@/components/side-nav";
 import { ThemeProvider } from "@/components/theme-provider";
-import {
-  SidebarProvider,
-  SidebarTrigger,
-  SidebarInset,
-} from "@/components/ui/sidebar";
 import { Header } from "@/components/header";
 import { Loading } from "@/components/ui/loading";
 
@@ -46,18 +41,14 @@ export default function DashboardLayout({
       enableSystem
       disableTransitionOnChange
     >
-      <SidebarProvider>
-        <Header />
-        <div className="flex h-screen bg-background mt-20 w-full">
-          <SideNav />
-          <div className="flex-1 overflow-auto bg-background">
-            <div className="p-4">
-              <SidebarTrigger />
-            </div>
-            {children}
-          </div>
+      <Header />
+      <div className="flex h-screen bg-background mt-20 w-full">
+        <SideNav />
+        <div className="flex-1 overflow-auto bg-background">
+          <div className="p-4"></div>
+          {children}
         </div>
-      </SidebarProvider>
+      </div>
     </ThemeProvider>
   );
 }
