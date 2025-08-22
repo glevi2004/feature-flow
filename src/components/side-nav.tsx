@@ -219,9 +219,7 @@ export function SideNav({ onClose }: SideNavProps) {
   };
 
   const getQuickLinks = (): QuickLinks => {
-    if (isActive("/dashboard") && !isActive("/board")) {
-      return pageConfigs.dashboard;
-    } else if (isActive("/board")) {
+    if (isActive("/board")) {
       return pageConfigs.board;
     } else if (isActive("/analytics")) {
       return pageConfigs.analytics;
@@ -229,6 +227,8 @@ export function SideNav({ onClose }: SideNavProps) {
       return pageConfigs.notifications;
     } else if (isActive("/settings")) {
       return pageConfigs.settings;
+    } else if (isActive("/dashboard")) {
+      return pageConfigs.dashboard;
     }
 
     // Default fallback
