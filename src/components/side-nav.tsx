@@ -21,8 +21,6 @@ import {
   XCircle,
   Tag,
   Sparkles,
-  HelpCircle,
-  Box,
   ChevronRight,
   FileText,
   Activity,
