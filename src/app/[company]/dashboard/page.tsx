@@ -131,23 +131,8 @@ function DashboardPage() {
         setPosts(postsData);
         setTypes(typesData);
       } else {
-        // Try to migrate existing onboarding data and fallback
-        const onboardingData =
-          (await OnboardingService.migrateOnboardingData(user!.uid)) ||
-          (await OnboardingService.getOnboardingData(user!.uid));
-
-        if (onboardingData?.companyName) {
-          setCompanyName(onboardingData.companyName);
-
-          // Load posts and types
-          const [postsData, typesData] = await Promise.all([
-            FeedbackService.getCompanyPosts(onboardingData.companyName),
-            FeedbackService.getCompanyTypes(onboardingData.companyName),
-          ]);
-
-          setPosts(postsData);
-          setTypes(typesData);
-        }
+        // No companies found for user
+        console.log("No companies found for user");
       }
     } catch (error) {
       console.error("Error loading company data:", error);
