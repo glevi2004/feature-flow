@@ -227,7 +227,13 @@ export function SideNav({ onClose }: SideNavProps) {
       return pageConfigs.notifications;
     } else if (isActive("/settings")) {
       return pageConfigs.settings;
-    } else if (isActive("/dashboard")) {
+    } else if (
+      isActive("/dashboard") &&
+      !isActive("/board") &&
+      !isActive("/analytics") &&
+      !isActive("/notifications") &&
+      !isActive("/settings")
+    ) {
       return pageConfigs.dashboard;
     }
 
@@ -261,14 +267,22 @@ export function SideNav({ onClose }: SideNavProps) {
                 <Link
                   href={`/${encodeURIComponent(companyName || "")}/dashboard`}
                   className={`p-2 rounded-lg transition-colors ${
-                    isActive("/dashboard") && !isActive("/board")
+                    isActive("/dashboard") &&
+                    !isActive("/board") &&
+                    !isActive("/analytics") &&
+                    !isActive("/notifications") &&
+                    !isActive("/settings")
                       ? "bg-blue-100 dark:bg-blue-900/20"
                       : "hover:bg-muted"
                   }`}
                 >
                   <House
                     className={`h-5 w-5 ${
-                      isActive("/dashboard") && !isActive("/board")
+                      isActive("/dashboard") &&
+                      !isActive("/board") &&
+                      !isActive("/analytics") &&
+                      !isActive("/notifications") &&
+                      !isActive("/settings")
                         ? "text-blue-600 dark:text-blue-400"
                         : "text-gray-500 dark:text-gray-400"
                     }`}
