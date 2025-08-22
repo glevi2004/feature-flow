@@ -463,7 +463,7 @@ export function SideNav({ onClose }: SideNavProps) {
       </div>
 
       {/* Quick Links Panel */}
-      <div className="w-80 bg-background border-r border-border p-6 overflow-y-auto">
+      <div className="w-56 bg-background border-r border-border py-5 px-4 overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold">{quickLinks.title}</h2>
           <ExternalLink className="h-4 w-4 text-muted-foreground" />
