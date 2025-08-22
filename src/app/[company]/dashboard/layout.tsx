@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { AppSidebar } from "@/components/app-sidebar";
+import { SideNav } from "@/components/side-nav";
 import { ThemeProvider } from "@/components/theme-provider";
 import {
   SidebarProvider,
@@ -49,13 +49,13 @@ export default function DashboardLayout({
       <SidebarProvider>
         <Header />
         <div className="flex h-screen bg-background mt-20 w-full">
-          <AppSidebar />
-          <SidebarInset className="flex-1 overflow-auto bg-background">
+          <SideNav />
+          <div className="flex-1 overflow-auto bg-background">
             <div className="p-4">
               <SidebarTrigger />
             </div>
             {children}
-          </SidebarInset>
+          </div>
         </div>
       </SidebarProvider>
     </ThemeProvider>

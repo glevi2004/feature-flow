@@ -22,7 +22,7 @@ import {
   Tag,
   Sparkles,
   HelpCircle,
-  Cube,
+  Box,
   ChevronRight,
   Briefcase,
   Map,
@@ -180,7 +180,7 @@ export function SideNav({ onClose }: SideNavProps) {
         {
           title: "Resources",
           items: [
-            { label: "Install Widget & Embed", icon: Cube },
+            { label: "Install Widget & Embed", icon: Box },
             { label: "Help Center", icon: HelpCircle },
           ],
         },
