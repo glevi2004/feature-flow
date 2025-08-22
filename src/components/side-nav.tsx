@@ -1,0 +1,363 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import {
+  House,
+  Kanban,
+  Globe,
+  Bell,
+  BarChart3,
+  Settings,
+  User,
+  LogOut,
+  X,
+  ExternalLink,
+  Radio,
+  Circle,
+  CheckCircle,
+  XCircle,
+  Tag,
+  Sparkles,
+  HelpCircle,
+  Cube,
+  ChevronRight,
+  Briefcase,
+  Map,
+  Megaphone,
+  FileText,
+  BookOpen,
+  Users,
+  Activity,
+  Rocket,
+} from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { CompanyService } from "@/lib/services/company";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+
+interface SideNavProps {
+  onClose?: () => void;
+}
+
+export function SideNav({ onClose }: SideNavProps) {
+  const { user, signOut } = useAuth();
+  const pathname = usePathname();
+  const [companyName, setCompanyName] = useState("");
+  const [companyId, setCompanyId] = useState("");
+
+  useEffect(() => {
+    if (user) {
+      loadCompanyData();
+    }
+  }, [user]);
+
+  const loadCompanyData = async () => {
+    try {
+      const userCompanies = await CompanyService.getUserCompanies(user!.uid);
+      if (userCompanies.length > 0) {
+        const companyId = userCompanies[0];
+        const companyData = await CompanyService.getCompany(companyId);
+        if (companyData) {
+          setCompanyName(companyData.name);
+          setCompanyId(companyId);
+        }
+      }
+    } catch (error) {
+      console.error("Error loading company data:", error);
+    }
+  };
+
+  const isActive = (path: string) => {
+    return pathname.includes(path);
+  };
+
+  const getQuickLinks = () => {
+    if (isActive("/dashboard")) {
+      return {
+        title: "Dashboard",
+        sections: [
+          {
+            title: "Statuses",
+            items: [
+              { label: "Under Review", icon: Radio, color: "text-gray-400" },
+              { label: "Planned", icon: Circle, color: "text-purple-400" },
+              { label: "Active", icon: Activity, color: "text-blue-400" },
+              { label: "Done", icon: CheckCircle, color: "text-green-400" },
+              { label: "Closed", icon: XCircle, color: "text-red-400" },
+            ],
+          },
+          {
+            title: "Quick Filters",
+            items: [
+              { label: "Boards", icon: Kanban, hasArrow: true },
+              { label: "Tags", icon: Tag, hasArrow: true },
+            ],
+          },
+          {
+            title: "More",
+            items: [
+              { label: "AI Tools", icon: Sparkles, hasArrow: true },
+              { label: "Analytics", icon: BarChart3 },
+            ],
+          },
+        ],
+      };
+    } else if (isActive("/board")) {
+      return {
+        title: "Board",
+        sections: [
+          {
+            title: "Statuses",
+            items: [
+              { label: "Under Review", icon: Radio, color: "text-gray-400" },
+              { label: "Planned", icon: Circle, color: "text-purple-400" },
+              { label: "Active", icon: Activity, color: "text-blue-400" },
+              { label: "Done", icon: CheckCircle, color: "text-green-400" },
+              { label: "Closed", icon: XCircle, color: "text-red-400" },
+            ],
+          },
+          {
+            title: "Quick Filters",
+            items: [
+              { label: "My Tasks", icon: User, hasArrow: true },
+              { label: "Priority", icon: Activity, hasArrow: true },
+            ],
+          },
+        ],
+      };
+    } else if (isActive("/analytics")) {
+      return {
+        title: "Analytics",
+        sections: [
+          {
+            title: "Metrics",
+            items: [
+              { label: "Overview", icon: BarChart3 },
+              { label: "Trends", icon: Activity },
+              { label: "Reports", icon: FileText },
+            ],
+          },
+        ],
+      };
+    }
+
+    return {
+      title: "Feedback",
+      sections: [
+        {
+          title: "Statuses",
+          items: [
+            { label: "Under Review", icon: Radio, color: "text-gray-400" },
+            { label: "Planned", icon: Circle, color: "text-purple-400" },
+            { label: "Active", icon: Activity, color: "text-blue-400" },
+            { label: "Done", icon: CheckCircle, color: "text-green-400" },
+            { label: "Closed", icon: XCircle, color: "text-red-400" },
+          ],
+        },
+        {
+          title: "Quick Filters",
+          items: [
+            { label: "Boards", icon: Kanban, hasArrow: true },
+            { label: "Tags", icon: Tag, hasArrow: true },
+          ],
+        },
+        {
+          title: "More",
+          items: [
+            { label: "AI Tools", icon: Sparkles, hasArrow: true },
+            { label: "Analytics", icon: BarChart3 },
+          ],
+        },
+        {
+          title: "Resources",
+          items: [
+            { label: "Install Widget & Embed", icon: Cube },
+            { label: "Help Center", icon: HelpCircle },
+          ],
+        },
+      ],
+    };
+  };
+
+  const quickLinks = getQuickLinks();
+
+  return (
+    <div className="flex h-screen bg-background">
+      {/* Fixed Left Navigation */}
+      <div className="w-16 bg-muted/50 border-r border-border flex flex-col items-center py-4 space-y-6">
+        {/* Close button */}
+        {onClose && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            className="h-8 w-8 p-0"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
+
+        {/* Main Navigation Icons */}
+        <div className="flex flex-col items-center space-y-4">
+          <Link
+            href={`/${encodeURIComponent(companyName || "")}/dashboard`}
+            className={`p-3 rounded-lg transition-colors ${
+              isActive("/dashboard") && !isActive("/board")
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-muted"
+            }`}
+          >
+            <House className="h-6 w-6" />
+          </Link>
+
+          <Link
+            href={`/${encodeURIComponent(companyName || "")}/dashboard/board`}
+            className={`p-3 rounded-lg transition-colors ${
+              isActive("/board")
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-muted"
+            }`}
+          >
+            <Kanban className="h-6 w-6" />
+          </Link>
+
+          <Link
+            href={`/${encodeURIComponent(companyName || "")}`}
+            target="_blank"
+            className="p-3 rounded-lg transition-colors hover:bg-muted"
+          >
+            <Globe className="h-6 w-6" />
+          </Link>
+
+          <Link
+            href={`/${encodeURIComponent(
+              companyName || ""
+            )}/dashboard/notifications`}
+            className={`p-3 rounded-lg transition-colors ${
+              isActive("/notifications")
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-muted"
+            }`}
+          >
+            <Bell className="h-6 w-6" />
+          </Link>
+
+          <Link
+            href={`/${encodeURIComponent(
+              companyName || ""
+            )}/dashboard/analytics`}
+            className={`p-3 rounded-lg transition-colors ${
+              isActive("/analytics")
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-muted"
+            }`}
+          >
+            <BarChart3 className="h-6 w-6" />
+          </Link>
+
+          <Link
+            href={`/${encodeURIComponent(
+              companyName || ""
+            )}/dashboard/settings`}
+            className={`p-3 rounded-lg transition-colors ${
+              isActive("/settings")
+                ? "bg-primary text-primary-foreground"
+                : "hover:bg-muted"
+            }`}
+          >
+            <Settings className="h-6 w-6" />
+          </Link>
+        </div>
+
+        {/* User Profile at Bottom */}
+        <div className="mt-auto">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-10 w-10 p-0 rounded-full"
+              >
+                {user?.photoURL ? (
+                  <Image
+                    src={user.photoURL}
+                    alt={user.displayName || "User"}
+                    width={40}
+                    height={40}
+                    className="h-10 w-10 rounded-full"
+                  />
+                ) : (
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                    <User className="h-5 w-5" />
+                  </div>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem asChild>
+                <Link href="/profile" className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  My Profile
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => signOut()}
+                className="flex items-center gap-2 text-destructive focus:text-destructive"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+
+      {/* Quick Links Panel */}
+      <div className="w-80 bg-background border-r border-border p-6 overflow-y-auto">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold">{quickLinks.title}</h2>
+          <ExternalLink className="h-4 w-4 text-muted-foreground" />
+        </div>
+
+        <div className="space-y-8">
+          {quickLinks.sections.map((section, sectionIndex) => (
+            <div key={sectionIndex}>
+              <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">
+                {section.title}
+              </h3>
+              <div className="space-y-1">
+                {section.items.map((item, itemIndex) => (
+                  <button
+                    key={itemIndex}
+                    className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                  >
+                    <div className="flex items-center gap-3">
+                      <item.icon
+                        className={`h-4 w-4 ${
+                          item.color || "text-muted-foreground"
+                        }`}
+                      />
+                      <span className="text-sm">{item.label}</span>
+                    </div>
+                    {item.hasArrow && (
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
