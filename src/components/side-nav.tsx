@@ -24,14 +24,8 @@ import {
   HelpCircle,
   Box,
   ChevronRight,
-  Briefcase,
-  Map,
-  Megaphone,
   FileText,
-  BookOpen,
-  Users,
   Activity,
-  Rocket,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { CompanyService } from "@/lib/services/company";
@@ -42,7 +36,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
   TooltipContent,

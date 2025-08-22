@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Loading } from "@/components/ui/loading";
 import { PostModal } from "@/components/ui/post-modal";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Search,
   Filter,
@@ -19,7 +19,6 @@ import {
   CheckSquare,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { OnboardingService } from "@/lib/services/onboarding";
 import { CompanyService } from "@/lib/services/company";
 import {
   FeedbackService,
