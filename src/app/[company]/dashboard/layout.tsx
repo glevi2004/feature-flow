@@ -42,7 +42,10 @@ export default function DashboardLayout({
       disableTransitionOnChange
     >
       <Header />
-      <div className="flex h-screen bg-background mt-20 w-full">
+      <div
+        className="flex bg-background w-full"
+        style={{ height: "calc(100vh - 3.5rem)", marginTop: "3.5rem" }}
+      >
         <SideNav />
         <div className="flex-1 overflow-auto bg-background">
           <div className="p-4"></div>

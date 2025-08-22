@@ -48,6 +48,36 @@ interface SideNavProps {
   onClose?: () => void;
 }
 
+// TypeScript interfaces for the different item types
+interface BaseItem {
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
+interface StatusItem extends BaseItem {
+  color: string;
+}
+
+interface QuickFilterItem extends BaseItem {
+  hasArrow: boolean;
+}
+
+interface RegularItem extends BaseItem {
+  // No additional properties
+}
+
+type QuickLinkItem = StatusItem | QuickFilterItem | RegularItem;
+
+interface QuickLinkSection {
+  title: string;
+  items: QuickLinkItem[];
+}
+
+interface QuickLinks {
+  title: string;
+  sections: QuickLinkSection[];
+}
+
 export function SideNav({ onClose }: SideNavProps) {
   const { user, signOut } = useAuth();
   const pathname = usePathname();
@@ -80,7 +110,7 @@ export function SideNav({ onClose }: SideNavProps) {
     return pathname.includes(path);
   };
 
-  const getQuickLinks = () => {
+  const getQuickLinks = (): QuickLinks => {
     if (isActive("/dashboard")) {
       return {
         title: "Dashboard",
@@ -191,7 +221,7 @@ export function SideNav({ onClose }: SideNavProps) {
   const quickLinks = getQuickLinks();
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-full bg-background">
       {/* Fixed Left Navigation */}
       <div className="w-16 bg-muted/50 border-r border-border flex flex-col items-center py-4 space-y-6">
         {/* Close button */}
@@ -210,71 +240,101 @@ export function SideNav({ onClose }: SideNavProps) {
         <div className="flex flex-col items-center space-y-4">
           <Link
             href={`/${encodeURIComponent(companyName || "")}/dashboard`}
-            className={`p-3 rounded-lg transition-colors ${
+            className={`p-2 rounded-lg transition-colors ${
               isActive("/dashboard") && !isActive("/board")
-                ? "bg-primary text-primary-foreground"
+                ? "bg-blue-100 dark:bg-blue-900/20"
                 : "hover:bg-muted"
             }`}
           >
-            <House className="h-6 w-6" />
+            <House
+              className={`h-5 w-5 ${
+                isActive("/dashboard") && !isActive("/board")
+                  ? "text-blue-600 dark:text-blue-400"
+                  : "text-gray-500 dark:text-gray-400"
+              }`}
+            />
           </Link>
 
           <Link
             href={`/${encodeURIComponent(companyName || "")}/dashboard/board`}
-            className={`p-3 rounded-lg transition-colors ${
+            className={`p-2 rounded-lg transition-colors ${
               isActive("/board")
-                ? "bg-primary text-primary-foreground"
+                ? "bg-blue-100 dark:bg-blue-900/20"
                 : "hover:bg-muted"
             }`}
           >
-            <Kanban className="h-6 w-6" />
+            <Kanban
+              className={`h-5 w-5 ${
+                isActive("/board")
+                  ? "text-blue-600 dark:text-blue-400"
+                  : "text-gray-500 dark:text-gray-400"
+              }`}
+            />
           </Link>
 
           <Link
             href={`/${encodeURIComponent(companyName || "")}`}
             target="_blank"
-            className="p-3 rounded-lg transition-colors hover:bg-muted"
+            className="p-2 rounded-lg transition-colors hover:bg-muted"
           >
-            <Globe className="h-6 w-6" />
+            <Globe className="h-5 w-5 text-gray-500 dark:text-gray-400" />
           </Link>
 
           <Link
             href={`/${encodeURIComponent(
               companyName || ""
             )}/dashboard/notifications`}
-            className={`p-3 rounded-lg transition-colors ${
+            className={`p-2 rounded-lg transition-colors ${
               isActive("/notifications")
-                ? "bg-primary text-primary-foreground"
+                ? "bg-blue-100 dark:bg-blue-900/20"
                 : "hover:bg-muted"
             }`}
           >
-            <Bell className="h-6 w-6" />
+            <Bell
+              className={`h-5 w-5 ${
+                isActive("/notifications")
+                  ? "text-blue-600 dark:text-blue-400"
+                  : "text-gray-500 dark:text-gray-400"
+              }`}
+            />
           </Link>
 
           <Link
             href={`/${encodeURIComponent(
               companyName || ""
             )}/dashboard/analytics`}
-            className={`p-3 rounded-lg transition-colors ${
+            className={`p-2 rounded-lg transition-colors ${
               isActive("/analytics")
-                ? "bg-primary text-primary-foreground"
+                ? "bg-blue-100 dark:bg-blue-900/20"
                 : "hover:bg-muted"
             }`}
           >
-            <BarChart3 className="h-6 w-6" />
+            <BarChart3
+              className={`h-5 w-5 ${
+                isActive("/analytics")
+                  ? "text-blue-600 dark:text-blue-400"
+                  : "text-gray-500 dark:text-gray-400"
+              }`}
+            />
           </Link>
 
           <Link
             href={`/${encodeURIComponent(
               companyName || ""
             )}/dashboard/settings`}
-            className={`p-3 rounded-lg transition-colors ${
+            className={`p-2 rounded-lg transition-colors ${
               isActive("/settings")
-                ? "bg-primary text-primary-foreground"
+                ? "bg-blue-100 dark:bg-blue-900/20"
                 : "hover:bg-muted"
             }`}
           >
-            <Settings className="h-6 w-6" />
+            <Settings
+              className={`h-5 w-5 ${
+                isActive("/settings")
+                  ? "text-blue-600 dark:text-blue-400"
+                  : "text-gray-500 dark:text-gray-400"
+              }`}
+            />
           </Link>
         </div>
 
@@ -343,12 +403,12 @@ export function SideNav({ onClose }: SideNavProps) {
                     <div className="flex items-center gap-3">
                       <item.icon
                         className={`h-4 w-4 ${
-                          item.color || "text-muted-foreground"
+                          "color" in item ? item.color : "text-muted-foreground"
                         }`}
                       />
                       <span className="text-sm">{item.label}</span>
                     </div>
-                    {item.hasArrow && (
+                    {"hasArrow" in item && item.hasArrow && (
                       <ChevronRight className="h-4 w-4 text-muted-foreground" />
                     )}
                   </button>
