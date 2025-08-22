@@ -43,6 +43,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface SideNavProps {
   onClose?: () => void;
@@ -237,106 +243,170 @@ export function SideNav({ onClose }: SideNavProps) {
         )}
 
         {/* Main Navigation Icons */}
-        <div className="flex flex-col items-center space-y-4">
-          <Link
-            href={`/${encodeURIComponent(companyName || "")}/dashboard`}
-            className={`p-2 rounded-lg transition-colors ${
-              isActive("/dashboard") && !isActive("/board")
-                ? "bg-blue-100 dark:bg-blue-900/20"
-                : "hover:bg-muted"
-            }`}
-          >
-            <House
-              className={`h-5 w-5 ${
-                isActive("/dashboard") && !isActive("/board")
-                  ? "text-blue-600 dark:text-blue-400"
-                  : "text-gray-500 dark:text-gray-400"
-              }`}
-            />
-          </Link>
+        <TooltipProvider>
+          <div className="flex flex-col items-center space-y-4">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={`/${encodeURIComponent(companyName || "")}/dashboard`}
+                  className={`p-2 rounded-lg transition-colors ${
+                    isActive("/dashboard") && !isActive("/board")
+                      ? "bg-blue-100 dark:bg-blue-900/20"
+                      : "hover:bg-muted"
+                  }`}
+                >
+                  <House
+                    className={`h-5 w-5 ${
+                      isActive("/dashboard") && !isActive("/board")
+                        ? "text-blue-600 dark:text-blue-400"
+                        : "text-gray-500 dark:text-gray-400"
+                    }`}
+                  />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent
+                side="right"
+                className="bg-gray-800 text-gray-200 border-gray-700"
+              >
+                Home
+              </TooltipContent>
+            </Tooltip>
 
-          <Link
-            href={`/${encodeURIComponent(companyName || "")}/dashboard/board`}
-            className={`p-2 rounded-lg transition-colors ${
-              isActive("/board")
-                ? "bg-blue-100 dark:bg-blue-900/20"
-                : "hover:bg-muted"
-            }`}
-          >
-            <Kanban
-              className={`h-5 w-5 ${
-                isActive("/board")
-                  ? "text-blue-600 dark:text-blue-400"
-                  : "text-gray-500 dark:text-gray-400"
-              }`}
-            />
-          </Link>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={`/${encodeURIComponent(
+                    companyName || ""
+                  )}/dashboard/board`}
+                  className={`p-2 rounded-lg transition-colors ${
+                    isActive("/board")
+                      ? "bg-blue-100 dark:bg-blue-900/20"
+                      : "hover:bg-muted"
+                  }`}
+                >
+                  <Kanban
+                    className={`h-5 w-5 ${
+                      isActive("/board")
+                        ? "text-blue-600 dark:text-blue-400"
+                        : "text-gray-500 dark:text-gray-400"
+                    }`}
+                  />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent
+                side="right"
+                className="bg-gray-800 text-gray-200 border-gray-700"
+              >
+                Board
+              </TooltipContent>
+            </Tooltip>
 
-          <Link
-            href={`/${encodeURIComponent(companyName || "")}`}
-            target="_blank"
-            className="p-2 rounded-lg transition-colors hover:bg-muted"
-          >
-            <Globe className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-          </Link>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={`/${encodeURIComponent(companyName || "")}`}
+                  target="_blank"
+                  className="p-2 rounded-lg transition-colors hover:bg-muted"
+                >
+                  <Globe className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent
+                side="right"
+                className="bg-gray-800 text-gray-200 border-gray-700"
+              >
+                Public Page
+              </TooltipContent>
+            </Tooltip>
 
-          <Link
-            href={`/${encodeURIComponent(
-              companyName || ""
-            )}/dashboard/notifications`}
-            className={`p-2 rounded-lg transition-colors ${
-              isActive("/notifications")
-                ? "bg-blue-100 dark:bg-blue-900/20"
-                : "hover:bg-muted"
-            }`}
-          >
-            <Bell
-              className={`h-5 w-5 ${
-                isActive("/notifications")
-                  ? "text-blue-600 dark:text-blue-400"
-                  : "text-gray-500 dark:text-gray-400"
-              }`}
-            />
-          </Link>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={`/${encodeURIComponent(
+                    companyName || ""
+                  )}/dashboard/notifications`}
+                  className={`p-2 rounded-lg transition-colors ${
+                    isActive("/notifications")
+                      ? "bg-blue-100 dark:bg-blue-900/20"
+                      : "hover:bg-muted"
+                  }`}
+                >
+                  <Bell
+                    className={`h-5 w-5 ${
+                      isActive("/notifications")
+                        ? "text-blue-600 dark:text-blue-400"
+                        : "text-gray-500 dark:text-gray-400"
+                    }`}
+                  />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent
+                side="right"
+                className="bg-gray-800 text-gray-200 border-gray-700"
+              >
+                Notifications
+              </TooltipContent>
+            </Tooltip>
 
-          <Link
-            href={`/${encodeURIComponent(
-              companyName || ""
-            )}/dashboard/analytics`}
-            className={`p-2 rounded-lg transition-colors ${
-              isActive("/analytics")
-                ? "bg-blue-100 dark:bg-blue-900/20"
-                : "hover:bg-muted"
-            }`}
-          >
-            <BarChart3
-              className={`h-5 w-5 ${
-                isActive("/analytics")
-                  ? "text-blue-600 dark:text-blue-400"
-                  : "text-gray-500 dark:text-gray-400"
-              }`}
-            />
-          </Link>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={`/${encodeURIComponent(
+                    companyName || ""
+                  )}/dashboard/analytics`}
+                  className={`p-2 rounded-lg transition-colors ${
+                    isActive("/analytics")
+                      ? "bg-blue-100 dark:bg-blue-900/20"
+                      : "hover:bg-muted"
+                  }`}
+                >
+                  <BarChart3
+                    className={`h-5 w-5 ${
+                      isActive("/analytics")
+                        ? "text-blue-600 dark:text-blue-400"
+                        : "text-gray-500 dark:text-gray-400"
+                    }`}
+                  />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent
+                side="right"
+                className="bg-gray-800 text-gray-200 border-gray-700"
+              >
+                Analytics
+              </TooltipContent>
+            </Tooltip>
 
-          <Link
-            href={`/${encodeURIComponent(
-              companyName || ""
-            )}/dashboard/settings`}
-            className={`p-2 rounded-lg transition-colors ${
-              isActive("/settings")
-                ? "bg-blue-100 dark:bg-blue-900/20"
-                : "hover:bg-muted"
-            }`}
-          >
-            <Settings
-              className={`h-5 w-5 ${
-                isActive("/settings")
-                  ? "text-blue-600 dark:text-blue-400"
-                  : "text-gray-500 dark:text-gray-400"
-              }`}
-            />
-          </Link>
-        </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={`/${encodeURIComponent(
+                    companyName || ""
+                  )}/dashboard/settings`}
+                  className={`p-2 rounded-lg transition-colors ${
+                    isActive("/settings")
+                      ? "bg-blue-100 dark:bg-blue-900/20"
+                      : "hover:bg-muted"
+                  }`}
+                >
+                  <Settings
+                    className={`h-5 w-5 ${
+                      isActive("/settings")
+                        ? "text-blue-600 dark:text-blue-400"
+                        : "text-gray-500 dark:text-gray-400"
+                    }`}
+                  />
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent
+                side="right"
+                className="bg-gray-800 text-gray-200 border-gray-700"
+              >
+                Settings
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
 
         {/* User Profile at Bottom */}
         <div className="mt-auto">
