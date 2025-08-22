@@ -109,78 +109,10 @@ export function SideNav({ onClose }: SideNavProps) {
     return pathname.includes(path);
   };
 
-  const getQuickLinks = (): QuickLinks => {
-    if (isActive("/dashboard")) {
-      return {
-        title: "Dashboard",
-        sections: [
-          {
-            title: "Statuses",
-            items: [
-              { label: "Under Review", icon: Radio, color: "text-gray-400" },
-              { label: "Planned", icon: Circle, color: "text-purple-400" },
-              { label: "Active", icon: Activity, color: "text-blue-400" },
-              { label: "Done", icon: CheckCircle, color: "text-green-400" },
-              { label: "Closed", icon: XCircle, color: "text-red-400" },
-            ],
-          },
-          {
-            title: "Quick Filters",
-            items: [
-              { label: "Boards", icon: Kanban, hasArrow: true },
-              { label: "Tags", icon: Tag, hasArrow: true },
-            ],
-          },
-          {
-            title: "More",
-            items: [
-              { label: "AI Tools", icon: Sparkles, hasArrow: true },
-              { label: "Analytics", icon: BarChart3 },
-            ],
-          },
-        ],
-      };
-    } else if (isActive("/board")) {
-      return {
-        title: "Board",
-        sections: [
-          {
-            title: "Statuses",
-            items: [
-              { label: "Under Review", icon: Radio, color: "text-gray-400" },
-              { label: "Planned", icon: Circle, color: "text-purple-400" },
-              { label: "Active", icon: Activity, color: "text-blue-400" },
-              { label: "Done", icon: CheckCircle, color: "text-green-400" },
-              { label: "Closed", icon: XCircle, color: "text-red-400" },
-            ],
-          },
-          {
-            title: "Quick Filters",
-            items: [
-              { label: "My Tasks", icon: User, hasArrow: true },
-              { label: "Priority", icon: Activity, hasArrow: true },
-            ],
-          },
-        ],
-      };
-    } else if (isActive("/analytics")) {
-      return {
-        title: "Analytics",
-        sections: [
-          {
-            title: "Metrics",
-            items: [
-              { label: "Overview", icon: BarChart3 },
-              { label: "Trends", icon: Activity },
-              { label: "Reports", icon: FileText },
-            ],
-          },
-        ],
-      };
-    }
-
-    return {
-      title: "Feedback",
+  // Page-specific configurations
+  const pageConfigs = {
+    dashboard: {
+      title: "Dashboard",
       sections: [
         {
           title: "Statuses",
@@ -206,15 +138,101 @@ export function SideNav({ onClose }: SideNavProps) {
             { label: "Analytics", icon: BarChart3 },
           ],
         },
+      ],
+    },
+    board: {
+      title: "Board",
+      sections: [
         {
-          title: "Resources",
+          title: "Statuses",
           items: [
-            { label: "Install Widget & Embed", icon: Box },
-            { label: "Help Center", icon: HelpCircle },
+            { label: "Under Review", icon: Radio, color: "text-gray-400" },
+            { label: "Planned", icon: Circle, color: "text-purple-400" },
+            { label: "Active", icon: Activity, color: "text-blue-400" },
+            { label: "Done", icon: CheckCircle, color: "text-green-400" },
+            { label: "Closed", icon: XCircle, color: "text-red-400" },
+          ],
+        },
+        {
+          title: "Quick Filters",
+          items: [
+            { label: "My Tasks", icon: User, hasArrow: true },
+            { label: "Priority", icon: Activity, hasArrow: true },
           ],
         },
       ],
-    };
+    },
+    analytics: {
+      title: "Analytics",
+      sections: [
+        {
+          title: "Metrics",
+          items: [
+            { label: "Overview", icon: BarChart3 },
+            { label: "Trends", icon: Activity },
+            { label: "Reports", icon: FileText },
+          ],
+        },
+      ],
+    },
+    notifications: {
+      title: "Notifications",
+      sections: [
+        {
+          title: "Filters",
+          items: [
+            { label: "All", icon: Bell },
+            { label: "Unread", icon: Circle },
+            { label: "Important", icon: Activity },
+          ],
+        },
+        {
+          title: "Settings",
+          items: [
+            { label: "Preferences", icon: Settings },
+            { label: "Email Alerts", icon: Bell },
+          ],
+        },
+      ],
+    },
+    settings: {
+      title: "Settings",
+      sections: [
+        {
+          title: "General",
+          items: [
+            { label: "Profile", icon: User },
+            { label: "Company", icon: Settings },
+            { label: "Team", icon: User },
+          ],
+        },
+        {
+          title: "Integrations",
+          items: [
+            { label: "Slack", icon: Settings },
+            { label: "Email", icon: Settings },
+            { label: "API Keys", icon: Settings },
+          ],
+        },
+      ],
+    },
+  };
+
+  const getQuickLinks = (): QuickLinks => {
+    if (isActive("/dashboard") && !isActive("/board")) {
+      return pageConfigs.dashboard;
+    } else if (isActive("/board")) {
+      return pageConfigs.board;
+    } else if (isActive("/analytics")) {
+      return pageConfigs.analytics;
+    } else if (isActive("/notifications")) {
+      return pageConfigs.notifications;
+    } else if (isActive("/settings")) {
+      return pageConfigs.settings;
+    }
+
+    // Default fallback
+    return pageConfigs.dashboard;
   };
 
   const quickLinks = getQuickLinks();
