@@ -25,7 +25,7 @@ export type FeedbackStatus =
 
 export interface FeedbackPost {
   id?: string;
-  companyName: string;
+  companyId: string;
   userId: string;
   title: string;
   description: string;
@@ -41,6 +41,7 @@ export interface FeedbackPost {
 export interface FeedbackComment {
   id?: string;
   postId: string;
+  companyId: string;
   userId: string;
   userName: string;
   content: string;
@@ -49,7 +50,7 @@ export interface FeedbackComment {
 
 export interface FeedbackType {
   id?: string;
-  companyName: string;
+  companyId: string;
   name: string;
   emoji: string;
   color?: string;
@@ -89,11 +90,11 @@ export class FeedbackService {
   }
 
   // Get all posts for a company
-  static async getCompanyPosts(companyName: string) {
+  static async getCompanyPosts(companyId: string) {
     try {
       const q = query(
         collection(db, "feedback_posts"),
-        where("companyName", "==", companyName),
+        where("companyId", "==", companyId),
         orderBy("createdAt", "desc")
       );
 
@@ -230,11 +231,11 @@ export class FeedbackService {
   }
 
   // Get all types for a company
-  static async getCompanyTypes(companyName: string) {
+  static async getCompanyTypes(companyId: string) {
     try {
       const q = query(
         collection(db, "feedback_types"),
-        where("companyName", "==", companyName),
+        where("companyId", "==", companyId),
         orderBy("createdAt", "asc")
       );
 
@@ -267,7 +268,7 @@ export class FeedbackService {
   }
 
   // Initialize default types for a company
-  static async initializeDefaultTypes(companyName: string) {
+  static async initializeDefaultTypes(companyId: string) {
     try {
       const defaultTypes = [
         { name: "Feature Request", emoji: "💡", color: "#3B82F6" },
@@ -275,7 +276,7 @@ export class FeedbackService {
 
       for (const type of defaultTypes) {
         await this.createType({
-          companyName,
+          companyId,
           name: type.name,
           emoji: type.emoji,
           color: type.color,

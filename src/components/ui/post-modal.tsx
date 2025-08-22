@@ -35,6 +35,7 @@ import { FeedbackService } from "@/lib/services/feedback";
 interface PostModalProps {
   post: FeedbackPost | null;
   types: FeedbackType[];
+  companyId: string;
   isOpen: boolean;
   onClose: () => void;
   onPostUpdate: (updatedPost: FeedbackPost) => void;
@@ -51,6 +52,7 @@ const STATUS_OPTIONS = [
 export function PostModal({
   post,
   types,
+  companyId,
   isOpen,
   onClose,
   onPostUpdate,
@@ -101,6 +103,7 @@ export function PostModal({
       setSubmittingComment(true);
       const newCommentData = await FeedbackService.addComment({
         postId: currentPost.id!,
+        companyId,
         userId: `anonymous-${Date.now()}`,
         userName: userName.trim(),
         content: newComment.trim(),

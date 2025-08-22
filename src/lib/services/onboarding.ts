@@ -1,6 +1,7 @@
 import { db } from "@/lib/firebase/firebaseConfig";
 import { doc, setDoc, getDoc, addDoc, collection } from "firebase/firestore";
 import { CompanyService } from "./company";
+import { FeedbackService } from "./feedback";
 
 export interface OnboardingData {
   id?: string;
@@ -38,11 +39,21 @@ export class OnboardingService {
       // Create company first
       if (data.companyName) {
         console.log("OnboardingService: Creating company:", data.companyName);
-        await CompanyService.createCompany(data.companyName, userId, {
-          website: data.companyWebsite,
-          teamSize: data.teamSize,
-        });
+        const companyData = await CompanyService.createCompany(
+          data.companyName,
+          userId,
+          {
+            website: data.companyWebsite,
+            teamSize: data.teamSize,
+          }
+        );
         console.log("OnboardingService: Company created successfully");
+
+        // Initialize default feedback types for the company
+        if (companyData) {
+          await FeedbackService.initializeDefaultTypes(companyData.id);
+          console.log("OnboardingService: Default feedback types initialized");
+        }
       }
 
       // Save to onboarding collection

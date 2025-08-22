@@ -83,6 +83,7 @@ function DashboardPage() {
   const [types, setTypes] = useState<FeedbackType[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyName, setCompanyName] = useState("");
+  const [companyId, setCompanyId] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
@@ -121,11 +122,12 @@ function DashboardPage() {
         }
 
         setCompanyName(companyData.name);
+        setCompanyId(companyId);
 
-        // Load posts and types using company name for backward compatibility
+        // Load posts and types using company ID
         const [postsData, typesData] = await Promise.all([
-          FeedbackService.getCompanyPosts(companyData.name),
-          FeedbackService.getCompanyTypes(companyData.name),
+          FeedbackService.getCompanyPosts(companyId),
+          FeedbackService.getCompanyTypes(companyId),
         ]);
 
         setPosts(postsData);
@@ -198,7 +200,7 @@ function DashboardPage() {
 
     try {
       const newType = await FeedbackService.createType({
-        companyName,
+        companyId,
         name: newTypeName.trim(),
         emoji: newTypeEmoji.trim(),
         color: newTypeColor,
@@ -475,6 +477,7 @@ function DashboardPage() {
       <PostModal
         post={selectedPost}
         types={types}
+        companyId={companyId}
         isOpen={showPostModal}
         onClose={() => setShowPostModal(false)}
         onPostUpdate={handlePostUpdate}

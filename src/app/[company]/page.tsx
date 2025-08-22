@@ -20,6 +20,7 @@ import {
   FeedbackType,
   FeedbackStatus,
 } from "@/lib/services/feedback";
+import { CompanyService } from "@/lib/services/company";
 import {
   Heart,
   MessageSquare,
@@ -61,6 +62,7 @@ export default function PublicFeedbackPage() {
   const [posts, setPosts] = useState<FeedbackPost[]>([]);
   const [types, setTypes] = useState<FeedbackType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [companyId, setCompanyId] = useState<string>("");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [comments, setComments] = useState<FeedbackComment[]>([]);
   const [showComments, setShowComments] = useState<string | null>(null);
@@ -83,9 +85,19 @@ export default function PublicFeedbackPage() {
   const loadCompanyData = async () => {
     try {
       setLoading(true);
+
+      // First get the company ID from the company name
+      const companyData = await CompanyService.getCompanyByName(companyName);
+      if (!companyData) {
+        console.error("Company not found:", companyName);
+        return;
+      }
+
+      setCompanyId(companyData.id);
+
       let [postsData, typesData] = await Promise.all([
-        FeedbackService.getCompanyPosts(companyName),
-        FeedbackService.getCompanyTypes(companyName),
+        FeedbackService.getCompanyPosts(companyData.id),
+        FeedbackService.getCompanyTypes(companyData.id),
       ]);
 
       // Apply search filter
@@ -175,7 +187,7 @@ export default function PublicFeedbackPage() {
 
     try {
       const newPost = await FeedbackService.createPost({
-        companyName,
+        companyId,
         userId: `anonymous-${Date.now()}`,
         title: title.trim(),
         description: description.trim(),
@@ -232,6 +244,7 @@ export default function PublicFeedbackPage() {
     try {
       const newComment = await FeedbackService.addComment({
         postId,
+        companyId,
         userId: `anonymous-${Date.now()}`,
         userName: userName.trim(),
         content: commentContent.trim(),

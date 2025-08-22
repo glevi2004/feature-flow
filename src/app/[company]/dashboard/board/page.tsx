@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { OnboardingService } from "@/lib/services/onboarding";
+import { CompanyService } from "@/lib/services/company";
 import {
   FeedbackService,
   FeedbackPost,
@@ -74,6 +75,7 @@ function BoardPage() {
   const [types, setTypes] = useState<FeedbackType[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyName, setCompanyName] = useState("");
+  const [companyId, setCompanyId] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [draggedPost, setDraggedPost] = useState<FeedbackPost | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
@@ -89,16 +91,27 @@ function BoardPage() {
   const loadCompanyData = async () => {
     try {
       setLoading(true);
-      const onboardingData = await OnboardingService.getOnboardingData(
-        user!.uid
-      );
-      if (onboardingData?.companyName) {
-        setCompanyName(onboardingData.companyName);
+
+      // Get user's companies
+      const userCompanies = await CompanyService.getUserCompanies(user!.uid);
+
+      if (userCompanies.length > 0) {
+        // For now, use the first company
+        const companyId = userCompanies[0];
+
+        // Verify company exists and user has access
+        const companyData = await CompanyService.getCompany(companyId);
+        if (!companyData || !companyData.members.includes(user!.uid)) {
+          throw new Error("Access denied to company");
+        }
+
+        setCompanyName(companyData.name);
+        setCompanyId(companyId);
 
         // Load posts and types
         const [postsData, typesData] = await Promise.all([
-          FeedbackService.getCompanyPosts(onboardingData.companyName),
-          FeedbackService.getCompanyTypes(onboardingData.companyName),
+          FeedbackService.getCompanyPosts(companyId),
+          FeedbackService.getCompanyTypes(companyId),
         ]);
 
         // Filter out rejected posts
@@ -107,6 +120,8 @@ function BoardPage() {
         );
         setPosts(filteredPosts);
         setTypes(typesData);
+      } else {
+        console.log("No companies found for user");
       }
     } catch (error) {
       console.error("Error loading company data:", error);
@@ -364,6 +379,7 @@ function BoardPage() {
       <PostModal
         post={selectedPost}
         types={types}
+        companyId={companyId}
         isOpen={showPostModal}
         onClose={() => setShowPostModal(false)}
         onPostUpdate={handlePostUpdate}
