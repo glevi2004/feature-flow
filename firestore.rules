@@ -4,11 +4,11 @@ service cloud.firestore {
     // Users can only read/write their own user document
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
-      
-      // Users can only read/write their own onboarding subcollection
-      match /onboarding/{document=**} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
-      }
+    }
+
+    // Onboarding data - users can only read/write their own onboarding data
+    match /onboarding/{onboardingId} {
+      allow read, write: if request.auth != null;
     }
 
     // Feedback posts - allow read for public access, write for authenticated users

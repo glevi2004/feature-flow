@@ -1,8 +1,10 @@
 import { db } from "@/lib/firebase/firebaseConfig";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, addDoc, collection } from "firebase/firestore";
 import { CompanyService } from "./company";
 
 export interface OnboardingData {
+  id?: string;
+  userId: string;
   goals: string[];
   accessType: string;
   companyName: string;
@@ -13,16 +15,17 @@ export interface OnboardingData {
 }
 
 export class OnboardingService {
-  // Save onboarding data as a document under the user and create company
+  // Save onboarding data as a separate document and create company
   static async saveOnboardingData(
     userId: string,
-    data: Omit<OnboardingData, "createdAt">
+    data: Omit<OnboardingData, "id" | "userId" | "createdAt">
   ) {
     try {
       console.log("OnboardingService: Starting to save data for user:", userId);
       console.log("OnboardingService: Data to save:", data);
 
-      const onboardingData: OnboardingData = {
+      const onboardingData: Omit<OnboardingData, "id"> = {
+        userId,
         ...data,
         createdAt: new Date(),
       };
@@ -42,32 +45,75 @@ export class OnboardingService {
         console.log("OnboardingService: Company created successfully");
       }
 
-      // Save to users/{userId}/onboarding/data
-      const docRef = doc(db, "users", userId, "onboarding", "data");
+      // Save to onboarding collection
+      const docRef = await addDoc(collection(db, "onboarding"), onboardingData);
+      const onboardingId = docRef.id;
       console.log("OnboardingService: Document reference:", docRef.path);
 
-      await setDoc(docRef, onboardingData);
+      // Update user document with onboarding info ID
+      await setDoc(
+        doc(db, "users", userId),
+        {
+          onboardingInfoId: onboardingId,
+        },
+        { merge: true }
+      );
+
       console.log("OnboardingService: Data saved successfully");
 
-      return { success: true };
+      return { success: true, onboardingId };
     } catch (error) {
       console.error("OnboardingService: Error saving onboarding data:", error);
       throw error;
     }
   }
 
-  // Get onboarding data from subcollection
+  // Get onboarding data by user ID
   static async getOnboardingData(userId: string) {
     try {
+      // First get the user document to find the onboarding info ID
+      const userDoc = await getDoc(doc(db, "users", userId));
+      if (!userDoc.exists()) {
+        return null;
+      }
+
+      const userData = userDoc.data();
+      const onboardingInfoId = userData.onboardingInfoId;
+
+      if (!onboardingInfoId) {
+        return null;
+      }
+
+      // Get the onboarding document
       const onboardingDoc = await getDoc(
-        doc(db, "users", userId, "onboarding", "data")
+        doc(db, "onboarding", onboardingInfoId)
       );
       if (onboardingDoc.exists()) {
-        return onboardingDoc.data() as OnboardingData;
+        return {
+          id: onboardingDoc.id,
+          ...onboardingDoc.data(),
+        } as OnboardingData;
       }
       return null;
     } catch (error) {
       console.error("Error getting onboarding data:", error);
+      throw error;
+    }
+  }
+
+  // Get onboarding data by onboarding ID
+  static async getOnboardingDataById(onboardingId: string) {
+    try {
+      const onboardingDoc = await getDoc(doc(db, "onboarding", onboardingId));
+      if (onboardingDoc.exists()) {
+        return {
+          id: onboardingDoc.id,
+          ...onboardingDoc.data(),
+        } as OnboardingData;
+      }
+      return null;
+    } catch (error) {
+      console.error("Error getting onboarding data by ID:", error);
       throw error;
     }
   }
@@ -81,6 +127,66 @@ export class OnboardingService {
     } catch (error) {
       console.error("Error checking company name availability:", error);
       throw error;
+    }
+  }
+
+  // Migrate existing onboarding data from subcollection to new collection
+  static async migrateOnboardingData(userId: string) {
+    try {
+      // Check if user already has onboardingInfoId
+      const userDoc = await getDoc(doc(db, "users", userId));
+      if (!userDoc.exists()) {
+        return null;
+      }
+
+      const userData = userDoc.data();
+      if (userData.onboardingInfoId) {
+        // Already migrated, return existing data
+        return await this.getOnboardingData(userId);
+      }
+
+      // Try to get old onboarding data from subcollection
+      const oldOnboardingDoc = await getDoc(
+        doc(db, "users", userId, "onboarding", "data")
+      );
+
+      if (oldOnboardingDoc.exists()) {
+        const oldData = oldOnboardingDoc.data();
+
+        // Create new onboarding document
+        const newOnboardingData: Omit<OnboardingData, "id"> = {
+          userId,
+          goals: oldData.goals || [],
+          accessType: oldData.accessType || "",
+          companyName: oldData.companyName || "",
+          teamSize: oldData.teamSize || "",
+          discoveryMethod: oldData.discoveryMethod || "",
+          companyWebsite: oldData.companyWebsite || "",
+          createdAt: oldData.createdAt || new Date(),
+        };
+
+        const docRef = await addDoc(
+          collection(db, "onboarding"),
+          newOnboardingData
+        );
+        const onboardingId = docRef.id;
+
+        // Update user document with onboarding info ID
+        await setDoc(
+          doc(db, "users", userId),
+          {
+            onboardingInfoId: onboardingId,
+          },
+          { merge: true }
+        );
+
+        return { id: onboardingId, ...newOnboardingData };
+      }
+
+      return null;
+    } catch (error) {
+      console.error("Error migrating onboarding data:", error);
+      return null;
     }
   }
 }

@@ -131,10 +131,11 @@ function DashboardPage() {
         setPosts(postsData);
         setTypes(typesData);
       } else {
-        // Fallback to onboarding data for backward compatibility
-        const onboardingData = await OnboardingService.getOnboardingData(
-          user!.uid
-        );
+        // Try to migrate existing onboarding data and fallback
+        const onboardingData =
+          (await OnboardingService.migrateOnboardingData(user!.uid)) ||
+          (await OnboardingService.getOnboardingData(user!.uid));
+
         if (onboardingData?.companyName) {
           setCompanyName(onboardingData.companyName);
 

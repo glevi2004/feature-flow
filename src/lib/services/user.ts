@@ -8,6 +8,7 @@ export interface UserData {
   photoURL?: string;
   emailVerified?: boolean;
   companies?: string[]; // Array of company IDs the user belongs to
+  onboardingInfoId?: string; // Reference to onboarding data document
   createdAt: Date;
   lastLoginAt: Date;
 }

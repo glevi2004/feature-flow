@@ -23,15 +23,15 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   signInWithGoogle: (
-    onboardingData?: Omit<OnboardingData, "createdAt">
+    onboardingData?: Omit<OnboardingData, "id" | "userId" | "createdAt">
   ) => Promise<UserCredential>;
   signInWithGitHub: (
-    onboardingData?: Omit<OnboardingData, "createdAt">
+    onboardingData?: Omit<OnboardingData, "id" | "userId" | "createdAt">
   ) => Promise<UserCredential>;
   signInWithEmail: (
     email: string,
     password: string,
-    onboardingData?: Omit<OnboardingData, "createdAt">
+    onboardingData?: Omit<OnboardingData, "id" | "userId" | "createdAt">
   ) => Promise<UserCredential>;
   loginWithGoogle: () => Promise<UserCredential>;
   loginWithGitHub: () => Promise<UserCredential>;
@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signInWithGoogle = async (
-    onboardingData?: Omit<OnboardingData, "createdAt">
+    onboardingData?: Omit<OnboardingData, "id" | "userId" | "createdAt">
   ) => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
@@ -122,7 +122,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signInWithGitHub = async (
-    onboardingData?: Omit<OnboardingData, "createdAt">
+    onboardingData?: Omit<OnboardingData, "id" | "userId" | "createdAt">
   ) => {
     try {
       const result = await signInWithPopup(auth, githubProvider);
@@ -179,7 +179,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithEmail = async (
     email: string,
     password: string,
-    onboardingData?: Omit<OnboardingData, "createdAt">
+    onboardingData?: Omit<OnboardingData, "id" | "userId" | "createdAt">
   ) => {
     try {
       const result = await createUserWithEmailAndPassword(
