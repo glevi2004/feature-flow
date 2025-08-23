@@ -25,14 +25,16 @@ import {
   FileText,
   Activity,
 } from "lucide-react";
-import { TagsList } from "@/components/ui/tags-list";
+import { TagsService, FeedbackTag } from "@/lib/services/tags";
 import { useAuth } from "@/contexts/AuthContext";
 import { CompanyService } from "@/lib/services/company";
+import { TagsDropdown } from "@/components/ui/tags-dropdown";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import {
@@ -81,7 +83,6 @@ export function SideNav({ onClose }: SideNavProps) {
   const pathname = usePathname();
   const [companyName, setCompanyName] = useState("");
   const [companyId, setCompanyId] = useState("");
-  const [showTags, setShowTags] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -478,32 +479,24 @@ export function SideNav({ onClose }: SideNavProps) {
 
       {/* Quick Links Panel */}
       <div className="w-56 bg-background border-r border-border py-5 px-4 overflow-y-auto">
-        {showTags ? (
-          <TagsList companyId={companyId} onClose={() => setShowTags(false)} />
-        ) : (
-          <>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold">{quickLinks.title}</h2>
-              <ExternalLink className="h-4 w-4 text-muted-foreground" />
-            </div>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold">{quickLinks.title}</h2>
+          <ExternalLink className="h-4 w-4 text-muted-foreground" />
+        </div>
 
-            <div className="space-y-8">
-              {quickLinks.sections.map((section, sectionIndex) => (
-                <div key={sectionIndex}>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">
-                    {section.title}
-                  </h3>
-                  <div className="space-y-1">
-                    {section.items.map((item, itemIndex) => (
-                      <button
-                        key={itemIndex}
-                        className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
-                        onClick={() => {
-                          if (item.label === "Tags") {
-                            setShowTags(true);
-                          }
-                        }}
-                      >
+        <div className="space-y-8">
+          {quickLinks.sections.map((section, sectionIndex) => (
+            <div key={sectionIndex}>
+              <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">
+                {section.title}
+              </h3>
+              <div className="space-y-1">
+                {section.items.map((item, itemIndex) => (
+                  <div key={itemIndex}>
+                    {item.label === "Tags" ? (
+                      <TagsDropdown companyId={companyId} />
+                    ) : (
+                      <button className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left">
                         <div className="flex items-center gap-3">
                           <item.icon
                             className={`h-4 w-4 ${
@@ -518,13 +511,13 @@ export function SideNav({ onClose }: SideNavProps) {
                           <ChevronRight className="h-4 w-4 text-muted-foreground" />
                         )}
                       </button>
-                    ))}
+                    )}
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </>
-        )}
+          ))}
+        </div>
       </div>
     </div>
   );
