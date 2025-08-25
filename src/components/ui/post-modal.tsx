@@ -429,11 +429,11 @@ export function PostModal({
                   </SelectTrigger>
                   <SelectContent>
                     {loadingTags ? (
-                      <SelectItem value="" disabled>
+                      <SelectItem value="loading" disabled>
                         Loading tags...
                       </SelectItem>
                     ) : tags.length === 0 ? (
-                      <SelectItem value="" disabled>
+                      <SelectItem value="no-tags" disabled>
                         No tags available
                       </SelectItem>
                     ) : (
