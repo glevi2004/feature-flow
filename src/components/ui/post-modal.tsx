@@ -31,6 +31,7 @@ import {
   FeedbackStatus,
 } from "@/lib/services/feedback";
 import { FeedbackService } from "@/lib/services/feedback";
+import { TagsService, FeedbackTag } from "@/lib/services/tags";
 
 interface PostModalProps {
   post: FeedbackPost | null;
@@ -64,6 +65,9 @@ export function PostModal({
   const [loadingComments, setLoadingComments] = useState(false);
   const [submittingComment, setSubmittingComment] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [tags, setTags] = useState<FeedbackTag[]>([]);
+  const [loadingTags, setLoadingTags] = useState(false);
+  const [updatingTags, setUpdatingTags] = useState(false);
 
   // Update currentPost when post prop changes
   useEffect(() => {
@@ -75,6 +79,7 @@ export function PostModal({
   useEffect(() => {
     if (currentPost && isOpen) {
       loadComments();
+      loadTags();
     }
   }, [currentPost, isOpen]);
 
@@ -90,6 +95,18 @@ export function PostModal({
       console.error("Error loading comments:", error);
     } finally {
       setLoadingComments(false);
+    }
+  };
+
+  const loadTags = async () => {
+    try {
+      setLoadingTags(true);
+      const allTags = await TagsService.getAllTags(companyId);
+      setTags(allTags);
+    } catch (error) {
+      console.error("Error loading tags:", error);
+    } finally {
+      setLoadingTags(false);
     }
   };
 
@@ -143,9 +160,32 @@ export function PostModal({
     }
   };
 
+  const handleTagsChange = async (tagIds: string[]) => {
+    if (!currentPost) return;
+
+    try {
+      setUpdatingTags(true);
+      await FeedbackService.updatePostTags(currentPost.id!, tagIds);
+      const updatedPost = { ...currentPost, tags: tagIds };
+      setCurrentPost(updatedPost);
+      onPostUpdate(updatedPost);
+    } catch (error) {
+      console.error("Error updating tags:", error);
+      alert("Failed to update tags");
+    } finally {
+      setUpdatingTags(false);
+    }
+  };
+
   const getTypeColor = (typeName: string) => {
     const type = types.find((t) => t.name === typeName);
     return type?.color || "#6B7280";
+  };
+
+  const getTagNames = (tagIds: string[]) => {
+    return tagIds
+      .map((tagId) => tags.find((tag) => tag.id === tagId)?.name)
+      .filter(Boolean);
   };
 
   const formatRelativeTime = (date: Date) => {
@@ -369,6 +409,93 @@ export function PostModal({
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+
+              {/* Tags */}
+              <div>
+                <Label className="text-sm font-medium">Tags</Label>
+                <Select
+                  value=""
+                  onValueChange={(tagId) => {
+                    const currentTags = currentPost.tags || [];
+                    if (!currentTags.includes(tagId)) {
+                      handleTagsChange([...currentTags, tagId]);
+                    }
+                  }}
+                  disabled={updatingTags || loadingTags}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Add a tag..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {loadingTags ? (
+                      <SelectItem value="" disabled>
+                        Loading tags...
+                      </SelectItem>
+                    ) : tags.length === 0 ? (
+                      <SelectItem value="" disabled>
+                        No tags available
+                      </SelectItem>
+                    ) : (
+                      tags
+                        .filter(
+                          (tag) => !(currentPost.tags || []).includes(tag.id!)
+                        )
+                        .map((tag) => (
+                          <SelectItem key={tag.id} value={tag.id!}>
+                            <div className="flex items-center gap-2">
+                              <div
+                                className="w-3 h-3 rounded-full flex-shrink-0"
+                                style={{ backgroundColor: tag.color }}
+                              />
+                              <span>{tag.name}</span>
+                            </div>
+                          </SelectItem>
+                        ))
+                    )}
+                  </SelectContent>
+                </Select>
+
+                {/* Display current tags */}
+                {(currentPost.tags || []).length > 0 && (
+                  <div className="mt-2 space-y-1">
+                    {getTagNames(currentPost.tags || []).map(
+                      (tagName, index) => {
+                        const tagId = currentPost.tags![index];
+                        const tag = tags.find((t) => t.id === tagId);
+                        return (
+                          <div
+                            key={tagId}
+                            className="flex items-center justify-between p-2 bg-muted rounded-md"
+                          >
+                            <div className="flex items-center gap-2">
+                              <div
+                                className="w-3 h-3 rounded-full flex-shrink-0"
+                                style={{
+                                  backgroundColor: tag?.color || "#6B7280",
+                                }}
+                              />
+                              <span className="text-sm">{tagName}</span>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const updatedTags = (
+                                  currentPost.tags || []
+                                ).filter((id) => id !== tagId);
+                                handleTagsChange(updatedTags);
+                              }}
+                              className="h-6 w-6 p-0"
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        );
+                      }
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Upvotes */}
