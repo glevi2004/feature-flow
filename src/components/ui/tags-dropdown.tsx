@@ -1,16 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Tag as TagIcon, ChevronRight } from "lucide-react";
 import { TagsService, FeedbackTag } from "@/lib/services/tags";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-} from "@/components/ui/dropdown-menu";
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "@/components/ui/collapsible";
 
 interface TagsDropdownProps {
   companyId: string;
@@ -19,6 +16,7 @@ interface TagsDropdownProps {
 export function TagsDropdown({ companyId }: TagsDropdownProps) {
   const [tags, setTags] = useState<FeedbackTag[]>([]);
   const [tagsLoading, setTagsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (companyId) {
@@ -39,59 +37,59 @@ export function TagsDropdown({ companyId }: TagsDropdownProps) {
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+    <Collapsible
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      className="group/collapsible"
+    >
+      <CollapsibleTrigger asChild>
         <button className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left">
           <div className="flex items-center gap-3">
             <TagIcon className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm">Tags</span>
           </div>
-          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-90" />
         </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        side="bottom"
-        align="start"
-        className="w-64 z-50"
-        sideOffset={4}
-        avoidCollisions={true}
-      >
-        <DropdownMenuLabel>Tags</DropdownMenuLabel>
-        {tagsLoading ? (
-          <DropdownMenuItem disabled>
-            <div className="flex items-center justify-center w-full">
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <div className="ml-6 mt-1 space-y-1">
+          {tagsLoading ? (
+            <div className="flex items-center justify-center w-full p-2">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900 dark:border-gray-100"></div>
               <span className="ml-2 text-sm">Loading...</span>
             </div>
-          </DropdownMenuItem>
-        ) : tags.length === 0 ? (
-          <DropdownMenuItem disabled>
-            <span className="text-sm text-muted-foreground">No tags found</span>
-          </DropdownMenuItem>
-        ) : (
-          <>
-            {tags.map((tag) => (
-              <DropdownMenuItem
-                key={tag.id}
-                className="flex items-center gap-2"
-              >
-                <div
-                  className="w-3 h-3 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: tag.color }}
-                />
-                <span className="text-sm flex-1">{tag.name}</span>
-                {!tag.companyId && (
-                  <span className="text-xs text-muted-foreground flex-shrink-0">
-                    Default
-                  </span>
-                )}
-              </DropdownMenuItem>
-            ))}
-          </>
-        )}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>Manage Tags</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          ) : tags.length === 0 ? (
+            <div className="p-2">
+              <span className="text-sm text-muted-foreground">
+                No tags found
+              </span>
+            </div>
+          ) : (
+            <>
+              {tags.map((tag) => (
+                <button
+                  key={tag.id}
+                  className="flex items-center gap-2 w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                >
+                  <div
+                    className="w-3 h-3 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: tag.color }}
+                  />
+                  <span className="text-sm flex-1">{tag.name}</span>
+                  {!tag.companyId && (
+                    <span className="text-xs text-muted-foreground flex-shrink-0">
+                      Default
+                    </span>
+                  )}
+                </button>
+              ))}
+              <button className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left">
+                <span className="text-sm">Manage Tags</span>
+              </button>
+            </>
+          )}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }
