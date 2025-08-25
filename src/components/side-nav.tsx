@@ -28,7 +28,7 @@ import {
 import { TagsService, FeedbackTag } from "@/lib/services/tags";
 import { useAuth } from "@/contexts/AuthContext";
 import { CompanyService } from "@/lib/services/company";
-import { TagsDropdown } from "@/components/ui/tags-dropdown";
+import { DropdownButton } from "@/components/ui/dropdown-button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -82,6 +82,8 @@ export function SideNav({ onClose }: SideNavProps) {
   const pathname = usePathname();
   const [companyName, setCompanyName] = useState("");
   const [companyId, setCompanyId] = useState("");
+  const [tags, setTags] = useState<FeedbackTag[]>([]);
+  const [tagsLoading, setTagsLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -98,10 +100,24 @@ export function SideNav({ onClose }: SideNavProps) {
         if (companyData) {
           setCompanyName(companyData.name);
           setCompanyId(companyId);
+          // Load tags after company data is loaded
+          loadTags(companyId);
         }
       }
     } catch (error) {
       console.error("Error loading company data:", error);
+    }
+  };
+
+  const loadTags = async (companyId: string) => {
+    try {
+      setTagsLoading(true);
+      const allTags = await TagsService.getAllTags(companyId);
+      setTags(allTags);
+    } catch (error) {
+      console.error("Error loading tags:", error);
+    } finally {
+      setTagsLoading(false);
     }
   };
 
@@ -493,7 +509,53 @@ export function SideNav({ onClose }: SideNavProps) {
                 {section.items.map((item, itemIndex) => (
                   <div key={itemIndex}>
                     {item.label === "Tags" ? (
-                      <TagsDropdown companyId={companyId} />
+                      <DropdownButton label="Tags" icon={Tag}>
+                        {tagsLoading ? (
+                          <div className="flex items-center justify-center w-full p-2">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900 dark:border-gray-100"></div>
+                            <span className="ml-2 text-sm">Loading...</span>
+                          </div>
+                        ) : tags.length === 0 ? (
+                          <div className="p-2">
+                            <span className="text-sm text-muted-foreground">
+                              No tags found
+                            </span>
+                          </div>
+                        ) : (
+                          <>
+                            {tags.map((tag) => (
+                              <button
+                                key={tag.id}
+                                className="flex items-center gap-2 w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                              >
+                                <div
+                                  className="w-3 h-3 rounded-full flex-shrink-0"
+                                  style={{ backgroundColor: tag.color }}
+                                />
+                                <span className="text-sm flex-1">
+                                  {tag.name}
+                                </span>
+                                {!tag.companyId && (
+                                  <span className="text-xs text-muted-foreground flex-shrink-0">
+                                    Default
+                                  </span>
+                                )}
+                              </button>
+                            ))}
+                            <button className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left">
+                              <span className="text-sm">Manage Tags</span>
+                            </button>
+                          </>
+                        )}
+                      </DropdownButton>
+                    ) : "hasArrow" in item && item.hasArrow ? (
+                      <DropdownButton label={item.label} icon={item.icon}>
+                        <div className="p-2">
+                          <span className="text-sm text-muted-foreground">
+                            {item.label} content will be implemented
+                          </span>
+                        </div>
+                      </DropdownButton>
                     ) : (
                       <button className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left">
                         <div className="flex items-center gap-3">
@@ -506,9 +568,6 @@ export function SideNav({ onClose }: SideNavProps) {
                           />
                           <span className="text-sm">{item.label}</span>
                         </div>
-                        {"hasArrow" in item && item.hasArrow && (
-                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                        )}
                       </button>
                     )}
                   </div>
