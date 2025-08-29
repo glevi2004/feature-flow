@@ -192,6 +192,7 @@ export default function PublicFeedbackPage() {
         title: title.trim(),
         description: description.trim(),
         types: selectedTypes,
+        tags: [], // Initialize with empty tags array
         status: "Under Review",
       });
 
@@ -374,20 +375,20 @@ export default function PublicFeedbackPage() {
                         <Badge
                           key={type.id}
                           className={`cursor-pointer ${
-                            selectedTypes.includes(type.name)
+                            selectedTypes.includes(type.id!)
                               ? "bg-blue-600 text-white"
                               : "bg-muted hover:bg-muted/80"
                           }`}
                           style={{
-                            backgroundColor: selectedTypes.includes(type.name)
+                            backgroundColor: selectedTypes.includes(type.id!)
                               ? type.color
                               : undefined,
                           }}
                           onClick={() => {
                             setSelectedTypes((prev) =>
-                              prev.includes(type.name)
-                                ? prev.filter((t) => t !== type.name)
-                                : [...prev, type.name]
+                              prev.includes(type.id!)
+                                ? prev.filter((t) => t !== type.id)
+                                : [...prev, type.id!]
                             );
                           }}
                         >
@@ -462,14 +463,15 @@ export default function PublicFeedbackPage() {
                       {post.types.length > 0 && (
                         <div className="mb-2 flex flex-wrap gap-1">
                           {post.types.map((type) => {
-                            const typeData = types.find((t) => t.name === type);
+                            const typeData = types.find((t) => t.id === type);
                             return (
                               <Badge
                                 key={type}
                                 className="px-2 py-0.5 rounded-full text-xs font-medium"
-                                style={{ backgroundColor: getTypeColor(type) }}
+                                style={{ backgroundColor: typeData?.color }}
                               >
-                                {typeData?.emoji} {type}
+                                {typeData?.emoji}{" "}
+                                {typeData?.name || "Unknown Type"}
                               </Badge>
                             );
                           })}
