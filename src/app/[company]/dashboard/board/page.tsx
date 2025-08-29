@@ -274,9 +274,11 @@ function BoardPage() {
                       <column.icon className="h-3 w-3 mr-1" />
                       {column.title}
                     </Badge>
-                    <Badge variant="outline" className="text-xs">
-                      {columnPosts.length}
-                    </Badge>
+                    {columnPosts.length > 0 && (
+                      <Badge variant="outline" className="text-xs">
+                        {columnPosts.length}
+                      </Badge>
+                    )}
                   </div>
                 </div>
 

@@ -239,19 +239,20 @@ export function PostModal({
             {currentPost.types.length > 0 && (
               <div className="mb-6">
                 <div className="flex flex-wrap gap-2">
-                  {currentPost.types.map((type) => (
-                    <Badge
-                      key={type}
-                      className="px-3 py-1 rounded-full text-sm font-medium"
-                      style={{
-                        backgroundColor: types.find((t) => t.id === type)
-                          ?.color,
-                      }}
-                    >
-                      <Lightbulb className="h-3 w-3 mr-1" />
-                      {types.find((t) => t.id === type)?.name || "Unknown Type"}
-                    </Badge>
-                  ))}
+                  {currentPost.types.map((type) => {
+                    const typeData = types.find((t) => t.id === type);
+                    return (
+                      <Badge
+                        key={type}
+                        className="px-3 py-1 rounded-full text-sm font-medium"
+                        style={{
+                          backgroundColor: typeData?.color,
+                        }}
+                      >
+                        {typeData?.emoji} {typeData?.name || "Unknown Type"}
+                      </Badge>
+                    );
+                  })}
                 </div>
               </div>
             )}
