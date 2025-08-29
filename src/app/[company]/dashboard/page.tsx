@@ -32,6 +32,11 @@ import {
   Radio,
   Check,
   Plus,
+  Eye,
+  CheckCircle,
+  XCircle,
+  Calendar,
+  CheckSquare,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { OnboardingService } from "@/lib/services/onboarding";
@@ -211,6 +216,23 @@ function DashboardPage() {
       (option) => option.value === status
     );
     return statusOption?.color || "bg-gray-100 text-gray-800";
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "Under Review":
+        return Eye;
+      case "Accepted":
+        return CheckCircle;
+      case "Rejected":
+        return XCircle;
+      case "Planned":
+        return Calendar;
+      case "Completed":
+        return CheckSquare;
+      default:
+        return Eye;
+    }
   };
 
   const handleCreateType = async (e: React.FormEvent) => {
@@ -480,7 +502,17 @@ function DashboardPage() {
                         )} hover:opacity-80 hover:scale-105`}
                         disabled={updatingStatus === post.id}
                       >
-                        {post.status || "Under Review"}
+                        {(() => {
+                          const StatusIcon = getStatusIcon(
+                            post.status || "Under Review"
+                          );
+                          return (
+                            <>
+                              <StatusIcon className="h-3 w-3 mr-1.5" />
+                              {post.status || "Under Review"}
+                            </>
+                          );
+                        })()}
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end">
