@@ -14,6 +14,7 @@ interface DropdownButtonProps {
   children: React.ReactNode;
   defaultOpen?: boolean;
   className?: string;
+  onOpen?: () => void;
 }
 
 export function DropdownButton({
@@ -22,13 +23,21 @@ export function DropdownButton({
   children,
   defaultOpen = false,
   className = "",
+  onOpen,
 }: DropdownButtonProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (open && onOpen) {
+      onOpen();
+    }
+  };
 
   return (
     <Collapsible
       open={isOpen}
-      onOpenChange={setIsOpen}
+      onOpenChange={handleOpenChange}
       className={`group/collapsible ${className}`}
     >
       <CollapsibleTrigger asChild>

@@ -84,7 +84,6 @@ export function SideNav({ onClose }: SideNavProps) {
   const [companyName, setCompanyName] = useState("");
   const [companyId, setCompanyId] = useState("");
   const [tags, setTags] = useState<FeedbackTag[]>([]);
-  const [tagsLoading, setTagsLoading] = useState(false);
   const [types, setTypes] = useState<FeedbackType[]>([]);
   const [typesLoading, setTypesLoading] = useState(false);
 
@@ -115,15 +114,19 @@ export function SideNav({ onClose }: SideNavProps) {
 
   const loadTags = async (companyId: string) => {
     try {
-      setTagsLoading(true);
       const allTags = await TagsService.getAllTags(companyId);
       setTags(allTags);
     } catch (error) {
       console.error("Error loading tags:", error);
-    } finally {
-      setTagsLoading(false);
     }
   };
+
+  // Add effect to reload tags when the dropdown is opened
+  useEffect(() => {
+    if (companyId && isActive("/settings/tags")) {
+      loadTags(companyId);
+    }
+  }, [companyId, pathname]);
 
   const loadTypes = async (companyId: string) => {
     try {
@@ -516,13 +519,12 @@ export function SideNav({ onClose }: SideNavProps) {
                 {section.items.map((item, itemIndex) => (
                   <div key={itemIndex}>
                     {item.label === "Tags" && !isActive("/settings") ? (
-                      <DropdownButton label="Tags" icon={Tag}>
-                        {tagsLoading ? (
-                          <div className="flex items-center justify-center w-full p-2">
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900 dark:border-gray-100"></div>
-                            <span className="ml-2 text-sm">Loading...</span>
-                          </div>
-                        ) : tags.length === 0 ? (
+                      <DropdownButton
+                        label="Tags"
+                        icon={Tag}
+                        onOpen={() => companyId && loadTags(companyId)}
+                      >
+                        {tags.length === 0 ? (
                           <div className="p-2">
                             <span className="text-sm text-muted-foreground">
                               No tags found
