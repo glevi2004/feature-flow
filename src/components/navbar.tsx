@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 // import { ModeToggle } from "@/components/mode-toggle";
-import { Zap, Menu, X } from "lucide-react";
+import { Package, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { app_name } from "@/lib/constants";
 
@@ -16,7 +16,7 @@ export function Navbar() {
         <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-3 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-              <Zap className="w-5 h-5 text-white" />
+              <Package className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-semibold text-white">{app_name}</span>
           </div>

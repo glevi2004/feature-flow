@@ -1,7 +1,7 @@
 "use client";
 
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Zap } from "lucide-react";
+import { Package } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
 import { app_name } from "@/lib/constants";
 
@@ -12,7 +12,7 @@ export function Header() {
         {/* Left side - Logo/Brand */}
         <div className="flex items-center">
           <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
-            <Zap className="w-5 h-5 text-white" />
+            <Package className="w-5 h-5 text-white" />
           </div>
           <span className="text-lg font-semibold">{app_name}</span>
         </div>

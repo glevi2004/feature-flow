@@ -7,7 +7,7 @@ import {
   Users,
   BarChart3,
   Target,
-  Zap,
+  Package,
   CheckCircle,
   ArrowRight,
 } from "lucide-react";
@@ -188,7 +188,7 @@ export default function Home() {
             {/* Integration */}
             <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-8 shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
               <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900 rounded-lg flex items-center justify-center mb-6">
-                <Zap className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                <Package className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
               </div>
               <h3 className="text-xl font-semibold mb-4">
                 Seamless Integrations
@@ -319,7 +319,7 @@ export default function Home() {
               <div>
                 <div className="flex items-center space-x-2 mb-4">
                   <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                    <Zap className="w-5 h-5 text-white" />
+                    <Package className="w-5 h-5 text-white" />
                   </div>
                   <span className="text-xl font-bold">{app_name}</span>
                 </div>

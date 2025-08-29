@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Zap, ArrowRight } from "lucide-react";
+import { Package, ArrowRight } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -625,7 +625,7 @@ export default function RegisterPage() {
         <CardHeader className="text-center">
           <div className="flex items-center justify-center mb-4">
             <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center mr-3">
-              <Zap className="w-6 h-6 text-white" />
+              <Package className="w-6 h-6 text-white" />
             </div>
             <span className="text-xl font-bold">{app_name}</span>
           </div>
