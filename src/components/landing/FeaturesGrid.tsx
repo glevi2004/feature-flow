@@ -26,9 +26,9 @@ export function FeaturesGrid() {
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         {/* Collection */}
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-8 shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-          <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-6">
-            <MessageSquare className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+        <div className="bg-white/10 border border-white/20 rounded-xl p-8 shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+          <div className="w-12 h-12 bg-blue-900 rounded-lg flex items-center justify-center mb-6">
+            <MessageSquare className="w-6 h-6 text-blue-400" />
           </div>
           <h3 className="text-xl font-semibold mb-4 text-white">
             Smart Feedback Collection
@@ -54,18 +54,18 @@ export function FeaturesGrid() {
         </div>
 
         {/* Engagement */}
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-8 shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-          <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-6">
-            <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+        <div className="bg-white/10 border border-white/20 rounded-xl p-8 shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+          <div className="w-12 h-12 bg-purple-900 rounded-lg flex items-center justify-center mb-6">
+            <Users className="w-6 h-6 text-purple-400" />
           </div>
           <h3 className="text-xl font-semibold mb-4 text-white">
             User Engagement & Enrichment
           </h3>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
+          <p className="text-gray-300 mb-4">
             Foster community engagement with upvoting, commenting, and follow-up
             questions to surface real value.
           </p>
-          <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+          <ul className="space-y-2 text-sm text-gray-300">
             <li className="flex items-center">
               <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
               Upvote and comment system
@@ -82,16 +82,18 @@ export function FeaturesGrid() {
         </div>
 
         {/* Segmentation */}
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-8 shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-          <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-6">
-            <BarChart3 className="w-6 h-6 text-green-600 dark:text-green-400" />
+        <div className="bg-white/10 border border-white/20 rounded-xl p-8 shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+          <div className="w-12 h-12 bg-green-900 rounded-lg flex items-center justify-center mb-6">
+            <BarChart3 className="w-6 h-6 text-green-400" />
           </div>
-          <h3 className="text-xl font-semibold mb-4">Smart Segmentation</h3>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
+          <h3 className="text-xl font-semibold mb-4 text-white">
+            Smart Segmentation
+          </h3>
+          <p className="text-gray-300 mb-4">
             Filter and segment feedback by revenue contribution, customer
             segment, and company size.
           </p>
-          <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+          <ul className="space-y-2 text-sm text-gray-300">
             <li className="flex items-center">
               <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
               Revenue-based prioritization
@@ -108,18 +110,18 @@ export function FeaturesGrid() {
         </div>
 
         {/* Prioritization */}
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-8 shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-          <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mb-6">
-            <Target className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+        <div className="bg-white/10 border border-white/20 rounded-xl p-8 shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+          <div className="w-12 h-12 bg-orange-900 rounded-lg flex items-center justify-center mb-6">
+            <Target className="w-6 h-6 text-orange-400" />
           </div>
-          <h3 className="text-xl font-semibold mb-4">
+          <h3 className="text-xl font-semibold mb-4 text-white">
             Advanced Prioritization
           </h3>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
+          <p className="text-gray-300 mb-4">
             Custom scoring frameworks and visualization tools to prioritize what
             matters most.
           </p>
-          <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+          <ul className="space-y-2 text-sm text-gray-300">
             <li className="flex items-center">
               <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
               Value vs effort scoring
@@ -136,16 +138,18 @@ export function FeaturesGrid() {
         </div>
 
         {/* Integration */}
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-8 shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-          <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900 rounded-lg flex items-center justify-center mb-6">
-            <Package className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+        <div className="bg-white/10 border border-white/20 rounded-xl p-8 shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+          <div className="w-12 h-12 bg-indigo-900 rounded-lg flex items-center justify-center mb-6">
+            <Package className="w-6 h-6 text-indigo-400" />
           </div>
-          <h3 className="text-xl font-semibold mb-4">Seamless Integrations</h3>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
+          <h3 className="text-xl font-semibold mb-4 text-white">
+            Seamless Integrations
+          </h3>
+          <p className="text-gray-300 mb-4">
             Integrate with your existing workflow tools like Jira, Linear,
             Slack, and more.
           </p>
-          <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+          <ul className="space-y-2 text-sm text-gray-300">
             <li className="flex items-center">
               <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
               Jira & Linear integration
@@ -162,16 +166,18 @@ export function FeaturesGrid() {
         </div>
 
         {/* Feedback Loop */}
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-8 shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
-          <div className="w-12 h-12 bg-pink-100 dark:bg-pink-900 rounded-lg flex items-center justify-center mb-6">
-            <ArrowRight className="w-6 h-6 text-pink-600 dark:text-pink-400" />
+        <div className="bg-white/10 border border-white/20 rounded-xl p-8 shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+          <div className="w-12 h-12 bg-pink-900 rounded-lg flex items-center justify-center mb-6">
+            <ArrowRight className="w-6 h-6 text-pink-400" />
           </div>
-          <h3 className="text-xl font-semibold mb-4">Complete Feedback Loop</h3>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
+          <h3 className="text-xl font-semibold mb-4 text-white">
+            Complete Feedback Loop
+          </h3>
+          <p className="text-gray-300 mb-4">
             Close the loop with automated updates, changelogs, and roadmap
             sharing.
           </p>
-          <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+          <ul className="space-y-2 text-sm text-gray-300">
             <li className="flex items-center">
               <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
               Automated notifications

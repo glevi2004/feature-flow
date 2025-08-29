@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-// import { ModeToggle } from "@/components/mode-toggle";
 import { Package, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { app_name } from "@/lib/constants";
@@ -53,7 +52,6 @@ export function Navbar() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden lg:flex items-center space-x-4">
-            {/* <ModeToggle /> */}
             <Link href="/login">
               <Button
                 variant="ghost"
@@ -71,7 +69,6 @@ export function Navbar() {
 
           {/* Mobile Menu Button */}
           <div className="lg:hidden flex items-center space-x-2">
-            {/* <ModeToggle /> */}
             <Button
               variant="ghost"
               size="icon"
