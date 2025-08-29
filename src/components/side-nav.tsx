@@ -232,6 +232,14 @@ export function SideNav({ onClose }: SideNavProps) {
           ],
         },
         {
+          title: "Dashboard & Boards",
+          items: [
+            { label: "Statuses", icon: Radio },
+            { label: "Types", icon: FileText },
+            { label: "Tags", icon: Tag },
+          ],
+        },
+        {
           title: "Integrations",
           items: [
             { label: "Slack", icon: Settings },
