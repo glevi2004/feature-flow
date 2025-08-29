@@ -559,9 +559,14 @@ export function SideNav({ onClose }: SideNavProps) {
                                 )}
                               </button>
                             ))}
-                            <button className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left">
+                            <Link
+                              href={`/${encodeURIComponent(
+                                companyName || ""
+                              )}/dashboard/settings/tags`}
+                              className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                            >
                               <span className="text-sm">Manage Tags</span>
-                            </button>
+                            </Link>
                           </>
                         )}
                       </DropdownButton>
@@ -593,9 +598,14 @@ export function SideNav({ onClose }: SideNavProps) {
                                 </span>
                               </button>
                             ))}
-                            <button className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left">
+                            <Link
+                              href={`/${encodeURIComponent(
+                                companyName || ""
+                              )}/dashboard/settings/types`}
+                              className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                            >
                               <span className="text-sm">Manage Types</span>
-                            </button>
+                            </Link>
                           </>
                         )}
                       </DropdownButton>
