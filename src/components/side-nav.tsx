@@ -85,7 +85,6 @@ export function SideNav({ onClose }: SideNavProps) {
   const [companyId, setCompanyId] = useState("");
   const [tags, setTags] = useState<FeedbackTag[]>([]);
   const [types, setTypes] = useState<FeedbackType[]>([]);
-  const [typesLoading, setTypesLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -130,13 +129,10 @@ export function SideNav({ onClose }: SideNavProps) {
 
   const loadTypes = async (companyId: string) => {
     try {
-      setTypesLoading(true);
       const allTypes = await FeedbackService.getCompanyTypes(companyId);
       setTypes(allTypes);
     } catch (error) {
       console.error("Error loading types:", error);
-    } finally {
-      setTypesLoading(false);
     }
   };
 
@@ -558,13 +554,12 @@ export function SideNav({ onClose }: SideNavProps) {
                         )}
                       </DropdownButton>
                     ) : item.label === "Types" && !isActive("/settings") ? (
-                      <DropdownButton label="Types" icon={FileText}>
-                        {typesLoading ? (
-                          <div className="flex items-center justify-center w-full p-2">
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900 dark:border-gray-100"></div>
-                            <span className="ml-2 text-sm">Loading...</span>
-                          </div>
-                        ) : types.length === 0 ? (
+                      <DropdownButton
+                        label="Types"
+                        icon={FileText}
+                        onOpen={() => companyId && loadTypes(companyId)}
+                      >
+                        {types.length === 0 ? (
                           <div className="p-2">
                             <span className="text-sm text-muted-foreground">
                               No types found
