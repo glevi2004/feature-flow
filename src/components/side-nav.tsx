@@ -26,6 +26,7 @@ import {
   Activity,
 } from "lucide-react";
 import { TagsService, FeedbackTag } from "@/lib/services/tags";
+import { FeedbackService, FeedbackType } from "@/lib/services/feedback";
 import { useAuth } from "@/contexts/AuthContext";
 import { CompanyService } from "@/lib/services/company";
 import { DropdownButton } from "@/components/ui/dropdown-button";
@@ -84,6 +85,8 @@ export function SideNav({ onClose }: SideNavProps) {
   const [companyId, setCompanyId] = useState("");
   const [tags, setTags] = useState<FeedbackTag[]>([]);
   const [tagsLoading, setTagsLoading] = useState(false);
+  const [types, setTypes] = useState<FeedbackType[]>([]);
+  const [typesLoading, setTypesLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -100,8 +103,9 @@ export function SideNav({ onClose }: SideNavProps) {
         if (companyData) {
           setCompanyName(companyData.name);
           setCompanyId(companyId);
-          // Load tags after company data is loaded
+          // Load tags and types after company data is loaded
           loadTags(companyId);
+          loadTypes(companyId);
         }
       }
     } catch (error) {
@@ -118,6 +122,18 @@ export function SideNav({ onClose }: SideNavProps) {
       console.error("Error loading tags:", error);
     } finally {
       setTagsLoading(false);
+    }
+  };
+
+  const loadTypes = async (companyId: string) => {
+    try {
+      setTypesLoading(true);
+      const allTypes = await FeedbackService.getCompanyTypes(companyId);
+      setTypes(allTypes);
+    } catch (error) {
+      console.error("Error loading types:", error);
+    } finally {
+      setTypesLoading(false);
     }
   };
 
@@ -145,6 +161,7 @@ export function SideNav({ onClose }: SideNavProps) {
           items: [
             { label: "Boards", icon: Kanban, hasArrow: true },
             { label: "Tags", icon: Tag, hasArrow: true },
+            { label: "Types", icon: FileText, hasArrow: true },
           ],
         },
         {
@@ -544,6 +561,40 @@ export function SideNav({ onClose }: SideNavProps) {
                             ))}
                             <button className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left">
                               <span className="text-sm">Manage Tags</span>
+                            </button>
+                          </>
+                        )}
+                      </DropdownButton>
+                    ) : item.label === "Types" ? (
+                      <DropdownButton label="Types" icon={FileText}>
+                        {typesLoading ? (
+                          <div className="flex items-center justify-center w-full p-2">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900 dark:border-gray-100"></div>
+                            <span className="ml-2 text-sm">Loading...</span>
+                          </div>
+                        ) : types.length === 0 ? (
+                          <div className="p-2">
+                            <span className="text-sm text-muted-foreground">
+                              No types found
+                            </span>
+                          </div>
+                        ) : (
+                          <>
+                            {types.map((type) => (
+                              <button
+                                key={type.id}
+                                className="flex items-center gap-2 w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                              >
+                                <span className="text-sm flex-shrink-0">
+                                  {type.emoji}
+                                </span>
+                                <span className="text-sm flex-1">
+                                  {type.name}
+                                </span>
+                              </button>
+                            ))}
+                            <button className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left">
+                              <span className="text-sm">Manage Types</span>
                             </button>
                           </>
                         )}
