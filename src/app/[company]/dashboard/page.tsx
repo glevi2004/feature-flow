@@ -265,8 +265,13 @@ function DashboardPage() {
     <div className="p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-8 mb-6">
-          <h1 className="text-2xl font-bold">Posts ({posts.length})</h1>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold">Posts ({posts.length})</h1>
+            <p className="text-muted-foreground">
+              Manage your feedback and feature requests
+            </p>
+          </div>
           <div className="flex items-center gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
