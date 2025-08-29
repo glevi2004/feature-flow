@@ -297,9 +297,32 @@ export class FeedbackService {
     }
   }
 
-  // Delete a type
-  static async deleteType(typeId: string) {
+  // Delete a type and remove its references from posts
+  static async deleteType(typeId: string, companyId: string) {
     try {
+      // First, get all posts that reference this type
+      const postsQuery = query(
+        collection(db, "feedback_posts"),
+        where("companyId", "==", companyId),
+        where("types", "array-contains", typeId)
+      );
+
+      const postsSnapshot = await getDocs(postsQuery);
+
+      // Remove the type from all posts that reference it
+      const updatePromises = postsSnapshot.docs.map(async (postDoc) => {
+        const postRef = doc(db, "feedback_posts", postDoc.id);
+        const postData = postDoc.data();
+        await updateDoc(postRef, {
+          types: postData.types.filter((type: string) => type !== typeId),
+          updatedAt: serverTimestamp(),
+        });
+      });
+
+      // Wait for all updates to complete
+      await Promise.all(updatePromises);
+
+      // Finally, delete the type
       await deleteDoc(doc(db, "feedback_types", typeId));
     } catch (error) {
       console.error("Error deleting type:", error);

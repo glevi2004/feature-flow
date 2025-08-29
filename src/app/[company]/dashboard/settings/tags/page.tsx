@@ -177,7 +177,7 @@ export default function TagsSettingsPage() {
   const handleDeleteTag = async (tagId: string) => {
     try {
       // Delete the tag using the service
-      await TagsService.deleteTag(tagId);
+      await TagsService.deleteTag(tagId, companyId);
 
       // Remove from local state
       setTags(tags.filter((tag) => tag.id !== tagId));

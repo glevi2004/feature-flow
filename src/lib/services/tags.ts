@@ -124,9 +124,32 @@ export class TagsService {
     }
   }
 
-  // Delete a tag
-  static async deleteTag(tagId: string) {
+  // Delete a tag and remove its references from posts
+  static async deleteTag(tagId: string, companyId: string) {
     try {
+      // First, get all posts that reference this tag
+      const postsQuery = query(
+        collection(db, "feedback_posts"),
+        where("companyId", "==", companyId),
+        where("tags", "array-contains", tagId)
+      );
+
+      const postsSnapshot = await getDocs(postsQuery);
+
+      // Remove the tag from all posts that reference it
+      const updatePromises = postsSnapshot.docs.map(async (postDoc) => {
+        const postRef = doc(db, "feedback_posts", postDoc.id);
+        const postData = postDoc.data();
+        await updateDoc(postRef, {
+          tags: postData.tags.filter((tag: string) => tag !== tagId),
+          updatedAt: serverTimestamp(),
+        });
+      });
+
+      // Wait for all updates to complete
+      await Promise.all(updatePromises);
+
+      // Finally, delete the tag
       await deleteDoc(doc(db, "feedback_tags", tagId));
     } catch (error) {
       console.error("Error deleting tag:", error);

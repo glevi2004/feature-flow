@@ -222,7 +222,7 @@ export default function TypesSettingsPage() {
   const handleDeleteType = async (typeId: string) => {
     try {
       // Delete the type using the service
-      await FeedbackService.deleteType(typeId);
+      await FeedbackService.deleteType(typeId, companyId);
 
       // Remove from local state
       setTypes(types.filter((type) => type.id !== typeId));

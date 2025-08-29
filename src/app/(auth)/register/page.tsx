@@ -342,26 +342,32 @@ export default function RegisterPage() {
               <div>
                 <Label htmlFor="companyName" className="text-sm font-medium">
                   Company Name
+                  <span className="text-gray-500 ml-1 font-normal">
+                    (lowercase only)
+                  </span>
                 </Label>
                 <Input
                   id="companyName"
                   type="text"
-                  placeholder="Enter your company name"
+                  placeholder="enter your company name in lowercase"
                   value={formData.companyName}
                   onChange={(e) => {
-                    updateFormData("companyName", e.target.value);
+                    const lowercaseValue = e.target.value.toLowerCase();
+                    updateFormData("companyName", lowercaseValue);
                     // Clear previous timeout
                     if (companyNameTimeout) {
                       clearTimeout(companyNameTimeout);
                     }
                     // Check availability after a delay
                     const timeoutId = setTimeout(() => {
-                      checkCompanyNameAvailability(e.target.value);
+                      checkCompanyNameAvailability(lowercaseValue);
                     }, 500);
                     setCompanyNameTimeout(timeoutId);
                   }}
                   onBlur={() =>
-                    checkCompanyNameAvailability(formData.companyName)
+                    checkCompanyNameAvailability(
+                      formData.companyName.toLowerCase()
+                    )
                   }
                   className={`mt-1 ${companyNameError ? "border-red-500" : ""}`}
                 />
