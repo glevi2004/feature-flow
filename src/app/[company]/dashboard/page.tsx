@@ -42,6 +42,7 @@ import {
   FeedbackType,
   FeedbackStatus,
 } from "@/lib/services/feedback";
+import { TagsService, FeedbackTag } from "@/lib/services/tags";
 
 // Status options
 const STATUS_OPTIONS = [
@@ -81,6 +82,7 @@ function DashboardPage() {
   const { user } = useAuth();
   const [posts, setPosts] = useState<FeedbackPost[]>([]);
   const [types, setTypes] = useState<FeedbackType[]>([]);
+  const [tags, setTags] = useState<FeedbackTag[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyName, setCompanyName] = useState("");
   const [companyId, setCompanyId] = useState("");
@@ -124,14 +126,16 @@ function DashboardPage() {
         setCompanyName(companyData.name);
         setCompanyId(companyId);
 
-        // Load posts and types using company ID
-        const [postsData, typesData] = await Promise.all([
+        // Load posts, types, and tags using company ID
+        const [postsData, typesData, tagsData] = await Promise.all([
           FeedbackService.getCompanyPosts(companyId),
           FeedbackService.getCompanyTypes(companyId),
+          TagsService.getAllTags(companyId),
         ]);
 
         setPosts(postsData);
         setTypes(typesData);
+        setTags(tagsData);
       } else {
         // No companies found for user
         console.log("No companies found for user");
@@ -146,6 +150,24 @@ function DashboardPage() {
   const getTypeColor = (typeName: string) => {
     const type = types.find((t) => t.name === typeName);
     return type?.color || "#6B7280";
+  };
+
+  const getTagColor = (tagId: string) => {
+    const tag = tags.find((t) => t.id === tagId);
+    return tag?.color || "#6B7280";
+  };
+
+  const getTagName = (tagId: string) => {
+    const tag = tags.find((t) => t.id === tagId);
+    if (!tag) {
+      console.log(
+        "Tag not found:",
+        tagId,
+        "Available tags:",
+        tags.map((t) => ({ id: t.id, name: t.name }))
+      );
+    }
+    return tag?.name || "Unknown Tag";
   };
 
   const formatDate = (date: Date) => {
@@ -223,10 +245,21 @@ function DashboardPage() {
     setShowPostModal(true);
   };
 
-  const handlePostUpdate = (updatedPost: FeedbackPost) => {
+  const reloadTags = async () => {
+    try {
+      const tagsData = await TagsService.getAllTags(companyId);
+      setTags(tagsData);
+    } catch (error) {
+      console.error("Error reloading tags:", error);
+    }
+  };
+
+  const handlePostUpdate = async (updatedPost: FeedbackPost) => {
     setPosts(
       posts.map((post) => (post.id === updatedPost.id ? updatedPost : post))
     );
+    // Reload tags to ensure we have the latest tag data
+    await reloadTags();
   };
 
   if (loading) {
@@ -391,13 +424,38 @@ function DashboardPage() {
                           : "Recently"}
                       </span>
                       {post.types.length > 0 && (
-                        <Badge
-                          variant="outline"
-                          className="flex items-center gap-1 px-2 py-0.5 text-xs"
-                        >
-                          <Lightbulb className="h-3 w-3" />
-                          {post.types[0]}
-                        </Badge>
+                        <div className="flex flex-wrap gap-1">
+                          {post.types.map((type) => {
+                            const typeData = types.find((t) => t.name === type);
+                            return (
+                              <Badge
+                                key={type}
+                                className="px-2 py-0.5 rounded-full text-xs font-medium"
+                                style={{ backgroundColor: getTypeColor(type) }}
+                              >
+                                {typeData?.emoji} {type}
+                              </Badge>
+                            );
+                          })}
+                        </div>
+                      )}
+                      {post.tags && post.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {post.tags.map((tagId) => (
+                            <Badge
+                              key={tagId}
+                              variant="outline"
+                              className="px-2 py-0.5 rounded-full text-xs font-medium"
+                              style={{
+                                borderColor: getTagColor(tagId) + "40", // 25% opacity
+                                color: getTagColor(tagId) + "CC", // 80% opacity
+                                backgroundColor: getTagColor(tagId) + "10", // 6% opacity background
+                              }}
+                            >
+                              {getTagName(tagId)}
+                            </Badge>
+                          ))}
+                        </div>
                       )}
                     </div>
                   </div>
