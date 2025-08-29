@@ -163,13 +163,6 @@ export function SideNav({ onClose }: SideNavProps) {
             { label: "Types", icon: FileText, hasArrow: true },
           ],
         },
-        {
-          title: "More",
-          items: [
-            { label: "AI Tools", icon: Sparkles, hasArrow: true },
-            { label: "Analytics", icon: BarChart3 },
-          ],
-        },
       ],
     },
     board: {
