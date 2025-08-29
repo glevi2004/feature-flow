@@ -297,18 +297,17 @@ function BoardPage() {
                         {post.types.length > 0 && (
                           <div className="mb-2 flex flex-wrap gap-1">
                             {post.types.slice(0, 2).map((type) => {
-                              const typeData = types.find(
-                                (t) => t.name === type
-                              );
+                              const typeData = types.find((t) => t.id === type);
                               return (
                                 <Badge
                                   key={type}
                                   className="px-2 py-0.5 rounded-full text-xs font-medium"
                                   style={{
-                                    backgroundColor: getTypeColor(type),
+                                    backgroundColor: typeData?.color,
                                   }}
                                 >
-                                  {typeData?.emoji} {type}
+                                  {typeData?.emoji}{" "}
+                                  {typeData?.name || "Unknown Type"}
                                 </Badge>
                               );
                             })}
