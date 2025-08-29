@@ -525,7 +525,7 @@ export function SideNav({ onClose }: SideNavProps) {
               <div className="space-y-1">
                 {section.items.map((item, itemIndex) => (
                   <div key={itemIndex}>
-                    {item.label === "Tags" ? (
+                    {item.label === "Tags" && !isActive("/settings") ? (
                       <DropdownButton label="Tags" icon={Tag}>
                         {tagsLoading ? (
                           <div className="flex items-center justify-center w-full p-2">
@@ -565,7 +565,7 @@ export function SideNav({ onClose }: SideNavProps) {
                           </>
                         )}
                       </DropdownButton>
-                    ) : item.label === "Types" ? (
+                    ) : item.label === "Types" && !isActive("/settings") ? (
                       <DropdownButton label="Types" icon={FileText}>
                         {typesLoading ? (
                           <div className="flex items-center justify-center w-full p-2">
@@ -599,6 +599,30 @@ export function SideNav({ onClose }: SideNavProps) {
                           </>
                         )}
                       </DropdownButton>
+                    ) : item.label === "Tags" && isActive("/settings") ? (
+                      <Link
+                        href={`/${encodeURIComponent(
+                          companyName || ""
+                        )}/dashboard/settings/tags`}
+                        className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                      >
+                        <div className="flex items-center gap-3">
+                          <item.icon className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-sm">{item.label}</span>
+                        </div>
+                      </Link>
+                    ) : item.label === "Types" && isActive("/settings") ? (
+                      <Link
+                        href={`/${encodeURIComponent(
+                          companyName || ""
+                        )}/dashboard/settings/types`}
+                        className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                      >
+                        <div className="flex items-center gap-3">
+                          <item.icon className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-sm">{item.label}</span>
+                        </div>
+                      </Link>
                     ) : "hasArrow" in item && item.hasArrow ? (
                       <DropdownButton label={item.label} icon={item.icon}>
                         <div className="p-2">
