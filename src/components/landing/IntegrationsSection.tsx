@@ -7,7 +7,7 @@ export function IntegrationsSection() {
       className="container mx-auto px-4 py-20 scroll-mt-20"
     >
       <div className="text-center mb-16">
-        <h2 className="text-4xl font-bold mb-4">
+        <h2 className="text-4xl font-bold mb-4 text-white">
           Integrate with Your Workflow
         </h2>
         <p className="text-xl text-gray-300 max-w-2xl mx-auto">
