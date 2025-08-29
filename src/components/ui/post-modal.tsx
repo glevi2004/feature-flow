@@ -243,10 +243,13 @@ export function PostModal({
                     <Badge
                       key={type}
                       className="px-3 py-1 rounded-full text-sm font-medium"
-                      style={{ backgroundColor: getTypeColor(type) }}
+                      style={{
+                        backgroundColor: types.find((t) => t.id === type)
+                          ?.color,
+                      }}
                     >
                       <Lightbulb className="h-3 w-3 mr-1" />
-                      {type}
+                      {types.find((t) => t.id === type)?.name || "Unknown Type"}
                     </Badge>
                   ))}
                 </div>
