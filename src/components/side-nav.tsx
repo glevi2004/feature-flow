@@ -159,7 +159,6 @@ export function SideNav({ onClose }: SideNavProps) {
         {
           title: "Quick Filters",
           items: [
-            { label: "Boards", icon: Kanban, hasArrow: true },
             { label: "Tags", icon: Tag, hasArrow: true },
             { label: "Types", icon: FileText, hasArrow: true },
           ],
