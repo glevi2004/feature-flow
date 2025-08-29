@@ -169,16 +169,6 @@ export function SideNav({ onClose }: SideNavProps) {
       title: "Board",
       sections: [
         {
-          title: "Statuses",
-          items: [
-            { label: "Under Review", icon: Radio, color: "text-gray-400" },
-            { label: "Planned", icon: Circle, color: "text-purple-400" },
-            { label: "Active", icon: Activity, color: "text-blue-400" },
-            { label: "Done", icon: CheckCircle, color: "text-green-400" },
-            { label: "Closed", icon: XCircle, color: "text-red-400" },
-          ],
-        },
-        {
           title: "Quick Filters",
           items: [
             { label: "My Tasks", icon: User, hasArrow: true },
@@ -552,7 +542,7 @@ export function SideNav({ onClose }: SideNavProps) {
                                 <span className="text-sm flex-1">
                                   {tag.name}
                                 </span>
-                                {!tag.companyId && (
+                                {tag.isDefault && (
                                   <span className="text-xs text-muted-foreground flex-shrink-0">
                                     Default
                                   </span>

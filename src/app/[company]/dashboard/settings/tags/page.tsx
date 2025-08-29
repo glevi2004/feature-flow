@@ -1,32 +1,455 @@
 "use client";
 
-import { Tags } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Tags, Plus, Edit2, Trash2, Lock, Unlock, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { TagsService, FeedbackTag } from "@/lib/services/tags";
+import { useAuth } from "@/contexts/AuthContext";
+import { CompanyService } from "@/lib/services/company";
+
+interface Tag extends FeedbackTag {
+  isDefault: boolean;
+  count: number;
+}
+
+const colorOptions = [
+  "#ef4444", // red
+  "#3b82f6", // blue
+  "#10b981", // green
+  "#eab308", // yellow
+  "#8b5cf6", // purple
+  "#f97316", // orange
+  "#ec4899", // pink
+  "#6366f1", // indigo
+  "#14b8a6", // teal
+  "#06b6d4", // cyan
+  "#84cc16", // lime
+  "#f59e0b", // amber
+];
 
 export default function TagsSettingsPage() {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] p-8">
-      <div className="text-center space-y-6">
-        <div className="flex justify-center">
-          <div className="p-4 bg-muted rounded-full">
-            <Tags className="h-12 w-12 text-muted-foreground" />
-          </div>
-        </div>
+  const { user } = useAuth();
+  const [companyId, setCompanyId] = useState<string>("");
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editingTag, setEditingTag] = useState<Tag | null>(null);
+  const [newTagName, setNewTagName] = useState("");
+  const [newTagColor, setNewTagColor] = useState("#3b82f6");
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold">Tags Settings</h1>
-          <p className="text-xl text-muted-foreground max-w-md">
-            Tags settings page is coming soon. We're working hard to bring you
-            comprehensive tag management features.
-          </p>
-        </div>
+  // Load company and fetch tags
+  useEffect(() => {
+    const loadCompanyAndTags = async () => {
+      if (!user) return;
+      try {
+        setLoading(true);
+        const companies = await CompanyService.getUserCompanies(user.uid);
+        if (companies.length === 0) return;
+        const cid = companies[0];
+        setCompanyId(cid);
+        const allTags = await TagsService.getAllTags(cid);
+        const transformedTags: Tag[] = allTags.map((tag) => ({
+          ...tag,
+          isDefault: Boolean((tag as any).isDefault),
+          count: 0,
+        }));
+        setTags(transformedTags);
+      } catch (error) {
+        console.error("Error loading tags:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-        <div className="pt-4">
-          <div className="inline-flex items-center px-4 py-2 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium">
-            <span className="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-pulse"></span>
-            In Development
-          </div>
+    if (user) {
+      loadCompanyAndTags();
+    }
+  }, [user]);
+
+  const handleAddTag = async () => {
+    if (!companyId || !newTagName.trim()) return;
+
+    try {
+      // Check if tag name already exists
+      const nameExists = await TagsService.isTagNameExists(
+        companyId,
+        newTagName.trim()
+      );
+      if (nameExists) {
+        alert("A tag with this name already exists.");
+        return;
+      }
+
+      // Create the tag using the service
+      const newTagData = await TagsService.createTag({
+        companyId,
+        name: newTagName.trim(),
+        color: newTagColor,
+      });
+
+      // Add the new tag to the local state
+      const newTag: Tag = {
+        ...newTagData,
+        isDefault: false,
+        count: 0,
+      };
+
+      setTags([...tags, newTag]);
+      setNewTagName("");
+      setNewTagColor("#3b82f6");
+      setIsAddDialogOpen(false);
+    } catch (error) {
+      console.error("Error adding tag:", error);
+      alert("Failed to create tag. Please try again.");
+    }
+  };
+
+  const handleEditTag = async () => {
+    if (!editingTag || !newTagName.trim() || !editingTag.id || !companyId)
+      return;
+
+    try {
+      // Check if tag name already exists (excluding the current tag)
+      const nameExists = await TagsService.isTagNameExists(
+        companyId,
+        newTagName.trim()
+      );
+      if (nameExists) {
+        const existingTag = tags.find(
+          (tag) => tag.name.toLowerCase() === newTagName.trim().toLowerCase()
+        );
+        if (existingTag && existingTag.id !== editingTag.id) {
+          alert("A tag with this name already exists.");
+          return;
+        }
+      }
+
+      // Update the tag using the service
+      await TagsService.updateTag(editingTag.id, {
+        name: newTagName.trim(),
+        color: newTagColor,
+      });
+
+      // Update the local state
+      setTags(
+        tags.map((tag) =>
+          tag.id === editingTag.id
+            ? { ...tag, name: newTagName.trim(), color: newTagColor }
+            : tag
+        )
+      );
+      setEditingTag(null);
+      setNewTagName("");
+      setNewTagColor("#3b82f6");
+      setIsEditDialogOpen(false);
+    } catch (error) {
+      console.error("Error updating tag:", error);
+      alert("Failed to update tag. Please try again.");
+    }
+  };
+
+  const handleDeleteTag = async (tagId: string) => {
+    try {
+      // Delete the tag using the service
+      await TagsService.deleteTag(tagId);
+
+      // Remove from local state
+      setTags(tags.filter((tag) => tag.id !== tagId));
+    } catch (error) {
+      console.error("Error deleting tag:", error);
+      alert("Failed to delete tag. Please try again.");
+    }
+  };
+
+  const openEditDialog = (tag: Tag) => {
+    setEditingTag(tag);
+    setNewTagName(tag.name);
+    setNewTagColor(tag.color);
+    setIsEditDialogOpen(true);
+  };
+
+  const defaultTagsList = tags.filter((tag) => tag.isDefault);
+  const customTagsList = tags.filter((tag) => !tag.isDefault);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex items-center gap-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Loading tags...</span>
         </div>
       </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Tags Management</h1>
+          <p className="text-muted-foreground">
+            Organize your feedback with custom tags and categories
+          </p>
+        </div>
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              Add Tag
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Tag</DialogTitle>
+              <DialogDescription>
+                Create a new tag to organize your feedback items.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">Tag Name</label>
+                <Input
+                  value={newTagName}
+                  onChange={(e) => setNewTagName(e.target.value)}
+                  placeholder="Enter tag name"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Color</label>
+                <div className="grid grid-cols-6 gap-2 mt-2">
+                  {colorOptions.map((color) => (
+                    <button
+                      key={color}
+                      type="button"
+                      className={`w-8 h-8 rounded-full border-2 ${
+                        newTagColor === color
+                          ? "border-black"
+                          : "border-transparent"
+                      }`}
+                      style={{ backgroundColor: color }}
+                      onClick={() => setNewTagColor(color)}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setIsAddDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleAddTag} disabled={!newTagName.trim()}>
+                Add Tag
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Default Tags */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Lock className="h-5 w-5 text-muted-foreground" />
+            Default Tags
+          </CardTitle>
+          <CardDescription>
+            These are system tags that cannot be deleted but can be used to
+            organize feedback.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {defaultTagsList.map((tag) => (
+              <div
+                key={tag.id}
+                className="flex items-center justify-between p-4 border rounded-lg bg-muted/50"
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-4 h-4 rounded-full"
+                    style={{ backgroundColor: tag.color }}
+                  />
+                  <div>
+                    <div className="font-medium">{tag.name}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {tag.count} items
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="text-xs">
+                    Default
+                  </Badge>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Custom Tags */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Unlock className="h-5 w-5 text-muted-foreground" />
+            Custom Tags
+          </CardTitle>
+          <CardDescription>
+            Your custom tags that you can edit or delete as needed.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {customTagsList.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Tags className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>No custom tags yet. Create your first tag to get started.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {customTagsList.map((tag) => (
+                <div
+                  key={tag.id}
+                  className="flex items-center justify-between p-4 border rounded-lg"
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-4 h-4 rounded-full"
+                      style={{ backgroundColor: tag.color }}
+                    />
+                    <div>
+                      <div className="font-medium">{tag.name}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {tag.count} items
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => openEditDialog(tag)}
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Tag</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete the tag "{tag.name}
+                            "? This action cannot be undone and will remove the
+                            tag from all associated feedback items.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => tag.id && handleDeleteTag(tag.id)}
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Edit Tag Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Tag</DialogTitle>
+            <DialogDescription>
+              Update the name and color of your tag.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium">Tag Name</label>
+              <Input
+                value={newTagName}
+                onChange={(e) => setNewTagName(e.target.value)}
+                placeholder="Enter tag name"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Color</label>
+              <div className="grid grid-cols-6 gap-2 mt-2">
+                {colorOptions.map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    className={`w-8 h-8 rounded-full border-2 ${
+                      newTagColor === color
+                        ? "border-black"
+                        : "border-transparent"
+                    }`}
+                    style={{ backgroundColor: color }}
+                    onClick={() => setNewTagColor(color)}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsEditDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleEditTag} disabled={!newTagName.trim()}>
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

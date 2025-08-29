@@ -18,6 +18,7 @@ export interface FeedbackTag {
   companyId?: string;
   name: string;
   color: string;
+  isDefault?: boolean;
   createdAt?: any;
 }
 
@@ -146,6 +147,37 @@ export class TagsService {
       return null;
     } catch (error) {
       console.error("Error getting tag:", error);
+      throw error;
+    }
+  }
+
+  // Initialize default tags for a company if none exist
+  static async initializeDefaultTags(companyId: string) {
+    try {
+      // Check if company already has tags
+      const existing = await this.getCompanyTags(companyId);
+      if (existing.length > 0) return existing;
+
+      const defaultTags: Array<Pick<FeedbackTag, "name" | "color">> = [
+        { name: "High Priority", color: "#ef4444" },
+        { name: "Medium Priority", color: "#eab308" },
+        { name: "Low Priority", color: "#10b981" },
+      ];
+
+      const created: FeedbackTag[] = [];
+      for (const tag of defaultTags) {
+        const createdTag = await this.createTag({
+          companyId,
+          name: tag.name,
+          color: tag.color,
+          isDefault: true,
+        } as Omit<FeedbackTag, "id" | "createdAt">);
+        created.push(createdTag);
+      }
+
+      return created;
+    } catch (error) {
+      console.error("Error initializing default tags:", error);
       throw error;
     }
   }

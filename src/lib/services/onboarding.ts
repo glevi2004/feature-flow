@@ -2,6 +2,7 @@ import { db } from "@/lib/firebase/firebaseConfig";
 import { doc, setDoc, getDoc, addDoc, collection } from "firebase/firestore";
 import { CompanyService } from "./company";
 import { FeedbackService } from "./feedback";
+import { TagsService } from "./tags";
 
 export interface OnboardingData {
   id?: string;
@@ -53,6 +54,8 @@ export class OnboardingService {
         if (companyData) {
           await FeedbackService.initializeDefaultTypes(companyData.id);
           console.log("OnboardingService: Default feedback types initialized");
+          await TagsService.initializeDefaultTags(companyData.id);
+          console.log("OnboardingService: Default feedback tags initialized");
         }
       }
 

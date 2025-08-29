@@ -283,6 +283,63 @@ export class FeedbackService {
     }
   }
 
+  // Update a type
+  static async updateType(typeId: string, data: Partial<FeedbackType>) {
+    try {
+      const typeRef = doc(db, "feedback_types", typeId);
+      await updateDoc(typeRef, {
+        ...data,
+        updatedAt: serverTimestamp(),
+      });
+    } catch (error) {
+      console.error("Error updating type:", error);
+      throw error;
+    }
+  }
+
+  // Delete a type
+  static async deleteType(typeId: string) {
+    try {
+      await deleteDoc(doc(db, "feedback_types", typeId));
+    } catch (error) {
+      console.error("Error deleting type:", error);
+      throw error;
+    }
+  }
+
+  // Get a single type by ID
+  static async getType(typeId: string) {
+    try {
+      const docRef = doc(db, "feedback_types", typeId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        return { id: docSnap.id, ...docSnap.data() } as FeedbackType;
+      }
+      return null;
+    } catch (error) {
+      console.error("Error getting type:", error);
+      throw error;
+    }
+  }
+
+  // Check if a type name already exists for a company
+  static async isTypeNameExists(companyId: string, name: string) {
+    try {
+      const q = query(
+        collection(db, "feedback_types"),
+        where("companyId", "==", companyId),
+        where("name", "==", name)
+      );
+
+      const querySnapshot = await getDocs(q);
+      return !querySnapshot.empty;
+    } catch (error) {
+      console.error("Error checking type name existence:", error);
+      throw error;
+    }
+  }
+
   // Initialize default types for a company
   static async initializeDefaultTypes(companyId: string) {
     try {
