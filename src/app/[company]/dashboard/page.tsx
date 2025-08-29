@@ -19,7 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
+
 import {
   Search,
   Filter,
@@ -31,7 +31,6 @@ import {
   Lightbulb,
   Radio,
   Check,
-  Plus,
   Eye,
   CheckCircle,
   XCircle,
@@ -98,10 +97,7 @@ function DashboardPage() {
   const [openStatusDropdown, setOpenStatusDropdown] = useState<string | null>(
     null
   );
-  const [showCreateTypeModal, setShowCreateTypeModal] = useState(false);
-  const [newTypeName, setNewTypeName] = useState("");
-  const [newTypeEmoji, setNewTypeEmoji] = useState("");
-  const [newTypeColor, setNewTypeColor] = useState("#3B82F6");
+
   const [selectedPost, setSelectedPost] = useState<FeedbackPost | null>(null);
   const [showPostModal, setShowPostModal] = useState(false);
 
@@ -235,33 +231,6 @@ function DashboardPage() {
     }
   };
 
-  const handleCreateType = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newTypeName.trim() || !newTypeEmoji.trim()) {
-      alert("Please fill in all required fields");
-      return;
-    }
-
-    try {
-      const newType = await FeedbackService.createType({
-        companyId,
-        name: newTypeName.trim(),
-        emoji: newTypeEmoji.trim(),
-        color: newTypeColor,
-      });
-
-      setTypes([...types, newType]);
-      setNewTypeName("");
-      setNewTypeEmoji("");
-      setNewTypeColor("#3B82F6");
-      setShowCreateTypeModal(false);
-      alert("Type created successfully!");
-    } catch (error) {
-      console.error("Error creating type:", error);
-      alert("Failed to create type");
-    }
-  };
-
   const handlePostClick = (post: FeedbackPost) => {
     setSelectedPost(post);
     setShowPostModal(true);
@@ -299,57 +268,6 @@ function DashboardPage() {
         <div className="flex items-center gap-8 mb-6">
           <h1 className="text-2xl font-bold">Posts ({posts.length})</h1>
           <div className="flex items-center gap-4">
-            <Dialog
-              open={showCreateTypeModal}
-              onOpenChange={setShowCreateTypeModal}
-            >
-              <DialogTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Type
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Create New Feedback Type</DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleCreateType} className="space-y-4">
-                  <div>
-                    <Label htmlFor="typeName">Type Name</Label>
-                    <Input
-                      id="typeName"
-                      value={newTypeName}
-                      onChange={(e) => setNewTypeName(e.target.value)}
-                      placeholder="e.g., Bug Report"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="typeEmoji">Emoji</Label>
-                    <Input
-                      id="typeEmoji"
-                      value={newTypeEmoji}
-                      onChange={(e) => setNewTypeEmoji(e.target.value)}
-                      placeholder="e.g., 🐛"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="typeColor">Color</Label>
-                    <Input
-                      id="typeColor"
-                      type="color"
-                      value={newTypeColor}
-                      onChange={(e) => setNewTypeColor(e.target.value)}
-                      className="h-10"
-                    />
-                  </div>
-                  <Button type="submit" className="w-full">
-                    Create Type
-                  </Button>
-                </form>
-              </DialogContent>
-            </Dialog>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
