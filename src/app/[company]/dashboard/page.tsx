@@ -497,7 +497,7 @@ function DashboardPage() {
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="ghost"
-                        className={`h-auto px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${getStatusColor(
+                        className={`h-auto px-2 py-0.5 rounded-full text-xs font-medium transition-all duration-200 ${getStatusColor(
                           post.status || "Under Review"
                         )} hover:opacity-80 hover:scale-105`}
                         disabled={updatingStatus === post.id}
@@ -508,7 +508,7 @@ function DashboardPage() {
                           );
                           return (
                             <>
-                              <StatusIcon className="h-3 w-3 mr-1.5" />
+                              <StatusIcon className="h-3 w-3 mr-1" />
                               {post.status || "Under Review"}
                             </>
                           );
