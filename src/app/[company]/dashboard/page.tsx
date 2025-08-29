@@ -445,48 +445,52 @@ function DashboardPage() {
                           ? formatDate(new Date(post.createdAt))
                           : "Recently"}
                       </span>
-                      {post.types.length > 0 && (
-                        <div className="flex flex-wrap gap-1">
-                          {post.types.map((type) => {
-                            const typeData = types.find((t) => t.name === type);
-                            return (
-                              <Badge
-                                key={type}
-                                className="px-2 py-0.5 rounded-full text-xs font-medium"
-                                style={{ backgroundColor: getTypeColor(type) }}
-                              >
-                                {typeData?.emoji} {type}
-                              </Badge>
-                            );
-                          })}
-                        </div>
-                      )}
-                      {post.tags && post.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {post.tags.map((tagId) => (
-                            <Badge
-                              key={tagId}
-                              variant="outline"
-                              className="px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1"
-                              style={{
-                                borderColor: getTagColor(tagId) + "40", // 25% opacity
-                                color: getTagColor(tagId) + "CC", // 80% opacity
-                                backgroundColor: getTagColor(tagId) + "10", // 6% opacity background
-                              }}
-                            >
-                              <div
-                                className="w-2 h-2 rounded-full flex-shrink-0 border"
-                                style={{ borderColor: getTagColor(tagId) }}
-                              />
-                              {getTagName(tagId)}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  {/* Type badges */}
+                  {post.types.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {post.types.map((type) => {
+                        const typeData = types.find((t) => t.name === type);
+                        return (
+                          <Badge
+                            key={type}
+                            className="px-2 py-0.5 rounded-full text-xs font-medium"
+                            style={{ backgroundColor: getTypeColor(type) }}
+                          >
+                            {typeData?.emoji} {type}
+                          </Badge>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Tag badges */}
+                  {post.tags && post.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {post.tags.map((tagId) => (
+                        <Badge
+                          key={tagId}
+                          variant="outline"
+                          className="px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1"
+                          style={{
+                            borderColor: getTagColor(tagId) + "40", // 25% opacity
+                            color: getTagColor(tagId) + "CC", // 80% opacity
+                            backgroundColor: getTagColor(tagId) + "10", // 6% opacity background
+                          }}
+                        >
+                          <div
+                            className="w-2 h-2 rounded-full flex-shrink-0 border"
+                            style={{ borderColor: getTagColor(tagId) }}
+                          />
+                          {getTagName(tagId)}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+
                   <DropdownMenu
                     open={openStatusDropdown === post.id}
                     onOpenChange={(open) => {
