@@ -474,17 +474,13 @@ function DashboardPage() {
                         <Badge
                           key={tagId}
                           variant="outline"
-                          className="px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1"
+                          className="px-2 py-0.5 rounded-full text-xs font-medium"
                           style={{
                             borderColor: getTagColor(tagId) + "40", // 25% opacity
                             color: getTagColor(tagId) + "CC", // 80% opacity
                             backgroundColor: getTagColor(tagId) + "10", // 6% opacity background
                           }}
                         >
-                          <div
-                            className="w-2 h-2 rounded-full flex-shrink-0 border"
-                            style={{ borderColor: getTagColor(tagId) }}
-                          />
                           {getTagName(tagId)}
                         </Badge>
                       ))}
