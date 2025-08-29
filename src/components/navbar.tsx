@@ -42,6 +42,12 @@ export function Navbar() {
               >
                 Integrations
               </a>
+              <Link
+                href="/documentation"
+                className="text-white hover:text-white/80 transition-colors text-sm"
+              >
+                Documentation
+              </Link>
             </nav>
           </div>
 
@@ -106,6 +112,13 @@ export function Navbar() {
               >
                 Integrations
               </a>
+              <Link
+                href="/documentation"
+                className="text-white hover:!bg-white/10 hover:!text-white/90 rounded-md px-4 transition-colors font-medium py-2 block"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Documentation
+              </Link>
             </nav>
             <div className="pt-3 border-t border-white/20 space-y-2 ">
               <Link href="/login" onClick={() => setIsMenuOpen(false)}>

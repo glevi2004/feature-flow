@@ -62,9 +62,7 @@ export function AppSidebar() {
           <SidebarMenu className="mt-15">
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link
-                  href={`/${encodeURIComponent(companyName || "")}/dashboard`}
-                >
+                <Link href={`/`}>
                   <House className="h-4 w-4" />
                   Home
                 </Link>
