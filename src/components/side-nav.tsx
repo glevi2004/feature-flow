@@ -542,11 +542,6 @@ export function SideNav({ onClose }: SideNavProps) {
                                 <span className="text-sm flex-1">
                                   {tag.name}
                                 </span>
-                                {tag.isDefault && (
-                                  <span className="text-xs text-muted-foreground flex-shrink-0">
-                                    Default
-                                  </span>
-                                )}
                               </button>
                             ))}
                             <Link

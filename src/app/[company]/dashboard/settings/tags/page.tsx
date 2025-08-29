@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Tags, Plus, Edit2, Trash2, Lock, Unlock, Loader2 } from "lucide-react";
+import { FileText, Plus, Edit2, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -37,7 +36,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { CompanyService } from "@/lib/services/company";
 
 interface Tag extends FeedbackTag {
-  isDefault: boolean;
   count: number;
 }
 
@@ -80,8 +78,7 @@ export default function TagsSettingsPage() {
         const allTags = await TagsService.getAllTags(cid);
         const transformedTags: Tag[] = allTags.map((tag) => ({
           ...tag,
-          isDefault: Boolean((tag as any).isDefault),
-          count: 0,
+          count: 0, // TODO: Implement actual count from feedback items
         }));
         setTags(transformedTags);
       } catch (error) {
@@ -120,7 +117,6 @@ export default function TagsSettingsPage() {
       // Add the new tag to the local state
       const newTag: Tag = {
         ...newTagData,
-        isDefault: false,
         count: 0,
       };
 
@@ -198,9 +194,6 @@ export default function TagsSettingsPage() {
     setIsEditDialogOpen(true);
   };
 
-  const defaultTagsList = tags.filter((tag) => tag.isDefault);
-  const customTagsList = tags.filter((tag) => !tag.isDefault);
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -217,9 +210,7 @@ export default function TagsSettingsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Tags Management</h1>
-          <p className="text-muted-foreground">
-            Organize your feedback with custom tags and categories
-          </p>
+          <p className="text-muted-foreground">Manage your feedback tags</p>
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
@@ -232,7 +223,7 @@ export default function TagsSettingsPage() {
             <DialogHeader>
               <DialogTitle>Add New Tag</DialogTitle>
               <DialogDescription>
-                Create a new tag to organize your feedback items.
+                Create a new tag to categorize your feedback items.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
@@ -279,68 +270,24 @@ export default function TagsSettingsPage() {
         </Dialog>
       </div>
 
-      {/* Default Tags */}
+      {/* Tags List */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Lock className="h-5 w-5 text-muted-foreground" />
-            Default Tags
+            <FileText className="h-5 w-5 text-muted-foreground" />
+            Tags
           </CardTitle>
-          <CardDescription>
-            These are system tags that cannot be deleted but can be used to
-            organize feedback.
-          </CardDescription>
+          <CardDescription>Manage your feedback tags</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {defaultTagsList.map((tag) => (
-              <div
-                key={tag.id}
-                className="flex items-center justify-between p-4 border rounded-lg bg-muted/50"
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-4 h-4 rounded-full"
-                    style={{ backgroundColor: tag.color }}
-                  />
-                  <div>
-                    <div className="font-medium">{tag.name}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {tag.count} items
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="text-xs">
-                    Default
-                  </Badge>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Custom Tags */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Unlock className="h-5 w-5 text-muted-foreground" />
-            Custom Tags
-          </CardTitle>
-          <CardDescription>
-            Your custom tags that you can edit or delete as needed.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {customTagsList.length === 0 ? (
+          {tags.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              <Tags className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No custom tags yet. Create your first tag to get started.</p>
+              <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>No tags yet. Create your first tag to get started.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {customTagsList.map((tag) => (
+              {tags.map((tag) => (
                 <div
                   key={tag.id}
                   className="flex items-center justify-between p-4 border rounded-lg"

@@ -18,7 +18,6 @@ export interface FeedbackTag {
   companyId?: string;
   name: string;
   color: string;
-  isDefault?: boolean;
   createdAt?: any;
 }
 
@@ -170,7 +169,6 @@ export class TagsService {
           companyId,
           name: tag.name,
           color: tag.color,
-          isDefault: true,
         } as Omit<FeedbackTag, "id" | "createdAt">);
         created.push(createdTag);
       }
