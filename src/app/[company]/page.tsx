@@ -672,7 +672,7 @@ export default function PublicFeedbackPage() {
         </div>
 
         <div>
-          <h3 className="text-lg font-semibold mb-4">Boards</h3>
+          <h3 className="text-lg font-semibold mb-4">Kanban</h3>
           <div className="space-y-2">
             <Button variant="ghost" className="w-full justify-start">
               <MessageSquare className="h-4 w-4 mr-2" />

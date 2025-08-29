@@ -164,8 +164,8 @@ export function SideNav({ onClose }: SideNavProps) {
         },
       ],
     },
-    board: {
-      title: "Board",
+    kanban: {
+      title: "Kanban",
       sections: [
         {
           title: "Quick Filters",
@@ -241,8 +241,8 @@ export function SideNav({ onClose }: SideNavProps) {
   };
 
   const getQuickLinks = (): QuickLinks => {
-    if (isActive("/board")) {
-      return pageConfigs.board;
+    if (isActive("/kanban")) {
+      return pageConfigs.kanban;
     } else if (isActive("/analytics")) {
       return pageConfigs.analytics;
     } else if (isActive("/notifications")) {
@@ -251,7 +251,7 @@ export function SideNav({ onClose }: SideNavProps) {
       return pageConfigs.settings;
     } else if (
       isActive("/dashboard") &&
-      !isActive("/board") &&
+      !isActive("/kanban") &&
       !isActive("/analytics") &&
       !isActive("/notifications") &&
       !isActive("/settings")
@@ -290,7 +290,7 @@ export function SideNav({ onClose }: SideNavProps) {
                   href={`/${encodeURIComponent(companyName || "")}/dashboard`}
                   className={`p-2 rounded-lg transition-colors ${
                     isActive("/dashboard") &&
-                    !isActive("/board") &&
+                    !isActive("/kanban") &&
                     !isActive("/analytics") &&
                     !isActive("/notifications") &&
                     !isActive("/settings")
@@ -301,7 +301,7 @@ export function SideNav({ onClose }: SideNavProps) {
                   <House
                     className={`h-5 w-5 ${
                       isActive("/dashboard") &&
-                      !isActive("/board") &&
+                      !isActive("/kanban") &&
                       !isActive("/analytics") &&
                       !isActive("/notifications") &&
                       !isActive("/settings")
@@ -324,16 +324,16 @@ export function SideNav({ onClose }: SideNavProps) {
                 <Link
                   href={`/${encodeURIComponent(
                     companyName || ""
-                  )}/dashboard/board`}
+                  )}/dashboard/kanban`}
                   className={`p-2 rounded-lg transition-colors ${
-                    isActive("/board")
+                    isActive("/kanban")
                       ? "bg-blue-100 dark:bg-blue-900/20"
                       : "hover:bg-muted"
                   }`}
                 >
                   <Kanban
                     className={`h-5 w-5 ${
-                      isActive("/board")
+                      isActive("/kanban")
                         ? "text-blue-600 dark:text-blue-400"
                         : "text-gray-500 dark:text-gray-400"
                     }`}
@@ -344,7 +344,7 @@ export function SideNav({ onClose }: SideNavProps) {
                 side="right"
                 className="bg-gray-800 text-gray-200 border-gray-700"
               >
-                Board
+                Kanban
               </TooltipContent>
             </Tooltip>
 

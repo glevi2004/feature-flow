@@ -270,7 +270,7 @@ function BoardPage() {
   if (loading) {
     return (
       <div className="h-[70vh] flex items-center justify-center">
-        <Loading size="lg" text="Loading board..." />
+        <Loading size="lg" text="Loading kanban..." />
       </div>
     );
   }
@@ -281,7 +281,7 @@ function BoardPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold">Board</h1>
+            <h1 className="text-2xl font-bold">Kanban</h1>
             <p className="text-muted-foreground">
               Manage your feedback and feature requests
             </p>
@@ -304,7 +304,7 @@ function BoardPage() {
           </div>
         </div>
 
-        {/* Board */}
+        {/* Kanban */}
         <div className="grid grid-cols-4 gap-4 h-[calc(100vh-200px)]">
           {BOARD_COLUMNS.map((column) => {
             const columnPosts = filteredPosts.filter(

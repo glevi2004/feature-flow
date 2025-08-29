@@ -73,10 +73,10 @@ export function AppSidebar() {
                 <Link
                   href={`/${encodeURIComponent(
                     companyName || ""
-                  )}/dashboard/board`}
+                  )}/dashboard/kanban`}
                 >
                   <Kanban className="h-4 w-4" />
-                  Board
+                  Kanban
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
