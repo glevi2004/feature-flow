@@ -15,23 +15,57 @@ export function IntegrationsSection() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
         {[
-          { name: "Slack", icon: "💬" },
-          { name: "Jira", icon: "🎯" },
-          { name: "Linear", icon: "📋" },
-          { name: "Intercom", icon: "💬" },
-          { name: "HubSpot", icon: "📊" },
-          { name: "Zendesk", icon: "🎧" },
+          {
+            name: "Slack",
+            logo: (
+              <img
+                src="/integration-logos/slack.png"
+                alt="Slack"
+                className="h-12 w-auto mx-auto mb-4"
+              />
+            ),
+            color: "text-[#E01E5A]",
+          },
+          {
+            name: "Jira",
+            logo: (
+              <div className="flex items-center justify-center gap-3">
+                <img
+                  src="/integration-logos/jira.png"
+                  alt="Jira"
+                  className="h-12 w-auto"
+                />
+                <span className="font-semibold text-white text-5xl">Jira</span>
+              </div>
+            ),
+            color: "text-[#0052CC]",
+          },
+          {
+            name: "ClickUp",
+            logo: (
+              <img
+                src="/integration-logos/clickup.png"
+                alt="ClickUp"
+                className="h-12 w-auto mx-auto mb-4"
+              />
+            ),
+            color: "text-[#7B68EE]",
+          },
         ].map((tool) => (
           <div
             key={tool.name}
-            className="bg-white dark:bg-gray-800 rounded-lg p-6 text-center shadow-md hover:shadow-lg transition-shadow"
+            className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-8 text-center shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300 relative"
           >
-            <div className="text-3xl mb-2">{tool.icon}</div>
-            <div className="font-semibold text-gray-900 dark:text-white">
-              {tool.name}
-            </div>
+            <div className={`${tool.color}`}>{tool.logo}</div>
+            {(tool.name === "Jira" || tool.name === "ClickUp") && (
+              <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2">
+                <div className="bg-blue-600/90 text-blue-100 text-xs font-medium px-3 py-1 rounded-full shadow-lg backdrop-blur-sm">
+                  In Development
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>
