@@ -148,8 +148,8 @@ function DashboardPage() {
     }
   };
 
-  const getTypeColor = (typeName: string) => {
-    const type = types.find((t) => t.name === typeName);
+  const getTypeColor = (typeId: string) => {
+    const type = types.find((t) => t.id === typeId);
     return type?.color || "#6B7280";
   };
 
@@ -376,14 +376,14 @@ function DashboardPage() {
                   {post.types.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {post.types.map((type) => {
-                        const typeData = types.find((t) => t.name === type);
+                        const typeData = types.find((t) => t.id === type);
                         return (
                           <Badge
                             key={type}
                             className="px-2 py-0.5 rounded-full text-xs font-medium"
-                            style={{ backgroundColor: getTypeColor(type) }}
+                            style={{ backgroundColor: typeData?.color }}
                           >
-                            {typeData?.emoji} {type}
+                            {typeData?.emoji} {typeData?.name || "Unknown Type"}
                           </Badge>
                         );
                       })}
