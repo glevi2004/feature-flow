@@ -26,6 +26,41 @@ import {
   FeedbackType,
   FeedbackStatus,
 } from "@/lib/services/feedback";
+import { TagsService, FeedbackTag } from "@/lib/services/tags";
+
+// Status options
+const STATUS_OPTIONS = [
+  {
+    value: "Under Review",
+    label: "Under Review",
+    color: "bg-blue-900/20 text-blue-400 border border-blue-800/30",
+    dotColor: "bg-blue-400",
+  },
+  {
+    value: "Accepted",
+    label: "Accepted",
+    color: "bg-green-900/20 text-green-400 border border-green-800/30",
+    dotColor: "bg-green-400",
+  },
+  {
+    value: "Rejected",
+    label: "Rejected",
+    color: "bg-red-900/20 text-red-400 border border-red-800/30",
+    dotColor: "bg-red-400",
+  },
+  {
+    value: "Planned",
+    label: "Planned",
+    color: "bg-purple-900/20 text-purple-400 border border-purple-800/30",
+    dotColor: "bg-purple-400",
+  },
+  {
+    value: "Completed",
+    label: "Completed",
+    color: "bg-emerald-900/20 text-emerald-400 border border-emerald-800/30",
+    dotColor: "bg-emerald-400",
+  },
+];
 
 // Board column configuration
 const BOARD_COLUMNS = [
@@ -72,6 +107,7 @@ function BoardPage() {
   const { user } = useAuth();
   const [posts, setPosts] = useState<FeedbackPost[]>([]);
   const [types, setTypes] = useState<FeedbackType[]>([]);
+  const [tags, setTags] = useState<FeedbackTag[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyName, setCompanyName] = useState("");
   const [companyId, setCompanyId] = useState("");
@@ -107,10 +143,11 @@ function BoardPage() {
         setCompanyName(companyData.name);
         setCompanyId(companyId);
 
-        // Load posts and types
-        const [postsData, typesData] = await Promise.all([
+        // Load posts, types, and tags
+        const [postsData, typesData, tagsData] = await Promise.all([
           FeedbackService.getCompanyPosts(companyId),
           FeedbackService.getCompanyTypes(companyId),
+          TagsService.getAllTags(companyId),
         ]);
 
         // Filter out rejected posts
@@ -119,6 +156,7 @@ function BoardPage() {
         );
         setPosts(filteredPosts);
         setTypes(typesData);
+        setTags(tagsData);
       } else {
         console.log("No companies found for user");
       }
@@ -132,6 +170,23 @@ function BoardPage() {
   const getTypeColor = (typeName: string) => {
     const type = types.find((t) => t.name === typeName);
     return type?.color || "#6B7280";
+  };
+
+  const getTagColor = (tagId: string) => {
+    const tag = tags.find((t) => t.id === tagId);
+    return tag?.color || "#6B7280";
+  };
+
+  const getTagName = (tagId: string) => {
+    const tag = tags.find((t) => t.id === tagId);
+    return tag?.name || null;
+  };
+
+  const getStatusColor = (status: string) => {
+    const statusOption = STATUS_OPTIONS.find(
+      (option) => option.value === status
+    );
+    return statusOption?.color || "bg-gray-100 text-gray-800";
   };
 
   const formatDate = (date: Date) => {
@@ -295,6 +350,17 @@ function BoardPage() {
                       onClick={() => handlePostClick(post)}
                     >
                       <CardContent className="p-3">
+                        {/* Post Status */}
+                        <div className="mb-2 flex flex-wrap gap-1">
+                          <Badge
+                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                              post.status || "Under Review"
+                            )}`}
+                          >
+                            {post.status || "Under Review"}
+                          </Badge>
+                        </div>
+
                         {/* Post Types */}
                         {post.types.length > 0 && (
                           <div className="mb-2 flex flex-wrap gap-1">
@@ -316,6 +382,44 @@ function BoardPage() {
                             {post.types.length > 2 && (
                               <Badge variant="outline" className="text-xs">
                                 +{post.types.length - 2}
+                              </Badge>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Post Tags */}
+                        {post.tags && post.tags.length > 0 && (
+                          <div className="mb-2 flex flex-wrap gap-1">
+                            {post.tags
+                              .map((tagId) => {
+                                const tagName = getTagName(tagId);
+                                return tagName
+                                  ? { id: tagId, name: tagName }
+                                  : null;
+                              })
+                              .filter(Boolean)
+                              .slice(0, 2)
+                              .map((tag) => (
+                                <Badge
+                                  key={tag!.id}
+                                  variant="outline"
+                                  className="px-2 py-0.5 rounded-full text-xs font-medium"
+                                  style={{
+                                    borderColor: getTagColor(tag!.id) + "40",
+                                    color: getTagColor(tag!.id) + "CC",
+                                    backgroundColor:
+                                      getTagColor(tag!.id) + "10",
+                                  }}
+                                >
+                                  {tag!.name}
+                                </Badge>
+                              ))}
+                            {post.tags.filter((tagId) => getTagName(tagId))
+                              .length > 2 && (
+                              <Badge variant="outline" className="text-xs">
+                                +
+                                {post.tags.filter((tagId) => getTagName(tagId))
+                                  .length - 2}
                               </Badge>
                             )}
                           </div>
