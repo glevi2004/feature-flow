@@ -18,6 +18,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { OnboardingService } from "@/lib/services/onboarding";
+import { app_name } from "@/lib/constants";
 
 interface FormData {
   goals: string[];
@@ -214,7 +215,7 @@ export default function RegisterPage() {
                 What&apos;s your main goal?
               </h2>
               <p className="text-gray-600">
-                Help us understand how you&apos;ll use Feature Flow
+                Help us understand how you&apos;ll use {app_name}
               </p>
             </div>
             <div className="space-y-3">
@@ -283,7 +284,7 @@ export default function RegisterPage() {
                 Who should have access?
               </h2>
               <p className="text-gray-600">
-                Choose the access level for your Feature Flow module
+                Choose the access level for your {app_name} module
               </p>
             </div>
             <div className="space-y-3">
@@ -483,9 +484,7 @@ export default function RegisterPage() {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-2xl font-bold mb-2">
-                Sign up to Feature Flow
-              </h2>
+              <h2 className="text-2xl font-bold mb-2">Sign up to {app_name}</h2>
               <p className="text-gray-600">
                 You&apos;re almost ready to get started!
               </p>
@@ -628,7 +627,7 @@ export default function RegisterPage() {
             <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center mr-3">
               <Zap className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl font-bold">Feature Flow</span>
+            <span className="text-xl font-bold">{app_name}</span>
           </div>
           <div className="flex justify-center space-x-2 mb-6">
             {[1, 2, 3, 4, 5].map((step) => (

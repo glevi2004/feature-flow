@@ -11,6 +11,7 @@ import {
   CheckCircle,
   ArrowRight,
 } from "lucide-react";
+import { app_name } from "@/lib/constants";
 
 export default function Home() {
   return (
@@ -39,7 +40,7 @@ export default function Home() {
               Transform Customer Feedback Into Action
             </h1>
             <p className="text-xl md:text-2xl text-white mb-8 max-w-3xl mx-auto">
-              Feature Flow is a modern feedback platform designed to help teams
+              {app_name} is a modern feedback platform designed to help teams
               collect, organize, and prioritize customer feedback effectively.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -254,7 +255,7 @@ export default function Home() {
               Integrate with Your Workflow
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Feature Flow works seamlessly with the tools you already use
+              {app_name} works seamlessly with the tools you already use
             </p>
           </div>
 
@@ -287,8 +288,8 @@ export default function Home() {
               Ready to Transform Your Feedback Process?
             </h2>
             <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Join thousands of teams using Feature Flow to build better
-              products based on real customer feedback.
+              Join thousands of teams using {app_name} to build better products
+              based on real customer feedback.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/register">
@@ -320,7 +321,7 @@ export default function Home() {
                   <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                     <Zap className="w-5 h-5 text-white" />
                   </div>
-                  <span className="text-xl font-bold">Feature Flow</span>
+                  <span className="text-xl font-bold">{app_name}</span>
                 </div>
                 <p className="text-gray-400">
                   Modern feedback platform for teams to collect, organize, and
@@ -404,7 +405,7 @@ export default function Home() {
               </div>
             </div>
             <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-              <p>&copy; 2024 Feature Flow. All rights reserved.</p>
+              <p>&copy; 2024 {app_name}. All rights reserved.</p>
             </div>
           </div>
         </footer>

@@ -3,6 +3,7 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Zap } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
+import { app_name } from "@/lib/constants";
 
 export function Header() {
   return (
@@ -13,7 +14,7 @@ export function Header() {
           <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
             <Zap className="w-5 h-5 text-white" />
           </div>
-          <span className="text-lg font-semibold">Feature Flow</span>
+          <span className="text-lg font-semibold">{app_name}</span>
         </div>
 
         {/* Right side - Mode Toggle */}

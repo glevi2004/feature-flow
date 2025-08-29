@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 // import { ModeToggle } from "@/components/mode-toggle";
 import { Zap, Menu, X } from "lucide-react";
 import Link from "next/link";
+import { app_name } from "@/lib/constants";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -17,9 +18,7 @@ export function Navbar() {
             <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
               <Zap className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-semibold text-white">
-              Feature Flow
-            </span>
+            <span className="text-xl font-semibold text-white">{app_name}</span>
           </div>
 
           {/* Desktop Navigation - Centered */}
