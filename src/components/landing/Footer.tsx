@@ -77,7 +77,10 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a
+                  href="/documentation"
+                  className="hover:text-white transition-colors"
+                >
                   Documentation
                 </a>
               </li>
