@@ -522,9 +522,14 @@ export function SideNav({ onClose }: SideNavProps) {
                       >
                         {tags.length === 0 ? (
                           <div className="p-2">
-                            <span className="text-sm text-muted-foreground">
-                              No tags found
-                            </span>
+                            <Link
+                              href={`/${encodeURIComponent(
+                                companyName || ""
+                              )}/dashboard/settings/tags`}
+                              className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                            >
+                              <span className="text-sm">Add Tags</span>
+                            </Link>
                           </div>
                         ) : (
                           <>
@@ -561,9 +566,14 @@ export function SideNav({ onClose }: SideNavProps) {
                       >
                         {types.length === 0 ? (
                           <div className="p-2">
-                            <span className="text-sm text-muted-foreground">
-                              No types found
-                            </span>
+                            <Link
+                              href={`/${encodeURIComponent(
+                                companyName || ""
+                              )}/dashboard/settings/types`}
+                              className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                            >
+                              <span className="text-sm">Add Types</span>
+                            </Link>
                           </div>
                         ) : (
                           <>
