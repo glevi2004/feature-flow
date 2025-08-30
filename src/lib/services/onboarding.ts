@@ -3,6 +3,7 @@ import { doc, setDoc, getDoc, addDoc, collection } from "firebase/firestore";
 import { CompanyService } from "./company";
 import { FeedbackService } from "./feedback";
 import { TagsService } from "./tags";
+import { OrganizationService } from "./organization";
 
 export interface OnboardingData {
   id?: string;
@@ -37,7 +38,7 @@ export class OnboardingService {
         onboardingData
       );
 
-      // Create company first
+      // Create company and organization
       if (data.companyName) {
         console.log("OnboardingService: Creating company:", data.companyName);
         const companyData = await CompanyService.createCompany(
@@ -49,6 +50,21 @@ export class OnboardingService {
           }
         );
         console.log("OnboardingService: Company created successfully");
+
+        // Create organization with the same name and link the company
+        console.log(
+          "OnboardingService: Creating organization:",
+          data.companyName
+        );
+        const organizationData = await OrganizationService.createOrganization(
+          data.companyName,
+          userId,
+          companyData.id,
+          {
+            teamSize: data.teamSize,
+          }
+        );
+        console.log("OnboardingService: Organization created successfully");
 
         // Initialize default feedback types for the company
         if (companyData) {

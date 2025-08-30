@@ -40,5 +40,11 @@ service cloud.firestore {
       allow read: if true; // Public read access for company name validation during registration
       allow write: if request.auth != null; // Authenticated users can create/update companies
     }
+
+    // Organizations - allow public read for name checking, write for authenticated users
+    match /organizations/{organizationId} {
+      allow read: if true; // Public read access for organization name validation during registration
+      allow write: if request.auth != null; // Authenticated users can create/update organizations
+    }
   }
 }
