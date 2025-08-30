@@ -4,7 +4,7 @@ import { app_name } from "@/lib/constants";
 
 export function HeroSection() {
   return (
-    <section className="container mx-auto px-4 py-30 lg:mt-10">
+    <section className="container mx-auto px-4 py-10 lg:mt-10">
       <div className="max-w-6xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-8 items-center">
           {/* Text Content */}
