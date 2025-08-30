@@ -218,6 +218,7 @@ export function SideNav({ onClose }: SideNavProps) {
             { label: "Profile", icon: User },
             { label: "Company", icon: Settings },
             { label: "Team", icon: User },
+            { label: "Feedback Site", icon: Globe },
           ],
         },
         {
@@ -630,6 +631,19 @@ export function SideNav({ onClose }: SideNavProps) {
                         href={`/${encodeURIComponent(
                           companyName || ""
                         )}/dashboard/settings/statuses`}
+                        className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                      >
+                        <div className="flex items-center gap-3">
+                          <item.icon className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-sm">{item.label}</span>
+                        </div>
+                      </Link>
+                    ) : item.label === "Feedback Site" &&
+                      isActive("/settings") ? (
+                      <Link
+                        href={`/${encodeURIComponent(
+                          companyName || ""
+                        )}/dashboard/settings/feedback-site`}
                         className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
                       >
                         <div className="flex items-center gap-3">
