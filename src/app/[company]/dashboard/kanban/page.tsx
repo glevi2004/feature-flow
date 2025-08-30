@@ -277,7 +277,7 @@ function BoardPage() {
 
   return (
     <div className="p-6">
-      <div className="max-w-7xl mx-auto">
+      <div className="w-full">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -305,7 +305,7 @@ function BoardPage() {
         </div>
 
         {/* Kanban */}
-        <div className="grid grid-cols-4 gap-4 h-[calc(100vh-200px)]">
+        <div className="grid grid-cols-4 gap-2 h-[calc(100vh-200px)]">
           {BOARD_COLUMNS.map((column) => {
             const columnPosts = filteredPosts.filter(
               (post) => post.status === column.status
@@ -350,8 +350,9 @@ function BoardPage() {
                       onClick={() => handlePostClick(post)}
                     >
                       <CardContent className="p-3">
-                        {/* Post Status */}
+                        {/* Post Badges - Status, Types, and Tags in one line */}
                         <div className="mb-2 flex flex-wrap gap-1">
+                          {/* Status Badge */}
                           <Badge
                             className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
                               post.status || "Under Review"
@@ -359,38 +360,27 @@ function BoardPage() {
                           >
                             {post.status || "Under Review"}
                           </Badge>
-                        </div>
 
-                        {/* Post Types */}
-                        {post.types.length > 0 && (
-                          <div className="mb-2 flex flex-wrap gap-1">
-                            {post.types.slice(0, 2).map((type) => {
-                              const typeData = types.find((t) => t.id === type);
-                              return (
-                                <Badge
-                                  key={type}
-                                  className="px-2 py-0.5 rounded-full text-xs font-medium"
-                                  style={{
-                                    backgroundColor: typeData?.color,
-                                  }}
-                                >
-                                  {typeData?.emoji}{" "}
-                                  {typeData?.name || "Unknown Type"}
-                                </Badge>
-                              );
-                            })}
-                            {post.types.length > 2 && (
-                              <Badge variant="outline" className="text-xs">
-                                +{post.types.length - 2}
+                          {/* Type Badges */}
+                          {post.types.slice(0, 1).map((type) => {
+                            const typeData = types.find((t) => t.id === type);
+                            return (
+                              <Badge
+                                key={type}
+                                className="px-2 py-0.5 rounded-full text-xs font-medium"
+                                style={{
+                                  backgroundColor: typeData?.color,
+                                }}
+                              >
+                                {typeData?.emoji}{" "}
+                                {typeData?.name || "Unknown Type"}
                               </Badge>
-                            )}
-                          </div>
-                        )}
+                            );
+                          })}
 
-                        {/* Post Tags */}
-                        {post.tags && post.tags.length > 0 && (
-                          <div className="mb-2 flex flex-wrap gap-1">
-                            {post.tags
+                          {/* Tag Badges */}
+                          {post.tags &&
+                            post.tags
                               .map((tagId) => {
                                 const tagName = getTagName(tagId);
                                 return tagName
@@ -398,7 +388,7 @@ function BoardPage() {
                                   : null;
                               })
                               .filter(Boolean)
-                              .slice(0, 2)
+                              .slice(0, 1)
                               .map((tag) => (
                                 <Badge
                                   key={tag!.id}
@@ -414,16 +404,24 @@ function BoardPage() {
                                   {tag!.name}
                                 </Badge>
                               ))}
-                            {post.tags.filter((tagId) => getTagName(tagId))
-                              .length > 2 && (
-                              <Badge variant="outline" className="text-xs">
-                                +
-                                {post.tags.filter((tagId) => getTagName(tagId))
-                                  .length - 2}
-                              </Badge>
-                            )}
-                          </div>
-                        )}
+
+                          {/* Overflow indicators */}
+                          {(post.types.length > 1 ||
+                            (post.tags &&
+                              post.tags.filter((tagId) => getTagName(tagId))
+                                .length > 1)) && (
+                            <Badge variant="outline" className="text-xs">
+                              +
+                              {post.types.length -
+                                1 +
+                                (post.tags
+                                  ? post.tags.filter((tagId) =>
+                                      getTagName(tagId)
+                                    ).length - 1
+                                  : 0)}
+                            </Badge>
+                          )}
+                        </div>
 
                         {/* Post Title */}
                         <h4 className="font-semibold text-sm mb-2 line-clamp-2">
