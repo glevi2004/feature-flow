@@ -11,7 +11,6 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import {
-  MessageSquare,
   Globe,
   Bell,
   BarChart3,
@@ -22,7 +21,7 @@ import {
   Kanban,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { OnboardingService } from "@/lib/services/onboarding";
 import {
   DropdownMenu,
@@ -39,9 +38,9 @@ export function AppSidebar() {
     if (user) {
       loadCompanyName();
     }
-  }, [user]);
+  }, [user, loadCompanyName]);
 
-  const loadCompanyName = async () => {
+  const loadCompanyName = useCallback(async () => {
     try {
       const onboardingData = await OnboardingService.getOnboardingData(
         user!.uid
@@ -52,7 +51,7 @@ export function AppSidebar() {
     } catch (error) {
       console.error("Error loading company name:", error);
     }
-  };
+  }, [user]);
 
   return (
     <Sidebar>

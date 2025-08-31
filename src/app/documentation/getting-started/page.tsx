@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function GettingStartedPage() {
   return (
     <div className="space-y-8">
@@ -73,24 +75,24 @@ export default function GettingStartedPage() {
               <p className="text-sm text-muted-foreground mb-3">
                 Learn about all the features available in Feature Ship.
               </p>
-              <a
+              <Link
                 href="/documentation/features"
                 className="text-blue-600 hover:underline text-sm"
               >
                 View Features →
-              </a>
+              </Link>
             </div>
             <div className="p-4 border rounded-lg">
               <h3 className="font-medium mb-2">Check Tutorials</h3>
               <p className="text-sm text-muted-foreground mb-3">
                 Follow step-by-step tutorials for common use cases.
               </p>
-              <a
+              <Link
                 href="/documentation/tutorials"
                 className="text-blue-600 hover:underline text-sm"
               >
                 View Tutorials →
-              </a>
+              </Link>
             </div>
           </div>
         </section>

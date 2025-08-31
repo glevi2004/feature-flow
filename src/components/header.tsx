@@ -1,6 +1,6 @@
 "use client";
 
-import { SidebarTrigger } from "@/components/ui/sidebar";
+
 import { Package } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
 import { app_name } from "@/lib/constants";

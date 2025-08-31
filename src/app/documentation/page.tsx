@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function DocumentationPage() {
   return (
     <div className="space-y-8">
@@ -15,12 +17,12 @@ export default function DocumentationPage() {
           <p className="text-muted-foreground mb-4">
             Learn the basics of Feature Ship and set up your first project.
           </p>
-          <a
+          <Link
             href="/documentation/getting-started"
             className="text-blue-600 hover:underline"
           >
             Read more →
-          </a>
+          </Link>
         </div>
 
         <div className="p-6 border rounded-lg">
@@ -28,12 +30,12 @@ export default function DocumentationPage() {
           <p className="text-muted-foreground mb-4">
             Explore all the features available in Feature Ship.
           </p>
-          <a
+          <Link
             href="/documentation/features"
             className="text-blue-600 hover:underline"
           >
             Read more →
-          </a>
+          </Link>
         </div>
 
         <div className="p-6 border rounded-lg">
@@ -41,12 +43,12 @@ export default function DocumentationPage() {
           <p className="text-muted-foreground mb-4">
             Complete API documentation for developers.
           </p>
-          <a
+          <Link
             href="/documentation/api"
             className="text-blue-600 hover:underline"
           >
             Read more →
-          </a>
+          </Link>
         </div>
 
         <div className="p-6 border rounded-lg">
@@ -54,12 +56,12 @@ export default function DocumentationPage() {
           <p className="text-muted-foreground mb-4">
             Connect Feature Ship with your existing tools.
           </p>
-          <a
+          <Link
             href="/documentation/integrations"
             className="text-blue-600 hover:underline"
           >
             Read more →
-          </a>
+          </Link>
         </div>
 
         <div className="p-6 border rounded-lg">
@@ -67,12 +69,12 @@ export default function DocumentationPage() {
           <p className="text-muted-foreground mb-4">
             Step-by-step guides for common use cases.
           </p>
-          <a
+          <Link
             href="/documentation/tutorials"
             className="text-blue-600 hover:underline"
           >
             Read more →
-          </a>
+          </Link>
         </div>
 
         <div className="p-6 border rounded-lg">
@@ -80,12 +82,12 @@ export default function DocumentationPage() {
           <p className="text-muted-foreground mb-4">
             Frequently asked questions and troubleshooting.
           </p>
-          <a
+          <Link
             href="/documentation/faq"
             className="text-blue-600 hover:underline"
           >
             Read more →
-          </a>
+          </Link>
         </div>
       </div>
     </div>
