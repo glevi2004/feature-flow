@@ -1,49 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import {
   FeedbackService,
   FeedbackPost,
   FeedbackComment,
   FeedbackType,
-  FeedbackStatus,
 } from "@/lib/services/feedback";
 import { CompanyService, CompanyData } from "@/lib/services/company";
 import {
-  Heart,
   MessageSquare,
   Send,
   User,
   Plus,
-  Lightbulb,
-  X,
   Search,
   Filter,
-  TrendingUp,
   ArrowUp,
-  Clock,
-  Star,
-  Activity,
-  Bookmark,
   Calendar,
-  Zap,
-  Link as LinkIcon,
-  HelpCircle,
-  BarChart3,
 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+
 import { Loading } from "@/components/ui/loading";
 import {
   Dialog,
@@ -53,7 +34,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
+
 import Image from "next/image";
 
 export default function PublicFeedbackPage() {
@@ -77,14 +58,10 @@ export default function PublicFeedbackPage() {
   const [userName, setUserName] = useState("");
 
   // Filter/Sort states
-  const [sortBy, setSortBy] = useState("trending"); // 'trending', 'top', 'new'
+  const [sortBy] = useState("trending"); // 'trending', 'top', 'new'
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    loadCompanyData();
-  }, [companyName, sortBy, searchQuery]);
-
-  const loadCompanyData = async () => {
+  const loadCompanyData = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -98,10 +75,11 @@ export default function PublicFeedbackPage() {
       setCompanyId(companyData.id);
       setCompanyData(companyData);
 
-      let [postsData, typesData] = await Promise.all([
+      const [initialPostsData, typesData] = await Promise.all([
         FeedbackService.getCompanyPosts(companyData.id),
         FeedbackService.getCompanyTypes(companyData.id),
       ]);
+      let postsData = initialPostsData;
 
       // Apply search filter
       if (searchQuery) {
@@ -179,7 +157,11 @@ export default function PublicFeedbackPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [companyName, sortBy, searchQuery]);
+
+  useEffect(() => {
+    loadCompanyData();
+  }, [loadCompanyData]);
 
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -281,11 +263,6 @@ export default function PublicFeedbackPage() {
     } catch (error) {
       console.error("Error loading comments:", error);
     }
-  };
-
-  const getTypeColor = (typeName: string) => {
-    const type = types.find((t) => t.name === typeName);
-    return type?.color || "#6B7280";
   };
 
   const formatRelativeTime = (date: Date) => {
@@ -457,7 +434,7 @@ export default function PublicFeedbackPage() {
               </CardContent>
             </Card>
           ) : (
-            posts.map((post, index) => (
+            posts.map((post) => (
               <Card key={post.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   {/* Post Header with PINNED label for first post */}
