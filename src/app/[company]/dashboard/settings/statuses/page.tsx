@@ -15,7 +15,7 @@ export default function StatusesSettingsPage() {
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">Statuses Settings</h1>
           <p className="text-xl text-muted-foreground max-w-md">
-            Statuses settings page is coming soon. We're working hard to bring
+            Statuses settings page is coming soon. We&apos;re working hard to bring
             you comprehensive status management features.
           </p>
         </div>

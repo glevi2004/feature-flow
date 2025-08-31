@@ -103,8 +103,9 @@ export default function OrganizationSettingsPage() {
       );
       setOrganization({ ...organization, name: newOrgName });
       alert("Organization name updated");
-    } catch (e: any) {
-      alert(e?.message || "Failed to update organization name");
+    } catch (e: unknown) {
+      const error = e as { message?: string };
+      alert(error?.message || "Failed to update organization name");
     } finally {
       setUpdatingOrg(false);
     }
@@ -124,8 +125,9 @@ export default function OrganizationSettingsPage() {
         teamSize: orgTeamSize || undefined,
       } as OrganizationData);
       alert("Organization details updated");
-    } catch (e: any) {
-      alert(e?.message || "Failed to update organization");
+    } catch (e: unknown) {
+      const error = e as { message?: string };
+      alert(error?.message || "Failed to update organization");
     } finally {
       setUpdatingOrg(false);
     }
@@ -138,8 +140,9 @@ export default function OrganizationSettingsPage() {
       await OrganizationService.deleteOrganization(organization.id, user.uid);
       alert("Organization deleted");
       setConfirmDeleteOrg(false);
-    } catch (e: any) {
-      alert(e?.message || "Failed to delete organization");
+    } catch (e: unknown) {
+      const error = e as { message?: string };
+      alert(error?.message || "Failed to delete organization");
     } finally {
       setUpdatingOrg(false);
     }
