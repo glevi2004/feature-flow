@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Package } from "lucide-react";
 import { app_name } from "@/lib/constants";
 
@@ -77,12 +78,12 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a
+                <Link
                   href="/documentation"
                   className="hover:text-white transition-colors"
                 >
                   Documentation
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="#" className="hover:text-white transition-colors">

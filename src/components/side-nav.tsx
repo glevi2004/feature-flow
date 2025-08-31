@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -20,8 +20,7 @@ import {
   CheckCircle,
   XCircle,
   Tag,
-  Sparkles,
-  ChevronRight,
+
   FileText,
   Activity,
 } from "lucide-react";
@@ -62,9 +61,7 @@ interface QuickFilterItem extends BaseItem {
   hasArrow: boolean;
 }
 
-interface RegularItem extends BaseItem {
-  // No additional properties
-}
+type RegularItem = BaseItem;
 
 type QuickLinkItem = StatusItem | QuickFilterItem | RegularItem;
 
@@ -86,13 +83,7 @@ export function SideNav({ onClose }: SideNavProps) {
   const [tags, setTags] = useState<FeedbackTag[]>([]);
   const [types, setTypes] = useState<FeedbackType[]>([]);
 
-  useEffect(() => {
-    if (user) {
-      loadCompanyData();
-    }
-  }, [user]);
-
-  const loadCompanyData = async () => {
+  const loadCompanyData = useCallback(async () => {
     try {
       const userCompanies = await CompanyService.getUserCompanies(user!.uid);
       if (userCompanies.length > 0) {
@@ -109,7 +100,13 @@ export function SideNav({ onClose }: SideNavProps) {
     } catch (error) {
       console.error("Error loading company data:", error);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      loadCompanyData();
+    }
+  }, [user, loadCompanyData]);
 
   const loadTags = async (companyId: string) => {
     try {
@@ -120,12 +117,16 @@ export function SideNav({ onClose }: SideNavProps) {
     }
   };
 
+  const isActive = useCallback((path: string) => {
+    return pathname.includes(path);
+  }, [pathname]);
+
   // Add effect to reload tags when the dropdown is opened
   useEffect(() => {
     if (companyId && isActive("/settings/tags")) {
       loadTags(companyId);
     }
-  }, [companyId, pathname]);
+  }, [companyId, pathname, isActive]);
 
   const loadTypes = async (companyId: string) => {
     try {
@@ -134,10 +135,6 @@ export function SideNav({ onClose }: SideNavProps) {
     } catch (error) {
       console.error("Error loading types:", error);
     }
-  };
-
-  const isActive = (path: string) => {
-    return pathname.includes(path);
   };
 
   // Page-specific configurations
