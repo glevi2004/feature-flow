@@ -11,6 +11,7 @@ import {
   query,
   where,
   getDocs,
+  deleteDoc,
 } from "firebase/firestore";
 
 export interface OrganizationData {
@@ -231,6 +232,121 @@ export class OrganizationService {
       return [];
     } catch (error) {
       console.error("Error getting user organizations:", error);
+      throw error;
+    }
+  }
+
+  // Get organizations that contain a given company ID
+  static async getOrganizationsByCompanyId(companyId: string) {
+    try {
+      const q = query(
+        collection(db, "organizations"),
+        where("companies", "array-contains", companyId)
+      );
+      const snapshot = await getDocs(q);
+      return snapshot.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+      })) as OrganizationData[];
+    } catch (error) {
+      console.error("Error getting organizations by company:", error);
+      throw error;
+    }
+  }
+
+  // Update organization name with uniqueness check
+  static async updateOrganizationName(
+    organizationId: string,
+    newName: string,
+    userId: string
+  ) {
+    try {
+      const trimmed = (newName || "").trim();
+      if (!trimmed) {
+        throw new Error("Organization name cannot be empty");
+      }
+
+      const exists = await this.checkOrganizationExists(trimmed);
+      if (exists) {
+        throw new Error("Organization name already exists");
+      }
+
+      const organization = await this.getOrganization(organizationId);
+      if (!organization || !organization.members.includes(userId)) {
+        throw new Error("Access denied");
+      }
+
+      await updateDoc(doc(db, "organizations", organizationId), {
+        name: trimmed,
+        updatedAt: new Date(),
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating organization name:", error);
+      throw error;
+    }
+  }
+
+  // Update organization details (currently teamSize)
+  static async updateOrganization(
+    organizationId: string,
+    updates: Partial<Pick<OrganizationData, "teamSize">>,
+    userId: string
+  ) {
+    try {
+      const organization = await this.getOrganization(organizationId);
+      if (!organization || !organization.members.includes(userId)) {
+        throw new Error("Access denied");
+      }
+
+      await updateDoc(doc(db, "organizations", organizationId), {
+        ...updates,
+        updatedAt: new Date(),
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating organization:", error);
+      throw error;
+    }
+  }
+
+  // Delete organization with safety: user must have more than one organization
+  static async deleteOrganization(organizationId: string, userId: string) {
+    try {
+      const organization = await this.getOrganization(organizationId);
+      if (!organization) {
+        throw new Error("Organization not found");
+      }
+
+      if (
+        organization.owner !== userId &&
+        !organization.members.includes(userId)
+      ) {
+        throw new Error("Access denied");
+      }
+
+      // Safety check: user must have more than one organization
+      const userOrganizations = await this.getUserOrganizations(userId);
+      if (userOrganizations.length <= 1) {
+        throw new Error(
+          "You cannot delete your only organization. Create another organization first."
+        );
+      }
+
+      // Remove organization from all member user records
+      for (const memberId of organization.members) {
+        await updateDoc(doc(db, "users", memberId), {
+          organizations: arrayRemove(organizationId),
+        });
+      }
+
+      await deleteDoc(doc(db, "organizations", organizationId));
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleting organization:", error);
       throw error;
     }
   }
