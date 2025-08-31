@@ -13,6 +13,8 @@ import {
   getDocs,
   deleteDoc,
 } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+import { storage } from "@/lib/firebase/firebaseConfig";
 import { OrganizationService } from "./organization";
 
 export interface CompanyData {
@@ -20,6 +22,7 @@ export interface CompanyData {
   name: string; // Company name (can be changed)
   website?: string;
   teamSize?: string;
+  logo?: string; // URL to the company logo stored in Firebase Storage
   createdAt: Date;
   createdBy: string; // User ID who created the company
   members: string[]; // Array of user IDs who are members
@@ -218,10 +221,84 @@ export class CompanyService {
     }
   }
 
-  // Update company details (website, teamSize)
+  // Upload company logo to Firebase Storage
+  static async uploadCompanyLogo(
+    companyId: string,
+    file: File,
+    userId: string
+  ): Promise<string> {
+    try {
+      const company = await this.getCompany(companyId);
+      if (!company || !company.members.includes(userId)) {
+        throw new Error("Access denied");
+      }
+
+      // Create a reference to the logo file
+      const fileExtension = file.name.split('.').pop();
+      const fileName = `company-logos/${companyId}/logo.${fileExtension}`;
+      const logoRef = ref(storage, fileName);
+
+      // Delete existing logo if it exists
+      if (company.logo) {
+        try {
+          const existingLogoRef = ref(storage, company.logo);
+          await deleteObject(existingLogoRef);
+        } catch (error) {
+          console.warn("Could not delete existing logo:", error);
+        }
+      }
+
+      // Upload the new logo
+      const snapshot = await uploadBytes(logoRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      // Update the company document with the new logo URL
+      await updateDoc(doc(db, "companies", companyId), {
+        logo: downloadURL,
+        updatedAt: new Date(),
+      });
+
+      return downloadURL;
+    } catch (error) {
+      console.error("Error uploading company logo:", error);
+      throw error;
+    }
+  }
+
+  // Remove company logo
+  static async removeCompanyLogo(companyId: string, userId: string) {
+    try {
+      const company = await this.getCompany(companyId);
+      if (!company || !company.members.includes(userId)) {
+        throw new Error("Access denied");
+      }
+
+      if (company.logo) {
+        try {
+          const logoRef = ref(storage, company.logo);
+          await deleteObject(logoRef);
+        } catch (error) {
+          console.warn("Could not delete logo file:", error);
+        }
+      }
+
+      // Remove logo URL from company document
+      await updateDoc(doc(db, "companies", companyId), {
+        logo: null,
+        updatedAt: new Date(),
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error removing company logo:", error);
+      throw error;
+    }
+  }
+
+  // Update company details (website, teamSize, logo)
   static async updateCompany(
     companyId: string,
-    updates: Partial<Pick<CompanyData, "website" | "teamSize">>,
+    updates: Partial<Pick<CompanyData, "website" | "teamSize" | "logo">>,
     userId: string
   ) {
     try {
