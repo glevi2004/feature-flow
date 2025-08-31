@@ -106,7 +106,11 @@ export default function CompanySettingsPage() {
     if (!user || !company) return;
     try {
       setUploadingLogo(true);
-      const logoUrl = await CompanyService.uploadCompanyLogo(company.id, file, user.uid);
+      const logoUrl = await CompanyService.uploadCompanyLogo(
+        company.id,
+        file,
+        user.uid
+      );
       setCompany({ ...company, logo: logoUrl });
       alert("Logo uploaded successfully");
     } catch (e: any) {
@@ -169,7 +173,7 @@ export default function CompanySettingsPage() {
             onRemove={handleLogoRemove}
             loading={uploadingLogo}
           />
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium">Company Name</label>
