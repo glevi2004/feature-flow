@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -12,13 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+
 
 import {
   Search,
@@ -28,7 +22,7 @@ import {
   X,
   Save,
   ArrowUp,
-  Lightbulb,
+
   Radio,
   Check,
   Eye,
@@ -38,7 +32,7 @@ import {
   CheckSquare,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { OnboardingService } from "@/lib/services/onboarding";
+
 import { CompanyService } from "@/lib/services/company";
 import {
   FeedbackService,
@@ -88,7 +82,7 @@ function DashboardPage() {
   const [types, setTypes] = useState<FeedbackType[]>([]);
   const [tags, setTags] = useState<FeedbackTag[]>([]);
   const [loading, setLoading] = useState(true);
-  const [companyName, setCompanyName] = useState("");
+
   const [companyId, setCompanyId] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
@@ -101,13 +95,7 @@ function DashboardPage() {
   const [selectedPost, setSelectedPost] = useState<FeedbackPost | null>(null);
   const [showPostModal, setShowPostModal] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      loadCompanyData();
-    }
-  }, [user]);
-
-  const loadCompanyData = async () => {
+  const loadCompanyData = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -124,7 +112,7 @@ function DashboardPage() {
           throw new Error("Access denied to company");
         }
 
-        setCompanyName(companyData.name);
+
         setCompanyId(companyId);
 
         // Load posts, types, and tags using company ID
@@ -146,12 +134,13 @@ function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  const getTypeColor = (typeId: string) => {
-    const type = types.find((t) => t.id === typeId);
-    return type?.color || "#6B7280";
-  };
+  useEffect(() => {
+    if (user) {
+      loadCompanyData();
+    }
+  }, [user, loadCompanyData]);
 
   const getTagColor = (tagId: string) => {
     const tag = tags.find((t) => t.id === tagId);
@@ -338,7 +327,7 @@ function DashboardPage() {
               <p className="text-muted-foreground">No posts found</p>
             </div>
           ) : (
-            posts.map((post, index) => (
+            posts.map((post) => (
               <div
                 key={post.id}
                 className="flex items-center justify-between p-4 bg-card border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"

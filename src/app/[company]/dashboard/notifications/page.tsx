@@ -15,7 +15,7 @@ export default function NotificationsPage() {
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">Notifications</h1>
           <p className="text-xl text-muted-foreground max-w-md">
-            Notifications center is coming soon. We're building a comprehensive
+            Notifications center is coming soon. We&apos;re building a comprehensive
             system to keep you updated on all your feedback and activities.
           </p>
         </div>
