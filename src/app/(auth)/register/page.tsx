@@ -139,9 +139,10 @@ export default function RegisterPage() {
       } else {
         router.push("/dashboard");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error signing in with Google:", error);
-      if (error.code === "auth/account-exists-with-different-credential") {
+      const authError = error as { code?: string; message?: string };
+      if (authError.code === "auth/account-exists-with-different-credential") {
         setError(
           "An account with this email already exists. Please try signing in with a different method."
         );
@@ -165,9 +166,10 @@ export default function RegisterPage() {
       } else {
         router.push("/dashboard");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error signing in with GitHub:", error);
-      if (error.code === "auth/account-exists-with-different-credential") {
+      const authError = error as { code?: string; message?: string };
+      if (authError.code === "auth/account-exists-with-different-credential") {
         setError(
           "An account with this email already exists. Please try signing in with a different method."
         );
@@ -187,15 +189,16 @@ export default function RegisterPage() {
       await signInWithEmail(email, password, formData);
       // Redirect to verification page instead of dashboard
       router.push("/verify-email");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error signing in with email:", error);
-      if (error.code === "auth/email-already-in-use") {
+      const authError = error as { code?: string; message?: string };
+      if (authError.code === "auth/email-already-in-use") {
         setError(
           "An account with this email already exists. Please try signing in instead."
         );
-      } else if (error.code === "auth/weak-password") {
+      } else if (authError.code === "auth/weak-password") {
         setError("Password should be at least 6 characters long.");
-      } else if (error.code === "auth/invalid-email") {
+      } else if (authError.code === "auth/invalid-email") {
         setError("Please enter a valid email address.");
       } else {
         setError("An error occurred during sign up. Please try again.");
