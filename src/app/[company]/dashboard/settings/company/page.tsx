@@ -70,8 +70,9 @@ export default function CompanySettingsPage() {
       );
       setCompany({ ...company, name: newCompanyName });
       alert("Company name updated");
-    } catch (e: any) {
-      alert(e?.message || "Failed to update company name");
+    } catch (e: unknown) {
+      const error = e as { message?: string };
+      alert(error?.message || "Failed to update company name");
     } finally {
       setUpdatingCompany(false);
     }
@@ -95,8 +96,9 @@ export default function CompanySettingsPage() {
         teamSize: teamSize || undefined,
       });
       alert("Company details updated");
-    } catch (e: any) {
-      alert(e?.message || "Failed to update company");
+    } catch (e: unknown) {
+      const error = e as { message?: string };
+      alert(error?.message || "Failed to update company");
     } finally {
       setUpdatingCompany(false);
     }
@@ -113,8 +115,9 @@ export default function CompanySettingsPage() {
       );
       setCompany({ ...company, logo: logoUrl });
       alert("Logo uploaded successfully");
-    } catch (e: any) {
-      alert(e?.message || "Failed to upload logo");
+    } catch (e: unknown) {
+      const error = e as { message?: string };
+      alert(error?.message || "Failed to upload logo");
     } finally {
       setUploadingLogo(false);
     }
@@ -127,8 +130,9 @@ export default function CompanySettingsPage() {
       await CompanyService.removeCompanyLogo(company.id, user.uid);
       setCompany({ ...company, logo: undefined });
       alert("Logo removed successfully");
-    } catch (e: any) {
-      alert(e?.message || "Failed to remove logo");
+    } catch (e: unknown) {
+      const error = e as { message?: string };
+      alert(error?.message || "Failed to remove logo");
     } finally {
       setUploadingLogo(false);
     }
@@ -141,8 +145,9 @@ export default function CompanySettingsPage() {
       await CompanyService.deleteCompany(company.id, user.uid);
       alert("Company deleted");
       setConfirmDeleteCompany(false);
-    } catch (e: any) {
-      alert(e?.message || "Failed to delete company");
+    } catch (e: unknown) {
+      const error = e as { message?: string };
+      alert(error?.message || "Failed to delete company");
     } finally {
       setUpdatingCompany(false);
     }

@@ -15,7 +15,7 @@ export default function FeedbackSitePage() {
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">Feedback Site Settings</h1>
           <p className="text-xl text-muted-foreground max-w-md">
-            Feedback site settings page is coming soon. We're working hard to
+            Feedback site settings page is coming soon. We&apos;re working hard to
             bring you comprehensive customization options.
           </p>
         </div>
