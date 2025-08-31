@@ -13,6 +13,7 @@ import {
   getDocs,
   deleteDoc,
 } from "firebase/firestore";
+import { OrganizationService } from "./organization";
 
 export interface CompanyData {
   id: string; // Auto-generated unique company ID
@@ -237,6 +238,31 @@ export class CompanyService {
       return { success: true };
     } catch (error) {
       console.error("Error updating company:", error);
+      throw error;
+    }
+  }
+
+  // Get companies by organization ID
+  static async getCompaniesByOrganizationId(organizationId: string): Promise<CompanyData[]> {
+    try {
+      // First get the organization to find its companies
+      const organization = await OrganizationService.getOrganization(organizationId);
+      if (!organization) {
+        throw new Error("Organization not found");
+      }
+
+      // Get all companies that belong to this organization
+      const companies: CompanyData[] = [];
+      for (const companyId of organization.companies) {
+        const company = await this.getCompany(companyId);
+        if (company) {
+          companies.push(company);
+        }
+      }
+
+      return companies;
+    } catch (error) {
+      console.error("Error getting companies by organization:", error);
       throw error;
     }
   }
