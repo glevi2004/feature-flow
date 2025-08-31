@@ -117,12 +117,6 @@ function BoardPage() {
   const [selectedPost, setSelectedPost] = useState<FeedbackPost | null>(null);
   const [showPostModal, setShowPostModal] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      loadCompanyData();
-    }
-  }, [user, loadCompanyData]);
-
   const loadCompanyData = useCallback(async () => {
     try {
       setLoading(true);
@@ -167,7 +161,11 @@ function BoardPage() {
     }
   }, [user]);
 
-
+  useEffect(() => {
+    if (user) {
+      loadCompanyData();
+    }
+  }, [user, loadCompanyData]);
 
   const getTagColor = (tagId: string) => {
     const tag = tags.find((t) => t.id === tagId);
