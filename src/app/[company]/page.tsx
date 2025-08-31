@@ -343,33 +343,7 @@ export default function PublicFeedbackPage() {
         </div>
 
         {/* Header/Navigation */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex space-x-2">
-            <Button
-              variant={sortBy === "trending" ? "secondary" : "ghost"}
-              onClick={() => setSortBy("trending")}
-              className="flex items-center gap-2"
-            >
-              <Zap className="h-4 w-4" />
-              Trending
-            </Button>
-            <Button
-              variant={sortBy === "top" ? "secondary" : "ghost"}
-              onClick={() => setSortBy("top")}
-              className="flex items-center gap-2"
-            >
-              <ArrowUp className="h-4 w-4" />
-              Top
-            </Button>
-            <Button
-              variant={sortBy === "new" ? "secondary" : "ghost"}
-              onClick={() => setSortBy("new")}
-              className="flex items-center gap-2"
-            >
-              <Clock className="h-4 w-4" />
-              New
-            </Button>
-          </div>
+        <div className="flex items-center justify-end mb-8">
           <div className="flex items-center space-x-2">
             <div className="relative">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -682,52 +656,6 @@ export default function PublicFeedbackPage() {
               </Card>
             ))
           )}
-        </div>
-      </div>
-
-      {/* Right Sidebar */}
-      <div className="w-72 flex-shrink-0 p-6 border-l">
-        <div className="mb-8">
-          <div className="flex items-center text-muted-foreground text-sm mb-2">
-            <span className="h-2 w-2 rounded-full bg-green-500 mr-2"></span>
-            Dashboard is not loading
-          </div>
-          <a
-            href="#"
-            className="text-blue-600 hover:text-blue-700 text-sm flex items-center"
-          >
-            View all your activity <Activity className="h-3 w-3 ml-1" />
-          </a>
-        </div>
-
-        <div>
-          <h3 className="text-lg font-semibold mb-4">Kanban</h3>
-          <div className="space-y-2">
-            <Button variant="ghost" className="w-full justify-start">
-              <MessageSquare className="h-4 w-4 mr-2" />
-              View all posts
-            </Button>
-            <Button variant="ghost" className="w-full justify-start">
-              <Lightbulb className="h-4 w-4 mr-2 text-yellow-500" />
-              Feature Request
-            </Button>
-            <Button variant="ghost" className="w-full justify-start">
-              <Zap className="h-4 w-4 mr-2 text-green-500" />
-              Bugs
-            </Button>
-            <Button variant="ghost" className="w-full justify-start">
-              <Bookmark className="h-4 w-4 mr-2 text-blue-500" />
-              Feedback
-            </Button>
-            <Button variant="ghost" className="w-full justify-start">
-              <LinkIcon className="h-4 w-4 mr-2 text-gray-500" />
-              Integrations
-            </Button>
-            <Button variant="ghost" className="w-full justify-start">
-              <HelpCircle className="h-4 w-4 mr-2 text-orange-500" />
-              Question
-            </Button>
-          </div>
         </div>
       </div>
     </div>
