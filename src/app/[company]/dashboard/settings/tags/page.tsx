@@ -322,9 +322,10 @@ export default function TagsSettingsPage() {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Delete Tag</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Are you sure you want to delete the tag &ldquo;{tag.name}
-                            &rdquo;? This action cannot be undone and will remove the
-                            tag from all associated feedback items.
+                            Are you sure you want to delete the tag &ldquo;
+                            {tag.name}
+                            &rdquo;? This action cannot be undone and will
+                            remove the tag from all associated feedback items.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

@@ -59,9 +59,10 @@ export default function OrganizationSettingsPage() {
           setOrganization(org);
           setNewOrgName(org.name);
           setOrgTeamSize(org.teamSize || "");
-          
+
           // Load companies for this organization
-          const orgCompanies = await CompanyService.getCompaniesByOrganizationId(org.id);
+          const orgCompanies =
+            await CompanyService.getCompaniesByOrganizationId(org.id);
           setCompanies(orgCompanies);
         } else {
           // Fallback to user's first organization
@@ -76,9 +77,10 @@ export default function OrganizationSettingsPage() {
               setOrganization(org);
               setNewOrgName(org.name);
               setOrgTeamSize(org.teamSize || "");
-              
+
               // Load companies for this organization
-              const orgCompanies = await CompanyService.getCompaniesByOrganizationId(org.id);
+              const orgCompanies =
+                await CompanyService.getCompaniesByOrganizationId(org.id);
               setCompanies(orgCompanies);
             }
           }
