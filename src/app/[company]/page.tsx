@@ -553,46 +553,7 @@ export default function PublicFeedbackPage() {
                     </div>
                   </div>
 
-                  {/* "How important is this to you?" section for second post */}
-                  {index === 1 && (
-                    <div className="mt-4 pt-4 border-t">
-                      <p className="text-sm font-semibold mb-2">
-                        How important is this to you?
-                      </p>
-                      <div className="flex space-x-2">
-                        <Button variant="outline" size="sm">
-                          <span
-                            role="img"
-                            aria-label="winking face"
-                            className="mr-1"
-                          >
-                            😉
-                          </span>
-                          Nice to have
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <span
-                            role="img"
-                            aria-label="smiling face"
-                            className="mr-1"
-                          >
-                            😊
-                          </span>
-                          Important
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <span
-                            role="img"
-                            aria-label="red face"
-                            className="mr-1"
-                          >
-                            😡
-                          </span>
-                          Essential
-                        </Button>
-                      </div>
-                    </div>
-                  )}
+
 
                   {/* Comments Section */}
                   {showComments === post.id && (
