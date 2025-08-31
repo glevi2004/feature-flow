@@ -553,8 +553,6 @@ export default function PublicFeedbackPage() {
                     </div>
                   </div>
 
-
-
                   {/* Comments Section */}
                   {showComments === post.id && (
                     <div className="mt-4 pt-4 border-t">
