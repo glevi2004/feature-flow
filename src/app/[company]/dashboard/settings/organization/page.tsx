@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { CompanyService } from "@/lib/services/company";
+import { CompanyService, CompanyData } from "@/lib/services/company";
 import {
   OrganizationService,
   OrganizationData,
@@ -19,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Loader2, Trash2 } from "lucide-react";
+import { Loader2, Trash2, Building2 } from "lucide-react";
 
 export default function OrganizationSettingsPage() {
   const params = useParams();
@@ -30,6 +30,7 @@ export default function OrganizationSettingsPage() {
   const [organization, setOrganization] = useState<OrganizationData | null>(
     null
   );
+  const [companies, setCompanies] = useState<CompanyData[]>([]);
 
   const [newOrgName, setNewOrgName] = useState("");
   const [orgTeamSize, setOrgTeamSize] = useState("");
@@ -58,6 +59,10 @@ export default function OrganizationSettingsPage() {
           setOrganization(org);
           setNewOrgName(org.name);
           setOrgTeamSize(org.teamSize || "");
+          
+          // Load companies for this organization
+          const orgCompanies = await CompanyService.getCompaniesByOrganizationId(org.id);
+          setCompanies(orgCompanies);
         } else {
           // Fallback to user's first organization
           const userOrgIds = await OrganizationService.getUserOrganizations(
@@ -71,6 +76,10 @@ export default function OrganizationSettingsPage() {
               setOrganization(org);
               setNewOrgName(org.name);
               setOrgTeamSize(org.teamSize || "");
+              
+              // Load companies for this organization
+              const orgCompanies = await CompanyService.getCompaniesByOrganizationId(org.id);
+              setCompanies(orgCompanies);
             }
           }
         }
@@ -195,6 +204,49 @@ export default function OrganizationSettingsPage() {
               <Trash2 className="h-4 w-4" /> Delete Organization
             </Button>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Companies Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Building2 className="h-5 w-5" />
+            Organization Companies ({companies.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {companies.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Building2 className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>No companies found in this organization.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {companies.map((company) => (
+                <div
+                  key={company.id}
+                  className="p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h3 className="font-medium text-sm">{company.name}</h3>
+                      {company.website && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {company.website}
+                        </p>
+                      )}
+                      {company.teamSize && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Team: {company.teamSize}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 
