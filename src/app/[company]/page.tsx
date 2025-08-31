@@ -20,7 +20,7 @@ import {
   FeedbackType,
   FeedbackStatus,
 } from "@/lib/services/feedback";
-import { CompanyService } from "@/lib/services/company";
+import { CompanyService, CompanyData } from "@/lib/services/company";
 import {
   Heart,
   MessageSquare,
@@ -54,6 +54,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import Image from "next/image";
 
 export default function PublicFeedbackPage() {
   const params = useParams();
@@ -63,6 +64,7 @@ export default function PublicFeedbackPage() {
   const [types, setTypes] = useState<FeedbackType[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyId, setCompanyId] = useState<string>("");
+  const [companyData, setCompanyData] = useState<CompanyData | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [comments, setComments] = useState<FeedbackComment[]>([]);
   const [showComments, setShowComments] = useState<string | null>(null);
@@ -94,6 +96,7 @@ export default function PublicFeedbackPage() {
       }
 
       setCompanyId(companyData.id);
+      setCompanyData(companyData);
 
       let [postsData, typesData] = await Promise.all([
         FeedbackService.getCompanyPosts(companyData.id),
@@ -313,6 +316,32 @@ export default function PublicFeedbackPage() {
     <div className="min-h-screen bg-background flex w-full">
       {/* Main Content Area */}
       <div className="flex-1 max-w-4xl mx-auto p-6">
+        {/* Company Header */}
+        <div className="flex items-center gap-4 mb-8 pb-6 border-b">
+          {companyData?.logo ? (
+            <div className="relative w-16 h-16 flex-shrink-0">
+              <Image
+                src={companyData.logo}
+                alt={`${companyData.name} logo`}
+                fill
+                className="object-contain rounded-lg"
+              />
+            </div>
+          ) : (
+            <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+              <User className="h-8 w-8 text-muted-foreground" />
+            </div>
+          )}
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">
+              {companyData?.name || companyName}
+            </h1>
+            <p className="text-muted-foreground">
+              Share your feedback and help us improve
+            </p>
+          </div>
+        </div>
+
         {/* Header/Navigation */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex space-x-2">
