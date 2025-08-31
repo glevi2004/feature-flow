@@ -50,9 +50,10 @@ export default function LoginPage() {
           }
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error signing in with Google:", error);
-      if (error.code === "auth/account-exists-with-different-credential") {
+      const authError = error as { code?: string; message?: string };
+      if (authError.code === "auth/account-exists-with-different-credential") {
         setError(
           "An account with this email already exists. Please try signing in with a different method."
         );
@@ -97,9 +98,10 @@ export default function LoginPage() {
           }
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error signing in with GitHub:", error);
-      if (error.code === "auth/account-exists-with-different-credential") {
+      const authError = error as { code?: string; message?: string };
+      if (authError.code === "auth/account-exists-with-different-credential") {
         setError(
           "An account with this email already exists. Please try signing in with a different method."
         );
