@@ -1,4 +1,5 @@
 import { app_name } from "@/lib/constants";
+import Image from "next/image";
 
 export function IntegrationsSection() {
   return (
@@ -20,9 +21,11 @@ export function IntegrationsSection() {
           {
             name: "Slack",
             logo: (
-              <img
+              <Image
                 src="/integration-logos/slack.png"
                 alt="Slack"
+                width={48}
+                height={48}
                 className="h-12 w-auto mx-auto mb-4"
               />
             ),
@@ -32,9 +35,11 @@ export function IntegrationsSection() {
             name: "Jira",
             logo: (
               <div className="flex items-center justify-center gap-3">
-                <img
+                <Image
                   src="/integration-logos/jira.png"
                   alt="Jira"
+                  width={48}
+                  height={48}
                   className="h-12 w-auto"
                 />
                 <span className="font-semibold text-white text-5xl">Jira</span>
@@ -45,9 +50,11 @@ export function IntegrationsSection() {
           {
             name: "ClickUp",
             logo: (
-              <img
+              <Image
                 src="/integration-logos/clickup.png"
                 alt="ClickUp"
+                width={48}
+                height={48}
                 className="h-12 w-auto mx-auto mb-4"
               />
             ),
