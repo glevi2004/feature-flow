@@ -243,10 +243,14 @@ export class CompanyService {
   }
 
   // Get companies by organization ID
-  static async getCompaniesByOrganizationId(organizationId: string): Promise<CompanyData[]> {
+  static async getCompaniesByOrganizationId(
+    organizationId: string
+  ): Promise<CompanyData[]> {
     try {
       // First get the organization to find its companies
-      const organization = await OrganizationService.getOrganization(organizationId);
+      const organization = await OrganizationService.getOrganization(
+        organizationId
+      );
       if (!organization) {
         throw new Error("Organization not found");
       }
