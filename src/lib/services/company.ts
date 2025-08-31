@@ -11,6 +11,7 @@ import {
   query,
   where,
   getDocs,
+  deleteDoc,
 } from "firebase/firestore";
 
 export interface CompanyData {
@@ -176,6 +177,104 @@ export class CompanyService {
       return [];
     } catch (error) {
       console.error("Error getting user companies:", error);
+      throw error;
+    }
+  }
+
+  // Update company name with uniqueness check
+  static async updateCompanyName(
+    companyId: string,
+    newName: string,
+    userId: string
+  ) {
+    try {
+      const trimmed = (newName || "").trim();
+      if (!trimmed) {
+        throw new Error("Company name cannot be empty");
+      }
+
+      // Check if new name already exists
+      const exists = await this.checkCompanyExists(trimmed);
+      if (exists) {
+        throw new Error("Company name already exists");
+      }
+
+      // Verify user has permission (must be a member)
+      const company = await this.getCompany(companyId);
+      if (!company || !company.members.includes(userId)) {
+        throw new Error("Access denied");
+      }
+
+      await updateDoc(doc(db, "companies", companyId), {
+        name: trimmed,
+        updatedAt: new Date(),
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating company name:", error);
+      throw error;
+    }
+  }
+
+  // Update company details (website, teamSize)
+  static async updateCompany(
+    companyId: string,
+    updates: Partial<Pick<CompanyData, "website" | "teamSize">>,
+    userId: string
+  ) {
+    try {
+      const company = await this.getCompany(companyId);
+      if (!company || !company.members.includes(userId)) {
+        throw new Error("Access denied");
+      }
+
+      await updateDoc(doc(db, "companies", companyId), {
+        ...updates,
+        updatedAt: new Date(),
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating company:", error);
+      throw error;
+    }
+  }
+
+  // Delete company with safety: user must have more than one company
+  static async deleteCompany(companyId: string, userId: string) {
+    try {
+      const company = await this.getCompany(companyId);
+      if (!company) {
+        throw new Error("Company not found");
+      }
+
+      // Ensure the requesting user is the creator or a member
+      if (company.createdBy !== userId && !company.members.includes(userId)) {
+        throw new Error("Access denied");
+      }
+
+      // Check safety constraint: user must have more than one company
+      const userCompanies = await this.getUserCompanies(userId);
+      if (userCompanies.length <= 1) {
+        throw new Error(
+          "You cannot delete your only company. Create another company first."
+        );
+      }
+
+      // Remove company from all member user records
+      for (const memberId of company.members) {
+        await updateDoc(doc(db, "users", memberId), {
+          companies: arrayRemove(companyId),
+        });
+      }
+
+      // TODO: Consider cascading deletes for related collections (posts/types/tags)
+      await deleteDoc(doc(db, "companies", companyId));
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleting company:", error);
       throw error;
     }
   }
