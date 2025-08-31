@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Mail, CheckCircle, RefreshCw } from "lucide-react";
@@ -18,12 +18,38 @@ export default function VerifyEmailPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const handleVerificationComplete = useCallback(async () => {
+    try {
+      // Check if we have pending onboarding data
+      const pendingOnboarding = localStorage.getItem("pendingOnboarding");
+      let onboardingData = null;
+
+      if (pendingOnboarding && user) {
+        onboardingData = JSON.parse(pendingOnboarding);
+        await OnboardingService.saveOnboardingData(user.uid, onboardingData);
+        localStorage.removeItem("pendingOnboarding");
+        console.log("Onboarding data saved successfully after verification");
+      }
+
+      // Redirect to company page after successful verification
+      if (onboardingData?.companyName) {
+        router.push(`/${encodeURIComponent(onboardingData.companyName)}`);
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      console.error("Error saving onboarding data:", error);
+      // Still redirect to dashboard even if onboarding save fails
+      router.push("/dashboard");
+    }
+  }, [user, router]);
+
   useEffect(() => {
     // If user is already verified, redirect to dashboard
     if (user?.emailVerified) {
       handleVerificationComplete();
     }
-  }, [user]);
+  }, [user, handleVerificationComplete]);
 
   const handleCheckVerification = async () => {
     setIsChecking(true);
@@ -42,7 +68,7 @@ export default function VerifyEmailPage() {
           "Email not verified yet. Please check your inbox and click the verification link."
         );
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error checking verification:", error);
       setError("Error checking verification status. Please try again.");
     } finally {
@@ -60,36 +86,11 @@ export default function VerifyEmailPage() {
         await sendEmailVerification(user);
         setMessage("Verification email sent! Please check your inbox.");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error resending verification:", error);
       setError("Error sending verification email. Please try again.");
     } finally {
       setIsResending(false);
-    }
-  };
-
-  const handleVerificationComplete = async () => {
-    try {
-      // Check if we have pending onboarding data
-      const pendingOnboarding = localStorage.getItem("pendingOnboarding");
-
-      if (pendingOnboarding && user) {
-        const onboardingData = JSON.parse(pendingOnboarding);
-        await OnboardingService.saveOnboardingData(user.uid, onboardingData);
-        localStorage.removeItem("pendingOnboarding");
-        console.log("Onboarding data saved successfully after verification");
-      }
-
-      // Redirect to company page after successful verification
-      if (onboardingData?.companyName) {
-        router.push(`/${encodeURIComponent(onboardingData.companyName)}`);
-      } else {
-        router.push("/dashboard");
-      }
-    } catch (error) {
-      console.error("Error saving onboarding data:", error);
-      // Still redirect to dashboard even if onboarding save fails
-      router.push("/dashboard");
     }
   };
 
@@ -140,7 +141,10 @@ export default function VerifyEmailPage() {
               <ol className="text-sm text-blue-800 space-y-1">
                 <li>1. Check your email inbox (and spam folder)</li>
                 <li>2. Click the verification link in the email</li>
-                <li>3. Come back here and click "I've Verified My Email"</li>
+                <li>
+                  3. Come back here and click &ldquo;I&apos;ve Verified My
+                  Email&rdquo;
+                </li>
               </ol>
             </div>
 
@@ -170,7 +174,7 @@ export default function VerifyEmailPage() {
                 ) : (
                   <>
                     <CheckCircle className="w-4 h-4 mr-2" />
-                    I've Verified My Email
+                    I&apos;ve Verified My Email
                   </>
                 )}
               </Button>
