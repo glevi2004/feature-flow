@@ -13,7 +13,12 @@ import {
   getDocs,
   deleteDoc,
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 import { storage } from "@/lib/firebase/firebaseConfig";
 import { OrganizationService } from "./organization";
 
@@ -234,7 +239,7 @@ export class CompanyService {
       }
 
       // Create a reference to the logo file
-      const fileExtension = file.name.split('.').pop();
+      const fileExtension = file.name.split(".").pop();
       const fileName = `company-logos/${companyId}/logo.${fileExtension}`;
       const logoRef = ref(storage, fileName);
 
