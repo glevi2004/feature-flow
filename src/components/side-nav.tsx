@@ -20,7 +20,6 @@ import {
   CheckCircle,
   XCircle,
   Tag,
-
   FileText,
   Activity,
 } from "lucide-react";
@@ -117,9 +116,12 @@ export function SideNav({ onClose }: SideNavProps) {
     }
   };
 
-  const isActive = useCallback((path: string) => {
-    return pathname.includes(path);
-  }, [pathname]);
+  const isActive = useCallback(
+    (path: string) => {
+      return pathname.includes(path);
+    },
+    [pathname]
+  );
 
   // Add effect to reload tags when the dropdown is opened
   useEffect(() => {
