@@ -16,6 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { AddCompanyDialog } from "@/components/ui/add-company-dialog";
+import { LogoUpload } from "@/components/ui/logo-upload";
 import { Loader2, Trash2 } from "lucide-react";
 
 export default function CompanySettingsPage() {
@@ -30,6 +31,7 @@ export default function CompanySettingsPage() {
   const [companyWebsite, setCompanyWebsite] = useState("");
   const [teamSize, setTeamSize] = useState("");
   const [updatingCompany, setUpdatingCompany] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   const [showAddCompany, setShowAddCompany] = useState(false);
   const [confirmDeleteCompany, setConfirmDeleteCompany] = useState(false);
@@ -100,6 +102,34 @@ export default function CompanySettingsPage() {
     }
   };
 
+  const handleLogoUpload = async (file: File) => {
+    if (!user || !company) return;
+    try {
+      setUploadingLogo(true);
+      const logoUrl = await CompanyService.uploadCompanyLogo(company.id, file, user.uid);
+      setCompany({ ...company, logo: logoUrl });
+      alert("Logo uploaded successfully");
+    } catch (e: any) {
+      alert(e?.message || "Failed to upload logo");
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
+  const handleLogoRemove = async () => {
+    if (!user || !company) return;
+    try {
+      setUploadingLogo(true);
+      await CompanyService.removeCompanyLogo(company.id, user.uid);
+      setCompany({ ...company, logo: undefined });
+      alert("Logo removed successfully");
+    } catch (e: any) {
+      alert(e?.message || "Failed to remove logo");
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
   const handleDeleteCompany = async () => {
     if (!user || !company) return;
     try {
@@ -131,7 +161,15 @@ export default function CompanySettingsPage() {
         <CardHeader>
           <CardTitle>Company Settings</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
+          {/* Logo Upload Section */}
+          <LogoUpload
+            currentLogo={company?.logo}
+            onUpload={handleLogoUpload}
+            onRemove={handleLogoRemove}
+            loading={uploadingLogo}
+          />
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium">Company Name</label>
