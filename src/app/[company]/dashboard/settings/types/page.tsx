@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { CompanyService } from "@/lib/services/company";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+
 import {
   Card,
   CardContent,
@@ -396,9 +396,9 @@ export default function TypesSettingsPage() {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Delete Type</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Are you sure you want to delete the type "
+                            Are you sure you want to delete the type &ldquo;
                             {type.name}
-                            "? This action cannot be undone and will remove the
+                            &rdquo;? This action cannot be undone and will remove the
                             type from all associated feedback items.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
