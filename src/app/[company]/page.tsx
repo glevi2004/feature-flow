@@ -487,12 +487,6 @@ export default function PublicFeedbackPage() {
                         {post.description}
                       </p>
                     </div>
-                    {index === 0 && (
-                      <div className="flex items-center gap-1 text-yellow-600">
-                        <Star className="h-4 w-4" />
-                        <span className="text-xs font-medium">PINNED</span>
-                      </div>
-                    )}
                   </div>
 
                   {/* Post Footer */}
