@@ -499,18 +499,35 @@ export default function PublicFeedbackPage() {
                       <div className="flex items-center space-x-2">
                         <Calendar className="h-4 w-4" />
                         <span>
-                          {post.createdAt &&
-                          typeof post.createdAt.toDate === "function"
-                            ? formatRelativeTime(post.createdAt.toDate())
-                            : post.createdAt &&
-                              typeof post.createdAt === "object" &&
-                              "seconds" in post.createdAt
-                            ? formatRelativeTime(
-                                new Date(post.createdAt.seconds * 1000)
-                              )
-                            : post.createdAt
-                            ? formatRelativeTime(new Date(post.createdAt))
-                            : "Recently"}
+                          {(() => {
+                            try {
+                              if (
+                                post.createdAt &&
+                                typeof post.createdAt.toDate === "function"
+                              ) {
+                                return formatRelativeTime(
+                                  post.createdAt.toDate()
+                                );
+                              } else if (
+                                post.createdAt &&
+                                typeof post.createdAt === "object" &&
+                                "seconds" in post.createdAt
+                              ) {
+                                return formatRelativeTime(
+                                  new Date(post.createdAt.seconds * 1000)
+                                );
+                              } else if (post.createdAt) {
+                                const date = new Date(post.createdAt);
+                                if (!isNaN(date.getTime())) {
+                                  return formatRelativeTime(date);
+                                }
+                              }
+                              return "Just now";
+                            } catch (error) {
+                              console.error("Error formatting date:", error);
+                              return "Just now";
+                            }
+                          })()}
                         </span>
                       </div>
                     </div>
