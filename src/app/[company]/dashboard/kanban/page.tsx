@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -109,7 +109,7 @@ function BoardPage() {
   const [types, setTypes] = useState<FeedbackType[]>([]);
   const [tags, setTags] = useState<FeedbackTag[]>([]);
   const [loading, setLoading] = useState(true);
-  const [companyName, setCompanyName] = useState("");
+
   const [companyId, setCompanyId] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [draggedPost, setDraggedPost] = useState<FeedbackPost | null>(null);
@@ -121,9 +121,9 @@ function BoardPage() {
     if (user) {
       loadCompanyData();
     }
-  }, [user]);
+  }, [user, loadCompanyData]);
 
-  const loadCompanyData = async () => {
+  const loadCompanyData = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -140,7 +140,7 @@ function BoardPage() {
           throw new Error("Access denied to company");
         }
 
-        setCompanyName(companyData.name);
+
         setCompanyId(companyId);
 
         // Load posts, types, and tags
@@ -165,12 +165,9 @@ function BoardPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  const getTypeColor = (typeName: string) => {
-    const type = types.find((t) => t.name === typeName);
-    return type?.color || "#6B7280";
-  };
+
 
   const getTagColor = (tagId: string) => {
     const tag = tags.find((t) => t.id === tagId);
@@ -196,9 +193,7 @@ function BoardPage() {
     });
   };
 
-  const getPostsForColumn = (status: FeedbackStatus) => {
-    return posts.filter((post) => post.status === status);
-  };
+
 
   const handleDragStart = (e: React.DragEvent, post: FeedbackPost) => {
     setDraggedPost(post);

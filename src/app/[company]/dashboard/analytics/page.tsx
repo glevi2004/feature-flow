@@ -15,7 +15,7 @@ export default function AnalyticsPage() {
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">Analytics</h1>
           <p className="text-xl text-muted-foreground max-w-md">
-            Analytics dashboard is coming soon. We're building powerful insights
+            Analytics dashboard is coming soon. We&apos;re building powerful insights
             and metrics to help you understand your feedback better.
           </p>
         </div>
