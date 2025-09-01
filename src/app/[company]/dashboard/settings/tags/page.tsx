@@ -394,6 +394,7 @@ export default function TagsSettingsPage() {
               Cancel
             </Button>
             <Button onClick={handleEditTag} disabled={!newTagName.trim()}>
+              <Save className="h-4 w-4" />
               Save Changes
             </Button>
           </DialogFooter>

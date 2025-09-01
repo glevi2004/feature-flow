@@ -7,6 +7,8 @@ import { CompanyService } from "@/lib/services/company";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Timestamp } from "firebase/firestore";
+import dynamic from "next/dynamic";
+import { EmojiClickData, Theme, EmojiStyle } from "emoji-picker-react";
 
 import {
   Card,
@@ -37,11 +39,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { FeedbackService, FeedbackType } from "@/lib/services/feedback";
 
+// Dynamic import to avoid SSR issues
+const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
+
 interface Type extends FeedbackType {
   count: number;
 }
 
-const emojiOptions = [
+const commonEmojis = [
   "💡",
   "🚀",
   "🐛",
@@ -66,6 +71,14 @@ const emojiOptions = [
   "📋",
   "⚙️",
   "🏆",
+  "✅",
+  "❌",
+  "⚠️",
+  "ℹ️",
+  "🔴",
+  "🟢",
+  "🟡",
+  "🔵",
 ];
 
 const colorOptions = [
@@ -94,6 +107,7 @@ export default function TypesSettingsPage() {
   const [newTypeColor, setNewTypeColor] = useState("#3b82f6");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
 
   // Load company data and then fetch types
   useEffect(() => {
@@ -242,6 +256,11 @@ export default function TypesSettingsPage() {
     setIsEditDialogOpen(true);
   };
 
+  const handleEmojiClick = (emojiData: EmojiClickData) => {
+    setNewTypeEmoji(emojiData.emoji);
+    setIsEmojiPickerOpen(false);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -288,21 +307,57 @@ export default function TypesSettingsPage() {
               </div>
               <div>
                 <label className="text-sm font-medium">Emoji</label>
-                <div className="grid grid-cols-8 gap-2 mt-2">
-                  {emojiOptions.map((emoji) => (
-                    <button
-                      key={emoji}
-                      type="button"
-                      className={`w-8 h-8 rounded border-2 flex items-center justify-center text-lg hover:bg-muted ${
-                        newTypeEmoji === emoji
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-transparent"
-                      }`}
-                      onClick={() => setNewTypeEmoji(emoji)}
+                <div className="flex items-center gap-3 mt-2">
+                  <button
+                    type="button"
+                    className="w-12 h-12 rounded border-2 flex items-center justify-center text-2xl hover:bg-muted border-gray-300"
+                  >
+                    {newTypeEmoji}
+                  </button>
+                </div>
+                <div className="mt-3">
+                  <div className="grid grid-cols-8 gap-2 mb-3">
+                    {commonEmojis.map((emoji) => (
+                      <button
+                        key={emoji}
+                        type="button"
+                        className={`w-8 h-8 rounded border-2 flex items-center justify-center text-lg hover:bg-muted ${
+                          newTypeEmoji === emoji
+                            ? "hover:bg-muted"
+                            : "border-transparent"
+                        }`}
+                        onClick={() => setNewTypeEmoji(emoji)}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsEmojiPickerOpen(!isEmojiPickerOpen)}
+                    className="w-full"
+                  >
+                    {isEmojiPickerOpen ? "Hide More Emojis" : "More Emojis"}
+                  </Button>
+                  {isEmojiPickerOpen && (
+                    <div
+                      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+                      onClick={() => setIsEmojiPickerOpen(false)}
                     >
-                      {emoji}
-                    </button>
-                  ))}
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <EmojiPicker
+                          onEmojiClick={handleEmojiClick}
+                          width={350}
+                          height={450}
+                          theme={Theme.AUTO}
+                          emojiStyle={EmojiStyle.APPLE}
+                          searchPlaceholder="Search emojis..."
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               <div>
@@ -445,21 +500,57 @@ export default function TypesSettingsPage() {
             </div>
             <div>
               <label className="text-sm font-medium">Emoji</label>
-              <div className="grid grid-cols-8 gap-2 mt-2">
-                {emojiOptions.map((emoji) => (
-                  <button
-                    key={emoji}
-                    type="button"
-                    className={`w-8 h-8 rounded border-2 flex items-center justify-center text-lg hover:bg-muted ${
-                      newTypeEmoji === emoji
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-transparent"
-                    }`}
-                    onClick={() => setNewTypeEmoji(emoji)}
+              <div className="flex items-center gap-3 mt-2">
+                <button
+                  type="button"
+                  className="w-12 h-12 rounded border-2 flex items-center justify-center text-2xl hover:bg-muted border-gray-300"
+                >
+                  {newTypeEmoji}
+                </button>
+              </div>
+              <div className="mt-3">
+                <div className="grid grid-cols-8 gap-2 mb-3">
+                  {commonEmojis.map((emoji) => (
+                    <button
+                      key={emoji}
+                      type="button"
+                      className={`w-8 h-8 rounded border-2 flex items-center justify-center text-lg hover:bg-muted ${
+                        newTypeEmoji === emoji
+                          ? "border-blue-500 bg-blue-50"
+                          : "border-transparent"
+                      }`}
+                      onClick={() => setNewTypeEmoji(emoji)}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsEmojiPickerOpen(!isEmojiPickerOpen)}
+                  className="w-full"
+                >
+                  {isEmojiPickerOpen ? "Hide More Emojis" : "More Emojis"}
+                </Button>
+                {isEmojiPickerOpen && (
+                  <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+                    onClick={() => setIsEmojiPickerOpen(false)}
                   >
-                    {emoji}
-                  </button>
-                ))}
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <EmojiPicker
+                        onEmojiClick={handleEmojiClick}
+                        width={350}
+                        height={450}
+                        theme={Theme.AUTO}
+                        emojiStyle={EmojiStyle.APPLE}
+                        searchPlaceholder="Search emojis..."
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             <div>

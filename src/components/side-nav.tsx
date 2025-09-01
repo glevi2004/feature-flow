@@ -239,7 +239,7 @@ export function SideNav({ onClose }: SideNavProps) {
         {
           title: "General",
           items: [
-            { label: "Profile", icon: User },
+            { label: "Account", icon: User },
             { label: "Company", icon: Settings },
             { label: "Organization", icon: User },
             { label: "Feedback Site", icon: Globe },
@@ -506,9 +506,14 @@ export function SideNav({ onClose }: SideNavProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem asChild>
-                <Link href="/profile" className="flex items-center gap-2">
+                <Link
+                  href={`/${encodeURIComponent(
+                    companyName || ""
+                  )}/dashboard/settings/account`}
+                  className="flex items-center gap-2"
+                >
                   <User className="h-4 w-4" />
-                  My Profile
+                  Account Settings
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -710,6 +715,18 @@ export function SideNav({ onClose }: SideNavProps) {
                           href={`/${encodeURIComponent(
                             companyName || ""
                           )}/dashboard/settings/feedback-site`}
+                          className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                        >
+                          <div className="flex items-center gap-3">
+                            <item.icon className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm">{item.label}</span>
+                          </div>
+                        </Link>
+                      ) : item.label === "Account" && isActive("/settings") ? (
+                        <Link
+                          href={`/${encodeURIComponent(
+                            companyName || ""
+                          )}/dashboard/settings/account`}
                           className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
                         >
                           <div className="flex items-center gap-3">
