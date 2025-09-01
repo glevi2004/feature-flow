@@ -14,7 +14,6 @@ import {
   User,
   LogOut,
   X,
-  ExternalLink,
   Radio,
   Circle,
   CheckCircle,
@@ -22,8 +21,7 @@ import {
   Tag,
   FileText,
   Activity,
-  ChevronRight,
-  ChevronLeft,
+  PanelLeftIcon,
 } from "lucide-react";
 import { TagsService, FeedbackTag } from "@/lib/services/tags";
 import { FeedbackService, FeedbackType } from "@/lib/services/feedback";
@@ -529,16 +527,15 @@ export function SideNav({ onClose }: SideNavProps) {
       <div className="relative">
         {/* Collapse Button - Positioned outside the panel */}
         <Button
+          data-sidebar="trigger"
+          data-slot="sidebar-trigger"
           variant="ghost"
-          size="sm"
+          size="icon"
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="absolute -right-3 top-6 h-6 w-6 p-0 hover:bg-muted bg-background border border-border rounded-full z-10"
+          className="absolute -right-8 top-6 size-7 hover:bg-muted bg-background z-10"
         >
-          {isCollapsed ? (
-            <ChevronRight className="h-4 w-4" />
-          ) : (
-            <ChevronLeft className="h-4 w-4" />
-          )}
+          <PanelLeftIcon className="h-4 w-4" />
+          <span className="sr-only">Toggle Quick Links Panel</span>
         </Button>
 
         <div
@@ -548,7 +545,6 @@ export function SideNav({ onClose }: SideNavProps) {
         >
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold">{quickLinks.title}</h2>
-            <ExternalLink className="h-4 w-4 text-muted-foreground" />
           </div>
 
           <div className="space-y-8">
