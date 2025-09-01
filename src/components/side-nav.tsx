@@ -85,6 +85,30 @@ export function SideNav({ onClose }: SideNavProps) {
   const [types, setTypes] = useState<FeedbackType[]>([]);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
+  // Auto-collapse on small screens
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+
+      if (width < 768) {
+        // md breakpoint is 768px
+        setIsCollapsed(true);
+      } else {
+        // Auto-expand on larger screens
+        setIsCollapsed(false);
+      }
+    };
+
+    // Set initial state
+    handleResize();
+
+    // Add event listener
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const loadCompanyData = useCallback(async () => {
     try {
       const userCompanies = await CompanyService.getUserCompanies(user!.uid);
