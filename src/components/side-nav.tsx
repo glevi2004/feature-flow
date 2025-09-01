@@ -539,7 +539,7 @@ export function SideNav({ onClose }: SideNavProps) {
         </Button>
 
         <div
-          className={`bg-background border-r border-border py-5 overflow-hidden transition-all duration-300 ${
+          className={`bg-background border-r border-border py-5 overflow-hidden transition-all duration-300 h-full ${
             isCollapsed ? "w-0 px-0" : "w-56 px-4"
           }`}
         >
