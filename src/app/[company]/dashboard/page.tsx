@@ -248,10 +248,10 @@ function DashboardPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="pb-4 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
           <div>
             <h1 className="text-2xl font-bold">Posts ({posts.length})</h1>
             <p className="text-muted-foreground">
