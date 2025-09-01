@@ -14,6 +14,7 @@ import {
   arrayUnion,
   arrayRemove,
   increment,
+  Timestamp,
 } from "firebase/firestore";
 
 export type FeedbackStatus =
@@ -35,8 +36,8 @@ export interface FeedbackPost {
   upvotes: string[]; // Array of user IDs who upvoted the post
   upvotesCount: number;
   commentsCount: number;
-  createdAt: any;
-  updatedAt: any;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 }
 
 export interface FeedbackComment {
@@ -46,7 +47,7 @@ export interface FeedbackComment {
   userId: string;
   userName: string;
   content: string;
-  createdAt: any;
+  createdAt: Timestamp;
 }
 
 export interface FeedbackType {
@@ -55,7 +56,7 @@ export interface FeedbackType {
   name: string;
   emoji: string;
   color?: string;
-  createdAt: any;
+  createdAt: Timestamp;
 }
 
 export class FeedbackService {

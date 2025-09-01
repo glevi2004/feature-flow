@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,7 +19,6 @@ import {
   ArrowUp,
   User,
   Calendar,
-  Lightbulb,
   Send,
   Activity,
   X,
@@ -76,14 +75,7 @@ export function PostModal({
     }
   }, [post]);
 
-  useEffect(() => {
-    if (currentPost && isOpen) {
-      loadComments();
-      loadTags();
-    }
-  }, [currentPost, isOpen]);
-
-  const loadComments = async () => {
+  const loadComments = useCallback(async () => {
     if (!currentPost) return;
     try {
       setLoadingComments(true);
@@ -96,9 +88,9 @@ export function PostModal({
     } finally {
       setLoadingComments(false);
     }
-  };
+  }, [currentPost]);
 
-  const loadTags = async () => {
+  const loadTags = useCallback(async () => {
     try {
       setLoadingTags(true);
       const allTags = await TagsService.getAllTags(companyId);
@@ -108,7 +100,14 @@ export function PostModal({
     } finally {
       setLoadingTags(false);
     }
-  };
+  }, [companyId]);
+
+  useEffect(() => {
+    if (currentPost && isOpen) {
+      loadComments();
+      loadTags();
+    }
+  }, [currentPost, isOpen, loadComments, loadTags]);
 
   const handleAddComment = async () => {
     if (!currentPost || !newComment.trim() || !userName.trim()) {
@@ -175,11 +174,6 @@ export function PostModal({
     } finally {
       setUpdatingTags(false);
     }
-  };
-
-  const getTypeColor = (typeName: string) => {
-    const type = types.find((t) => t.name === typeName);
-    return type?.color || "#6B7280";
   };
 
   const getTagNames = (tagIds: string[]) => {

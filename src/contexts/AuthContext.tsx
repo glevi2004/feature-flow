@@ -16,7 +16,7 @@ import {
   googleProvider,
   githubProvider,
 } from "@/lib/firebase/firebaseConfig";
-import { UserService } from "@/lib/services/user";
+import { UserService, UserData } from "@/lib/services/user";
 import { OnboardingService, OnboardingData } from "@/lib/services/onboarding";
 
 interface AuthContextType {
@@ -73,7 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Save user data first
       if (result.user) {
         try {
-          const userData: any = {
+          const userData: Omit<UserData, "createdAt" | "lastLoginAt"> = {
             uid: result.user.uid,
             email: result.user.email || "",
             displayName: result.user.displayName || "",
@@ -207,7 +207,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
 
           // Save user data with emailVerified: false
-          const userData: any = {
+          const userData: Omit<UserData, "createdAt" | "lastLoginAt"> = {
             uid: result.user.uid,
             email: result.user.email || "",
             displayName: result.user.displayName || "",

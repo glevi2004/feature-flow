@@ -1,7 +1,6 @@
 import { db } from "@/lib/firebase/firebaseConfig";
 import {
   doc,
-  setDoc,
   getDoc,
   updateDoc,
   arrayUnion,

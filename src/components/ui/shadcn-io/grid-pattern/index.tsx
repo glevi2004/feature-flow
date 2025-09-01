@@ -3,7 +3,11 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
-interface GridPatternProps {
+interface GridPatternProps
+  extends Omit<
+    React.SVGProps<SVGSVGElement>,
+    "width" | "height" | "x" | "y" | "className" | "strokeDasharray"
+  > {
   width?: number;
   height?: number;
   x?: number;
@@ -11,7 +15,6 @@ interface GridPatternProps {
   squares?: Array<[number, number]>;
   strokeDasharray?: string;
   className?: string;
-  [key: string]: any;
 }
 
 export function GridPattern({

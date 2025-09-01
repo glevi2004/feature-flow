@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Tag as TagIcon, Loader2 } from "lucide-react";
 import { TagsService, FeedbackTag } from "@/lib/services/tags";
 import { AddTagDialog } from "./add-tag-dialog";
@@ -15,7 +15,7 @@ export function TagsList({ companyId, onClose }: TagsListProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const loadTags = async () => {
+  const loadTags = useCallback(async () => {
     try {
       setLoading(true);
       const allTags = await TagsService.getAllTags(companyId);
@@ -26,13 +26,13 @@ export function TagsList({ companyId, onClose }: TagsListProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [companyId]);
 
   useEffect(() => {
     if (companyId) {
       loadTags();
     }
-  }, [companyId]);
+  }, [companyId, loadTags]);
 
   const handleTagAdded = () => {
     loadTags();
