@@ -46,7 +46,10 @@ export default function DashboardLayout({
         className="flex bg-background w-full"
         style={{ height: "calc(100vh - 3.5rem)", marginTop: "3.5rem" }}
       >
-        <SideNav />
+        <div className="mr-8">
+          <SideNav />
+        </div>
+
         <div className="flex-1 overflow-auto bg-background">
           <div className="p-4"></div>
           {children}

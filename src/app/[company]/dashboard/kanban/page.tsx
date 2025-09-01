@@ -266,7 +266,7 @@ function BoardPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="pb-6 px-6">
       <div className="w-full">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
