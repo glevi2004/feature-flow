@@ -77,8 +77,12 @@ export default function AccountSettingsPage() {
 
       // Reset success message after 3 seconds
       setTimeout(() => setDisplayNameSuccess(false), 3000);
-    } catch (error: any) {
-      setDisplayNameError(error.message || "Failed to update display name");
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to update display name";
+      setDisplayNameError(errorMessage);
     } finally {
       setUpdatingDisplayName(false);
     }
