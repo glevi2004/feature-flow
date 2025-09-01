@@ -17,7 +17,7 @@ export function CTASection() {
           <Link href="/register">
             <Button
               size="lg"
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-lg px-8 py-3"
+              className="bg-blue-600 hover:bg-blue-600/80 text-white text-lg px-8 py-3"
             >
               Start Free Trial
             </Button>

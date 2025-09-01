@@ -4,15 +4,15 @@ import { app_name } from "@/lib/constants";
 
 export function HeroSection() {
   return (
-    <section className="container mx-auto px-4 py-10 lg:mt-10">
+    <section className="bg-[#0d1117] container mx-auto px-4 py-20 lg:mt-0">
       <div className="max-w-4xl mx-auto">
         <div className="text-center">
           {/* Text Content */}
           <div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-blue-300 bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6 text-[#58a6ff]">
               Transform Customer Feedback Into Action
             </h1>
-            <p className="text-xl md:text-2xl text-white mb-8 max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
               {app_name} is a modern feedback platform designed to help teams
               collect, organize, and prioritize customer feedback effectively.
             </p>
@@ -20,12 +20,16 @@ export function HeroSection() {
               <Link href="/register">
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8 py-3"
+                  className="bg-[#238636] hover:bg-[#2ea043] text-white text-lg px-8 py-3 border border-[#30363d]"
                 >
                   Start Free Trial
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="text-lg px-8 py-3">
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-lg px-8 py-3 border-[#30363d] text-white hover:bg-[#21262d]"
+              >
                 Watch Demo
               </Button>
             </div>

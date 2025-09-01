@@ -5,7 +5,7 @@ export function IntegrationsSection() {
   return (
     <section
       id="integrations"
-      className="container mx-auto px-4 py-20 scroll-mt-20"
+      className="bg-[#0d1117] container mx-auto px-4 py-20 scroll-mt-20"
     >
       <div className="text-center mb-16">
         <h2 className="text-4xl font-bold mb-4 text-white">
@@ -63,12 +63,12 @@ export function IntegrationsSection() {
         ].map((tool) => (
           <div
             key={tool.name}
-            className="bg-white/10 border border-white/20 rounded-xl p-8 text-center shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300 relative"
+            className="bg-[#161b22] border border-[#30363d] rounded-xl p-8 text-center shadow-lg hover:shadow-xl hover:-translate-y-2 transition-all duration-300 relative hover:bg-[#21262d]"
           >
             <div className={`${tool.color}`}>{tool.logo}</div>
             {(tool.name === "Jira" || tool.name === "ClickUp") && (
               <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2">
-                <div className="bg-blue-600/90 text-blue-100 text-xs font-medium px-3 py-1 rounded-full shadow-lg">
+                <div className="bg-[#238636] text-white text-xs font-medium px-3 py-1 rounded-full shadow-lg">
                   In Development
                 </div>
               </div>

@@ -9,7 +9,7 @@ import { Footer } from "@/components/landing/Footer";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="min-h-screen bg-[#0d1117]">
       {/* Content */}
       <div className="relative z-10 pt-20">
         <Navbar />

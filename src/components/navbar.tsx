@@ -11,10 +11,10 @@ export function Navbar() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
-      <div className="container mx-auto px-6 py-4">
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-6 py-3 flex items-center justify-between">
+      <div className="w-full">
+        <div className="bg-[#161b22] backdrop-blur-md border border-[#30363d] px-6 py-3 flex items-center justify-between shadow-[0_2px_12px_rgba(59,130,246,0.15)]">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
               <Package className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-semibold text-white">{app_name}</span>
