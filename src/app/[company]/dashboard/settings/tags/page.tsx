@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FileText, Plus, Edit2, Trash2, Loader2 } from "lucide-react";
+import { FileText, Plus, Edit2, Trash2, Loader2, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -263,6 +263,7 @@ export default function TagsSettingsPage() {
                 Cancel
               </Button>
               <Button onClick={handleAddTag} disabled={!newTagName.trim()}>
+                <Save className="h-4 w-4" />
                 Add Tag
               </Button>
             </DialogFooter>
@@ -332,7 +333,7 @@ export default function TagsSettingsPage() {
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => tag.id && handleDeleteTag(tag.id)}
-                            className="bg-red-600 hover:bg-red-700"
+                            className="bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60"
                           >
                             Delete
                           </AlertDialogAction>
