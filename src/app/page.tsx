@@ -5,7 +5,7 @@ import { IntegrationsSection } from "@/components/landing/IntegrationsSection";
 import { CTASection } from "@/components/landing/CTASection";
 import { Footer } from "@/components/landing/Footer";
 
-const pastbg = "bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950";
+// const pastbg = "bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950";
 
 export default function Home() {
   return (

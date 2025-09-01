@@ -13,7 +13,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-
 import {
   Search,
   Filter,
@@ -22,7 +21,6 @@ import {
   X,
   Save,
   ArrowUp,
-
   Radio,
   Check,
   Eye,
@@ -111,7 +109,6 @@ function DashboardPage() {
         if (!companyData || !companyData.members.includes(user!.uid)) {
           throw new Error("Access denied to company");
         }
-
 
         setCompanyId(companyId);
 
@@ -254,7 +251,7 @@ function DashboardPage() {
     <div className="p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
           <div>
             <h1 className="text-2xl font-bold">Posts ({posts.length})</h1>
             <p className="text-muted-foreground">
