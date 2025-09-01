@@ -24,6 +24,7 @@ import {
   Loader2,
   CheckCircle,
   AlertCircle,
+  Save,
 } from "lucide-react";
 import { useParams } from "next/navigation";
 
@@ -170,7 +171,10 @@ export default function AccountSettingsPage() {
                     Updating...
                   </>
                 ) : (
-                  "Update Display Name"
+                  <>
+                    <Save className="h-4 w-4" />
+                    Update Display Name
+                  </>
                 )}
               </Button>
             </div>
