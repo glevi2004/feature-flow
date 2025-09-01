@@ -22,6 +22,8 @@ import {
   Tag,
   FileText,
   Activity,
+  ChevronRight,
+  ChevronLeft,
 } from "lucide-react";
 import { TagsService, FeedbackTag } from "@/lib/services/tags";
 import { FeedbackService, FeedbackType } from "@/lib/services/feedback";
@@ -81,6 +83,7 @@ export function SideNav({ onClose }: SideNavProps) {
   const [companyId, setCompanyId] = useState("");
   const [tags, setTags] = useState<FeedbackTag[]>([]);
   const [types, setTypes] = useState<FeedbackType[]>([]);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const loadCompanyData = useCallback(async () => {
     try {
@@ -498,210 +501,230 @@ export function SideNav({ onClose }: SideNavProps) {
         </div>
       </div>
 
-      {/* Quick Links Panel */}
-      <div className="w-56 bg-background border-r border-border py-5 px-4 overflow-y-auto relative">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold">{quickLinks.title}</h2>
-          <ExternalLink className="h-4 w-4 text-muted-foreground" />
-        </div>
+      {/* Collapsible Quick Links Panel */}
+      <div className="relative">
+        {/* Collapse Button - Positioned outside the panel */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="absolute -right-3 top-6 h-6 w-6 p-0 hover:bg-muted bg-background border border-border rounded-full z-10"
+        >
+          {isCollapsed ? (
+            <ChevronRight className="h-4 w-4" />
+          ) : (
+            <ChevronLeft className="h-4 w-4" />
+          )}
+        </Button>
 
-        <div className="space-y-8">
-          {quickLinks.sections.map((section, sectionIndex) => (
-            <div key={sectionIndex}>
-              <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">
-                {section.title}
-              </h3>
-              <div className="space-y-1">
-                {section.items.map((item, itemIndex) => (
-                  <div key={itemIndex}>
-                    {item.label === "Tags" && !isActive("/settings") ? (
-                      <DropdownButton
-                        label="Tags"
-                        icon={Tag}
-                        onOpen={() => companyId && loadTags(companyId)}
-                      >
-                        {tags.length === 0 ? (
-                          <div className="p-2">
-                            <Link
-                              href={`/${encodeURIComponent(
-                                companyName || ""
-                              )}/dashboard/settings/tags`}
-                              className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
-                            >
-                              <span className="text-sm">Add Tags</span>
-                            </Link>
-                          </div>
-                        ) : (
-                          <>
-                            {tags.map((tag) => (
-                              <button
-                                key={tag.id}
-                                className="flex items-center gap-2 w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+        <div
+          className={`bg-background border-r border-border py-5 overflow-hidden transition-all duration-300 ${
+            isCollapsed ? "w-0 px-0" : "w-56 px-4"
+          }`}
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold">{quickLinks.title}</h2>
+            <ExternalLink className="h-4 w-4 text-muted-foreground" />
+          </div>
+
+          <div className="space-y-8">
+            {quickLinks.sections.map((section, sectionIndex) => (
+              <div key={sectionIndex}>
+                <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">
+                  {section.title}
+                </h3>
+                <div className="space-y-1">
+                  {section.items.map((item, itemIndex) => (
+                    <div key={itemIndex}>
+                      {item.label === "Tags" && !isActive("/settings") ? (
+                        <DropdownButton
+                          label="Tags"
+                          icon={Tag}
+                          onOpen={() => companyId && loadTags(companyId)}
+                        >
+                          {tags.length === 0 ? (
+                            <div className="p-2">
+                              <Link
+                                href={`/${encodeURIComponent(
+                                  companyName || ""
+                                )}/dashboard/settings/tags`}
+                                className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
                               >
-                                <div
-                                  className="w-3 h-3 rounded-full flex-shrink-0"
-                                  style={{ backgroundColor: tag.color }}
-                                />
-                                <span className="text-sm flex-1">
-                                  {tag.name}
-                                </span>
-                              </button>
-                            ))}
-                            <Link
-                              href={`/${encodeURIComponent(
-                                companyName || ""
-                              )}/dashboard/settings/tags`}
-                              className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
-                            >
-                              <span className="text-sm">Manage Tags</span>
-                            </Link>
-                          </>
-                        )}
-                      </DropdownButton>
-                    ) : item.label === "Types" && !isActive("/settings") ? (
-                      <DropdownButton
-                        label="Types"
-                        icon={FileText}
-                        onOpen={() => companyId && loadTypes(companyId)}
-                      >
-                        {types.length === 0 ? (
-                          <div className="p-2">
-                            <Link
-                              href={`/${encodeURIComponent(
-                                companyName || ""
-                              )}/dashboard/settings/types`}
-                              className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
-                            >
-                              <span className="text-sm">Add Types</span>
-                            </Link>
-                          </div>
-                        ) : (
-                          <>
-                            {types.map((type) => (
-                              <button
-                                key={type.id}
-                                className="flex items-center gap-2 w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                                <span className="text-sm">Add Tags</span>
+                              </Link>
+                            </div>
+                          ) : (
+                            <>
+                              {tags.map((tag) => (
+                                <button
+                                  key={tag.id}
+                                  className="flex items-center gap-2 w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                                >
+                                  <div
+                                    className="w-3 h-3 rounded-full flex-shrink-0"
+                                    style={{ backgroundColor: tag.color }}
+                                  />
+                                  <span className="text-sm flex-1">
+                                    {tag.name}
+                                  </span>
+                                </button>
+                              ))}
+                              <Link
+                                href={`/${encodeURIComponent(
+                                  companyName || ""
+                                )}/dashboard/settings/tags`}
+                                className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
                               >
-                                <span className="text-sm flex-shrink-0">
-                                  {type.emoji}
-                                </span>
-                                <span className="text-sm flex-1">
-                                  {type.name}
-                                </span>
-                              </button>
-                            ))}
-                            <Link
-                              href={`/${encodeURIComponent(
-                                companyName || ""
-                              )}/dashboard/settings/types`}
-                              className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
-                            >
-                              <span className="text-sm">Manage Types</span>
-                            </Link>
-                          </>
-                        )}
-                      </DropdownButton>
-                    ) : item.label === "Tags" && isActive("/settings") ? (
-                      <Link
-                        href={`/${encodeURIComponent(
-                          companyName || ""
-                        )}/dashboard/settings/tags`}
-                        className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
-                      >
-                        <div className="flex items-center gap-3">
-                          <item.icon className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">{item.label}</span>
-                        </div>
-                      </Link>
-                    ) : item.label === "Types" && isActive("/settings") ? (
-                      <Link
-                        href={`/${encodeURIComponent(
-                          companyName || ""
-                        )}/dashboard/settings/types`}
-                        className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
-                      >
-                        <div className="flex items-center gap-3">
-                          <item.icon className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">{item.label}</span>
-                        </div>
-                      </Link>
-                    ) : item.label === "Company" && isActive("/settings") ? (
-                      <Link
-                        href={`/${encodeURIComponent(
-                          companyName || ""
-                        )}/dashboard/settings/company`}
-                        className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
-                      >
-                        <div className="flex items-center gap-3">
-                          <item.icon className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">{item.label}</span>
-                        </div>
-                      </Link>
-                    ) : item.label === "Organization" &&
-                      isActive("/settings") ? (
-                      <Link
-                        href={`/${encodeURIComponent(
-                          companyName || ""
-                        )}/dashboard/settings/organization`}
-                        className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
-                      >
-                        <div className="flex items-center gap-3">
-                          <item.icon className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">{item.label}</span>
-                        </div>
-                      </Link>
-                    ) : item.label === "Statuses" && isActive("/settings") ? (
-                      <Link
-                        href={`/${encodeURIComponent(
-                          companyName || ""
-                        )}/dashboard/settings/statuses`}
-                        className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
-                      >
-                        <div className="flex items-center gap-3">
-                          <item.icon className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">{item.label}</span>
-                        </div>
-                      </Link>
-                    ) : item.label === "Feedback Site" &&
-                      isActive("/settings") ? (
-                      <Link
-                        href={`/${encodeURIComponent(
-                          companyName || ""
-                        )}/dashboard/settings/feedback-site`}
-                        className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
-                      >
-                        <div className="flex items-center gap-3">
-                          <item.icon className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">{item.label}</span>
-                        </div>
-                      </Link>
-                    ) : "hasArrow" in item && item.hasArrow ? (
-                      <DropdownButton label={item.label} icon={item.icon}>
-                        <div className="p-2">
-                          <span className="text-sm text-muted-foreground">
-                            {item.label} content will be implemented
-                          </span>
-                        </div>
-                      </DropdownButton>
-                    ) : (
-                      <button className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left">
-                        <div className="flex items-center gap-3">
-                          <item.icon
-                            className={`h-4 w-4 ${
-                              "color" in item
-                                ? item.color
-                                : "text-muted-foreground"
-                            }`}
-                          />
-                          <span className="text-sm">{item.label}</span>
-                        </div>
-                      </button>
-                    )}
-                  </div>
-                ))}
+                                <span className="text-sm">Manage Tags</span>
+                              </Link>
+                            </>
+                          )}
+                        </DropdownButton>
+                      ) : item.label === "Types" && !isActive("/settings") ? (
+                        <DropdownButton
+                          label="Types"
+                          icon={FileText}
+                          onOpen={() => companyId && loadTypes(companyId)}
+                        >
+                          {types.length === 0 ? (
+                            <div className="p-2">
+                              <Link
+                                href={`/${encodeURIComponent(
+                                  companyName || ""
+                                )}/dashboard/settings/types`}
+                                className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                              >
+                                <span className="text-sm">Add Types</span>
+                              </Link>
+                            </div>
+                          ) : (
+                            <>
+                              {types.map((type) => (
+                                <button
+                                  key={type.id}
+                                  className="flex items-center gap-2 w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                                >
+                                  <span className="text-sm flex-shrink-0">
+                                    {type.emoji}
+                                  </span>
+                                  <span className="text-sm flex-1">
+                                    {type.name}
+                                  </span>
+                                </button>
+                              ))}
+                              <Link
+                                href={`/${encodeURIComponent(
+                                  companyName || ""
+                                )}/dashboard/settings/types`}
+                                className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                              >
+                                <span className="text-sm">Manage Types</span>
+                              </Link>
+                            </>
+                          )}
+                        </DropdownButton>
+                      ) : item.label === "Tags" && isActive("/settings") ? (
+                        <Link
+                          href={`/${encodeURIComponent(
+                            companyName || ""
+                          )}/dashboard/settings/tags`}
+                          className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                        >
+                          <div className="flex items-center gap-3">
+                            <item.icon className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm">{item.label}</span>
+                          </div>
+                        </Link>
+                      ) : item.label === "Types" && isActive("/settings") ? (
+                        <Link
+                          href={`/${encodeURIComponent(
+                            companyName || ""
+                          )}/dashboard/settings/types`}
+                          className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                        >
+                          <div className="flex items-center gap-3">
+                            <item.icon className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm">{item.label}</span>
+                          </div>
+                        </Link>
+                      ) : item.label === "Company" && isActive("/settings") ? (
+                        <Link
+                          href={`/${encodeURIComponent(
+                            companyName || ""
+                          )}/dashboard/settings/company`}
+                          className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                        >
+                          <div className="flex items-center gap-3">
+                            <item.icon className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm">{item.label}</span>
+                          </div>
+                        </Link>
+                      ) : item.label === "Organization" &&
+                        isActive("/settings") ? (
+                        <Link
+                          href={`/${encodeURIComponent(
+                            companyName || ""
+                          )}/dashboard/settings/organization`}
+                          className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                        >
+                          <div className="flex items-center gap-3">
+                            <item.icon className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm">{item.label}</span>
+                          </div>
+                        </Link>
+                      ) : item.label === "Statuses" && isActive("/settings") ? (
+                        <Link
+                          href={`/${encodeURIComponent(
+                            companyName || ""
+                          )}/dashboard/settings/statuses`}
+                          className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                        >
+                          <div className="flex items-center gap-3">
+                            <item.icon className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm">{item.label}</span>
+                          </div>
+                        </Link>
+                      ) : item.label === "Feedback Site" &&
+                        isActive("/settings") ? (
+                        <Link
+                          href={`/${encodeURIComponent(
+                            companyName || ""
+                          )}/dashboard/settings/feedback-site`}
+                          className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                        >
+                          <div className="flex items-center gap-3">
+                            <item.icon className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm">{item.label}</span>
+                          </div>
+                        </Link>
+                      ) : "hasArrow" in item && item.hasArrow ? (
+                        <DropdownButton label={item.label} icon={item.icon}>
+                          <div className="p-2">
+                            <span className="text-sm text-muted-foreground">
+                              {item.label} content will be implemented
+                            </span>
+                          </div>
+                        </DropdownButton>
+                      ) : (
+                        <button className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left">
+                          <div className="flex items-center gap-3">
+                            <item.icon
+                              className={`h-4 w-4 ${
+                                "color" in item
+                                  ? item.color
+                                  : "text-muted-foreground"
+                              }`}
+                            />
+                            <span className="text-sm">{item.label}</span>
+                          </div>
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>
