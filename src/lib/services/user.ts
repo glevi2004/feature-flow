@@ -11,18 +11,20 @@ export interface UserData {
   onboardingInfoId?: string; // Reference to onboarding data document
   createdAt: Date;
   lastLoginAt: Date;
+  updatedAt?: Date; // When the user data was last updated
 }
 
 export class UserService {
   // Create or update user data
   static async saveUserData(
-    userData: Omit<UserData, "createdAt" | "lastLoginAt">
+    userData: Omit<UserData, "createdAt" | "lastLoginAt" | "updatedAt">
   ) {
     try {
       const userDocData: UserData = {
         ...userData,
         createdAt: new Date(),
         lastLoginAt: new Date(),
+        updatedAt: new Date(),
       };
 
       await setDoc(doc(db, "users", userData.uid), userDocData, {
@@ -50,6 +52,7 @@ export class UserService {
       // User exists, update the last login time
       await updateDoc(doc(db, "users", uid), {
         lastLoginAt: new Date(),
+        updatedAt: new Date(),
       });
     } catch (error) {
       console.error("Error updating last login:", error);
@@ -67,6 +70,26 @@ export class UserService {
       return null;
     } catch (error) {
       console.error("Error getting user data:", error);
+      throw error;
+    }
+  }
+
+  // Update user display name
+  static async updateDisplayName(uid: string, newDisplayName: string) {
+    try {
+      const trimmed = (newDisplayName || "").trim();
+      if (!trimmed) {
+        throw new Error("Display name cannot be empty");
+      }
+
+      await updateDoc(doc(db, "users", uid), {
+        displayName: trimmed,
+        updatedAt: new Date(),
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating display name:", error);
       throw error;
     }
   }
