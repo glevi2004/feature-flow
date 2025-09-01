@@ -22,11 +22,10 @@ export function IntegrationsSection() {
             name: "Slack",
             logo: (
               <Image
-                src="/integration-logos/slack.png"
+                src="/integration-logos/slack.svg"
                 alt="Slack"
-                width={48}
-                height={48}
-                className="h-12 w-auto mx-auto mb-4"
+                width={250}
+                height={52}
               />
             ),
             color: "text-[#E01E5A]",
@@ -34,15 +33,15 @@ export function IntegrationsSection() {
           {
             name: "Jira",
             logo: (
-              <div className="flex items-center justify-center gap-3">
+              <div className="flex items-center justify-center gap-3 mt-8">
                 <Image
                   src="/integration-logos/jira.png"
                   alt="Jira"
-                  width={48}
-                  height={48}
-                  className="h-12 w-auto"
+                  width={64}
+                  height={64}
+                  className="h-16 w-16 "
                 />
-                <span className="font-semibold text-white text-5xl">Jira</span>
+                <span className="font-bold text-white text-5xl">Jira</span>
               </div>
             ),
             color: "text-[#0052CC]",
@@ -50,13 +49,15 @@ export function IntegrationsSection() {
           {
             name: "ClickUp",
             logo: (
-              <Image
-                src="/integration-logos/clickup.png"
-                alt="ClickUp"
-                width={48}
-                height={48}
-                className="h-12 w-auto mx-auto mb-4"
-              />
+              <div className="mt-8">
+                <Image
+                  src="/integration-logos/clickup.svg"
+                  alt="ClickUp"
+                  width={250}
+                  height={46}
+                  // className="h-12 w-auto mx-auto mb-4"
+                />
+              </div>
             ),
             color: "text-[#7B68EE]",
           },
