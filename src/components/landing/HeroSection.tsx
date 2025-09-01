@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 import { app_name } from "@/lib/constants";
 
 export function HeroSection() {
@@ -31,29 +32,18 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* App MVP Image Placeholder */}
+          {/* Dashboard Image */}
           <div className="flex justify-center lg:justify-end">
             <div className="relative">
-              <div className="w-[28rem] h-[28rem] bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl border border-slate-600 shadow-2xl flex items-center justify-center">
-                <div className="text-center text-slate-400">
-                  <div className="w-16 h-16 bg-slate-600 rounded-lg mx-auto mb-4 flex items-center justify-center">
-                    <svg
-                      className="w-8 h-8"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
-                      />
-                    </svg>
-                  </div>
-                  <p className="text-sm font-medium">App MVP Screenshot</p>
-                  <p className="text-xs text-slate-500 mt-1">448×448px</p>
-                </div>
+              <div className="w-[28rem] h-[28rem] rounded-2xl border border-slate-600 shadow-2xl overflow-hidden">
+                <Image
+                  src="/mvp/dashboard.jpeg"
+                  alt="Feature Ship Dashboard"
+                  width={448}
+                  height={448}
+                  className="w-full h-full object-cover"
+                  priority
+                />
               </div>
               {/* Decorative elements */}
               <div className="absolute -top-4 -right-4 w-8 h-8 bg-blue-500 rounded-full opacity-20"></div>
