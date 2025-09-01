@@ -34,12 +34,6 @@ export function AppSidebar() {
   const { user, signOut } = useAuth();
   const [companyName, setCompanyName] = useState("");
 
-  useEffect(() => {
-    if (user) {
-      loadCompanyName();
-    }
-  }, [user, loadCompanyName]);
-
   const loadCompanyName = useCallback(async () => {
     try {
       const onboardingData = await OnboardingService.getOnboardingData(
@@ -52,6 +46,12 @@ export function AppSidebar() {
       console.error("Error loading company name:", error);
     }
   }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      loadCompanyName();
+    }
+  }, [user, loadCompanyName]);
 
   return (
     <Sidebar>

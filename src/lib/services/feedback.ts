@@ -15,6 +15,7 @@ import {
   arrayRemove,
   increment,
   Timestamp,
+  FieldValue,
 } from "firebase/firestore";
 
 export type FeedbackStatus =
@@ -59,21 +60,28 @@ export interface FeedbackType {
   createdAt: Timestamp;
 }
 
+// Type for creating posts (with FieldValue for timestamps)
+type CreateFeedbackPostData = Omit<
+  FeedbackPost,
+  | "id"
+  | "createdAt"
+  | "updatedAt"
+  | "upvotes"
+  | "upvotesCount"
+  | "commentsCount"
+>;
+
+// Type for Firestore document data (with FieldValue for timestamps)
+type FeedbackPostDocument = Omit<FeedbackPost, "createdAt" | "updatedAt"> & {
+  createdAt: FieldValue;
+  updatedAt: FieldValue;
+};
+
 export class FeedbackService {
   // Create a new feedback post
-  static async createPost(
-    data: Omit<
-      FeedbackPost,
-      | "id"
-      | "createdAt"
-      | "updatedAt"
-      | "upvotes"
-      | "upvotesCount"
-      | "commentsCount"
-    >
-  ) {
+  static async createPost(data: CreateFeedbackPostData) {
     try {
-      const postData: Omit<FeedbackPost, "id"> = {
+      const postData: FeedbackPostDocument = {
         ...data,
         tags: data.tags || [], // Initialize tags as empty array if not provided
         status: "Under Review", // Set default status
@@ -85,7 +93,7 @@ export class FeedbackService {
       };
 
       const docRef = await addDoc(collection(db, "feedback_posts"), postData);
-      return { id: docRef.id, ...postData };
+      return { id: docRef.id, ...data };
     } catch (error) {
       console.error("Error creating feedback post:", error);
       throw error;
@@ -170,7 +178,7 @@ export class FeedbackService {
   // Add a comment to a post
   static async addComment(data: Omit<FeedbackComment, "id" | "createdAt">) {
     try {
-      const commentData: Omit<FeedbackComment, "id"> = {
+      const commentData = {
         ...data,
         createdAt: serverTimestamp(),
       };
@@ -187,7 +195,7 @@ export class FeedbackService {
         updatedAt: serverTimestamp(),
       });
 
-      return { id: commentRef.id, ...commentData };
+      return { id: commentRef.id, ...data };
     } catch (error) {
       console.error("Error adding comment:", error);
       throw error;
@@ -220,13 +228,13 @@ export class FeedbackService {
   // Create a new type for a company
   static async createType(data: Omit<FeedbackType, "id" | "createdAt">) {
     try {
-      const typeData: Omit<FeedbackType, "id"> = {
+      const typeData = {
         ...data,
         createdAt: serverTimestamp(),
       };
 
       const docRef = await addDoc(collection(db, "feedback_types"), typeData);
-      return { id: docRef.id, ...typeData };
+      return { id: docRef.id, ...data };
     } catch (error) {
       console.error("Error creating type:", error);
       throw error;

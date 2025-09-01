@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Timestamp } from "firebase/firestore";
 import {
   Select,
   SelectContent,
@@ -125,7 +126,7 @@ export function PostModal({
         content: newComment.trim(),
       });
 
-      setComments([...comments, newCommentData]);
+      setComments([...comments, { ...newCommentData, createdAt: Timestamp.now() }]);
       setNewComment("");
 
       const updatedPost = {

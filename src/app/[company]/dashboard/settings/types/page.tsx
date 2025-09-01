@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { CompanyService } from "@/lib/services/company";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Timestamp } from "firebase/firestore";
 
 import {
   Card,
@@ -151,10 +152,11 @@ export default function TypesSettingsPage() {
         color: newTypeColor,
       });
 
-      // Add the new type to the local state
+      // Add the new type to the local state with count
       const newType: Type = {
         ...newTypeData,
         count: 0,
+        createdAt: Timestamp.now(), // Add createdAt since it's not returned by createType
       };
 
       setTypes([...types, newType]);
@@ -398,8 +400,8 @@ export default function TypesSettingsPage() {
                           <AlertDialogDescription>
                             Are you sure you want to delete the type &ldquo;
                             {type.name}
-                            &rdquo;? This action cannot be undone and will remove the
-                            type from all associated feedback items.
+                            &rdquo;? This action cannot be undone and will
+                            remove the type from all associated feedback items.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

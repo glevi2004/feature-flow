@@ -11,6 +11,7 @@ import {
   where,
   orderBy,
   serverTimestamp,
+  Timestamp,
 } from "firebase/firestore";
 
 export interface FeedbackTag {
@@ -18,20 +19,20 @@ export interface FeedbackTag {
   companyId?: string;
   name: string;
   color: string;
-  createdAt?: any;
+  createdAt?: Timestamp;
 }
 
 export class TagsService {
   // Create a new tag for a company
   static async createTag(data: Omit<FeedbackTag, "id" | "createdAt">) {
     try {
-      const tagData: Omit<FeedbackTag, "id"> = {
+      const tagData = {
         ...data,
         createdAt: serverTimestamp(),
       };
 
       const docRef = await addDoc(collection(db, "feedback_tags"), tagData);
-      return { id: docRef.id, ...tagData };
+      return { id: docRef.id, ...data };
     } catch (error) {
       console.error("Error creating tag:", error);
       throw error;

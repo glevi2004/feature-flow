@@ -130,7 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Save user data first
       if (result.user) {
         try {
-          const userData: any = {
+          const userData: Omit<UserData, "createdAt" | "lastLoginAt"> = {
             uid: result.user.uid,
             email: result.user.email || "",
             displayName: result.user.displayName || "",

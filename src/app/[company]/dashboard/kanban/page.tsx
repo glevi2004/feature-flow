@@ -134,7 +134,6 @@ function BoardPage() {
           throw new Error("Access denied to company");
         }
 
-
         setCompanyId(companyId);
 
         // Load posts, types, and tags
@@ -190,8 +189,6 @@ function BoardPage() {
       month: "short",
     });
   };
-
-
 
   const handleDragStart = (e: React.DragEvent, post: FeedbackPost) => {
     setDraggedPost(post);
@@ -439,17 +436,8 @@ function BoardPage() {
                           <div className="flex items-center gap-1">
                             <Calendar className="h-3 w-3" />
                             <span>
-                              {post.createdAt &&
-                              typeof post.createdAt.toDate === "function"
+                              {post.createdAt
                                 ? formatDate(post.createdAt.toDate())
-                                : post.createdAt &&
-                                  typeof post.createdAt === "object" &&
-                                  "seconds" in post.createdAt
-                                ? formatDate(
-                                    new Date(post.createdAt.seconds * 1000)
-                                  )
-                                : post.createdAt
-                                ? formatDate(new Date(post.createdAt))
                                 : "Recently"}
                             </span>
                           </div>

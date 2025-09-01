@@ -56,7 +56,7 @@ export class OnboardingService {
           "OnboardingService: Creating organization:",
           data.companyName
         );
-        const organizationData = await OrganizationService.createOrganization(
+        await OrganizationService.createOrganization(
           data.companyName,
           userId,
           companyData.id,

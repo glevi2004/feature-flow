@@ -181,7 +181,7 @@ export default function PublicFeedbackPage() {
         status: "Under Review",
       });
 
-      setPosts([newPost, ...posts]);
+      setPosts([newPost as FeedbackPost, ...posts]);
       setTitle("");
       setDescription("");
       setSelectedTypes([]);
@@ -236,7 +236,7 @@ export default function PublicFeedbackPage() {
         content: commentContent.trim(),
       });
 
-      setComments([...comments, newComment]);
+      setComments([...comments, newComment as FeedbackComment]);
       setCommentContent("");
 
       setPosts(
