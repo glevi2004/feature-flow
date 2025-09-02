@@ -52,10 +52,13 @@ export class CompanyService {
         return false;
       }
 
+      // Normalize to lowercase for consistent comparison
+      const normalizedName = trimmedName.toLowerCase();
+
       // Query companies collection by name field
       const q = query(
         collection(db, "companies"),
-        where("name", "==", trimmedName)
+        where("name", "==", normalizedName)
       );
       const querySnapshot = await getDocs(q);
       return !querySnapshot.empty;
@@ -75,14 +78,17 @@ export class CompanyService {
     >
   ) {
     try {
+      // Ensure company name is lowercase for consistency
+      const normalizedName = companyName.toLowerCase().trim();
+
       // Check if company already exists
-      const exists = await this.checkCompanyExists(companyName);
+      const exists = await this.checkCompanyExists(normalizedName);
       if (exists) {
         throw new Error("Company name already exists");
       }
 
       const companyData: Omit<CompanyData, "id"> = {
-        name: companyName,
+        name: normalizedName,
         createdBy: userId,
         members: [userId],
         createdAt: new Date(),
@@ -122,9 +128,12 @@ export class CompanyService {
   // Get company data by name
   static async getCompanyByName(companyName: string) {
     try {
+      // Normalize to lowercase for consistent lookup
+      const normalizedName = companyName.toLowerCase().trim();
+
       const q = query(
         collection(db, "companies"),
-        where("name", "==", companyName)
+        where("name", "==", normalizedName)
       );
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
@@ -201,8 +210,11 @@ export class CompanyService {
         throw new Error("Company name cannot be empty");
       }
 
+      // Ensure company name is lowercase for consistency
+      const normalizedName = trimmed.toLowerCase();
+
       // Check if new name already exists
-      const exists = await this.checkCompanyExists(trimmed);
+      const exists = await this.checkCompanyExists(normalizedName);
       if (exists) {
         throw new Error("Company name already exists");
       }
@@ -214,7 +226,7 @@ export class CompanyService {
       }
 
       await updateDoc(doc(db, "companies", companyId), {
-        name: trimmed,
+        name: normalizedName,
         updatedAt: new Date(),
       });
 

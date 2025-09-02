@@ -24,13 +24,26 @@ import {
   Loader2,
   CheckCircle,
   AlertCircle,
+  Save,
 } from "lucide-react";
 import { useParams } from "next/navigation";
+import { Timestamp } from "firebase/firestore";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function AccountSettingsPage() {
   const router = useRouter();
   const params = useParams();
-  const { user } = useAuth();
+  const { user, deleteAccount } = useAuth();
   const companySlugName = decodeURIComponent(params.company as string);
 
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -39,6 +52,8 @@ export default function AccountSettingsPage() {
   const [newDisplayName, setNewDisplayName] = useState("");
   const [displayNameSuccess, setDisplayNameSuccess] = useState(false);
   const [displayNameError, setDisplayNameError] = useState("");
+  const [deletingAccount, setDeletingAccount] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -94,6 +109,47 @@ export default function AccountSettingsPage() {
 
   const navigateToOrganizationSettings = () => {
     router.push(`/${companySlugName}/dashboard/settings/organization`);
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!user) return;
+
+    try {
+      setDeletingAccount(true);
+
+      // Delete the account using AuthContext
+      await deleteAccount();
+
+      // Redirect to home page after successful deletion
+      router.push("/");
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to delete account. Please try again.";
+      console.error("Error deleting account:", error);
+      alert(errorMessage);
+    } finally {
+      setDeletingAccount(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
+  // Helper function to safely format dates from Firestore
+  const formatDate = (dateValue: Date | Timestamp | undefined): string => {
+    if (!dateValue) return "Not available";
+
+    try {
+      if (dateValue instanceof Date) {
+        return dateValue.toLocaleDateString();
+      } else if (dateValue instanceof Timestamp) {
+        return dateValue.toDate().toLocaleDateString();
+      } else {
+        return "Invalid date";
+      }
+    } catch {
+      return "Invalid date";
+    }
   };
 
   if (loading) {
@@ -170,7 +226,10 @@ export default function AccountSettingsPage() {
                     Updating...
                   </>
                 ) : (
-                  "Update Display Name"
+                  <>
+                    <Save className="h-4 w-4" />
+                    Update Display Name
+                  </>
                 )}
               </Button>
             </div>
@@ -271,9 +330,72 @@ export default function AccountSettingsPage() {
               <Label className="text-sm font-medium">Account Created</Label>
               <p className="text-sm text-muted-foreground mt-1">
                 {userData?.createdAt
-                  ? new Date(userData.createdAt).toLocaleDateString()
+                  ? formatDate(userData.createdAt)
                   : "Not available"}
               </p>
+            </div>
+          </div>
+
+          {/* Delete Account Section */}
+          <div className="pt-4 border-t">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <h4 className="text-sm font-medium text-destructive">
+                  Danger Zone
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  Once you delete your account, there is no going back. Please
+                  be certain.
+                </p>
+              </div>
+              <AlertDialog
+                open={showDeleteConfirm}
+                onOpenChange={setShowDeleteConfirm}
+              >
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" size="sm">
+                    Delete Account
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      your account and remove all your data from our servers.
+                      This includes:
+                      <br />
+                      • Your profile information
+                      <br />
+                      • Company memberships
+                      <br />
+                      • Organization memberships
+                      <br />
+                      • All feedback and posts
+                      <br />• Any other data associated with your account
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDeleteAccount}
+                      disabled={deletingAccount}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      {deletingAccount ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                          Deleting...
+                        </>
+                      ) : (
+                        "Yes, delete my account"
+                      )}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
         </CardContent>
