@@ -1,5 +1,14 @@
 import { db } from "@/lib/firebase/firebaseConfig";
-import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+  Timestamp,
+  deleteDoc,
+} from "firebase/firestore";
+import { CompanyService } from "./company";
+import { OrganizationService } from "./organization";
 
 export interface UserData {
   uid: string;
@@ -8,10 +17,11 @@ export interface UserData {
   photoURL?: string;
   emailVerified?: boolean;
   companies?: string[]; // Array of company IDs the user belongs to
+  organizations?: string[]; // Array of organization IDs the user belongs to
   onboardingInfoId?: string; // Reference to onboarding data document
-  createdAt: Date;
-  lastLoginAt: Date;
-  updatedAt?: Date; // When the user data was last updated
+  createdAt: Date | Timestamp;
+  lastLoginAt: Date | Timestamp;
+  updatedAt?: Date | Timestamp; // When the user data was last updated
 }
 
 export class UserService {
@@ -90,6 +100,59 @@ export class UserService {
       return { success: true };
     } catch (error) {
       console.error("Error updating display name:", error);
+      throw error;
+    }
+  }
+
+  // Delete user account and all related data
+  static async deleteUserAccount(uid: string) {
+    try {
+      // Get user data first to find related collections
+      const userData = await this.getUserData(uid);
+      if (!userData) {
+        throw new Error("User not found");
+      }
+
+      // Remove user from all companies they're members of
+      if (userData.companies && userData.companies.length > 0) {
+        for (const companyId of userData.companies) {
+          try {
+            await CompanyService.removeUserFromCompany(companyId, uid);
+          } catch (error) {
+            console.warn(
+              `Failed to remove user from company ${companyId}:`,
+              error
+            );
+          }
+        }
+      }
+
+      // Remove user from all organizations they're members of
+      if (userData.organizations && userData.organizations.length > 0) {
+        for (const orgId of userData.organizations) {
+          try {
+            await OrganizationService.removeUserFromOrganization(orgId, uid);
+          } catch (error) {
+            console.warn(
+              `Failed to remove user from organization ${orgId}:`,
+              error
+            );
+          }
+        }
+      }
+
+      // Delete user from users collection
+      await deleteDoc(doc(db, "users", uid));
+
+      // TODO: Add cleanup for other collections when they're implemented
+      // - Delete user's onboarding data
+      // - Delete user's feedback posts
+      // - Delete user's comments
+      // - etc.
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleting user account:", error);
       throw error;
     }
   }

@@ -10,6 +10,7 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged,
   UserCredential,
+  deleteUser as firebaseDeleteUser,
 } from "firebase/auth";
 import {
   auth,
@@ -37,6 +38,7 @@ interface AuthContextType {
   loginWithGitHub: () => Promise<UserCredential>;
   loginWithEmail: (email: string, password: string) => Promise<UserCredential>;
   signOut: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -264,6 +266,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const deleteAccount = async () => {
+    try {
+      if (!auth.currentUser) {
+        throw new Error("No user signed in");
+      }
+
+      // Delete user data from Firestore first
+      await UserService.deleteUserAccount(auth.currentUser.uid);
+
+      // Then delete the user from Firebase Auth
+      await firebaseDeleteUser(auth.currentUser);
+
+      console.log("Account deleted successfully.");
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      throw error;
+    }
+  };
+
   const value = {
     user,
     loading,
@@ -274,6 +295,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loginWithGitHub,
     loginWithEmail,
     signOut,
+    deleteAccount,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

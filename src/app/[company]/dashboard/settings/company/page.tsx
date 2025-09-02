@@ -8,6 +8,13 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -17,7 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { AddCompanyDialog } from "@/components/ui/add-company-dialog";
 import { LogoUpload } from "@/components/ui/logo-upload";
-import { Loader2, Trash2 } from "lucide-react";
+import { Loader2, Trash2, Save } from "lucide-react";
 
 export default function CompanySettingsPage() {
   const params = useParams();
@@ -59,29 +66,21 @@ export default function CompanySettingsPage() {
     load();
   }, [user, companySlugName]);
 
-  const handleSaveCompanyName = async () => {
+  const handleSaveAll = async () => {
     if (!user || !company) return;
     try {
       setUpdatingCompany(true);
-      await CompanyService.updateCompanyName(
-        company.id,
-        newCompanyName,
-        user.uid
-      );
-      setCompany({ ...company, name: newCompanyName });
-      alert("Company name updated");
-    } catch (e: unknown) {
-      const error = e as { message?: string };
-      alert(error?.message || "Failed to update company name");
-    } finally {
-      setUpdatingCompany(false);
-    }
-  };
 
-  const handleSaveCompanyDetails = async () => {
-    if (!user || !company) return;
-    try {
-      setUpdatingCompany(true);
+      // Save company name if it changed
+      if (newCompanyName !== company.name) {
+        await CompanyService.updateCompanyName(
+          company.id,
+          newCompanyName,
+          user.uid
+        );
+      }
+
+      // Save other company details
       await CompanyService.updateCompany(
         company.id,
         {
@@ -90,15 +89,19 @@ export default function CompanySettingsPage() {
         },
         user.uid
       );
+
+      // Update local state
       setCompany({
         ...company,
+        name: newCompanyName,
         website: companyWebsite || undefined,
         teamSize: teamSize || undefined,
       });
-      alert("Company details updated");
+
+      alert("Company information saved successfully");
     } catch (e: unknown) {
       const error = e as { message?: string };
-      alert(error?.message || "Failed to update company");
+      alert(error?.message || "Failed to save company information");
     } finally {
       setUpdatingCompany(false);
     }
@@ -182,18 +185,11 @@ export default function CompanySettingsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium">Company Name</label>
-              <div className="mt-1 flex gap-2">
-                <Input
-                  value={newCompanyName}
-                  onChange={(e) => setNewCompanyName(e.target.value)}
-                />
-                <Button
-                  onClick={handleSaveCompanyName}
-                  disabled={updatingCompany || !newCompanyName.trim()}
-                >
-                  Save
-                </Button>
-              </div>
+              <Input
+                value={newCompanyName}
+                onChange={(e) => setNewCompanyName(e.target.value)}
+                className="mt-1"
+              />
             </div>
             <div>
               <label className="text-sm font-medium">Website</label>
@@ -205,20 +201,40 @@ export default function CompanySettingsPage() {
             </div>
             <div>
               <label className="text-sm font-medium">Team Size</label>
-              <Input
+              <Select
                 value={teamSize}
-                onChange={(e) => setTeamSize(e.target.value)}
-                className="mt-1"
-              />
+                onValueChange={(value) => setTeamSize(value)}
+              >
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select team size" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1-10">1-10 employees</SelectItem>
+                  <SelectItem value="11-50">11-50 employees</SelectItem>
+                  <SelectItem value="51-200">51-200 employees</SelectItem>
+                  <SelectItem value="201-500">201-500 employees</SelectItem>
+                  <SelectItem value="500+">500+ employees</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Button
-              variant="outline"
-              onClick={handleSaveCompanyDetails}
+              onClick={handleSaveAll}
               disabled={updatingCompany}
+              className="flex items-center gap-2"
             >
-              Save Details
+              {updatingCompany ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  Save Company
+                </>
+              )}
             </Button>
             <Button variant="secondary" onClick={() => setShowAddCompany(true)}>
               Add Company
