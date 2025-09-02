@@ -293,7 +293,7 @@ export default function PublicFeedbackPage() {
   return (
     <div className="min-h-screen bg-background flex w-full">
       {/* Main Content Area */}
-      <div className="flex-1 max-w-4xl mx-auto p-6">
+      <div className="flex-1 max-w-4xl mx-auto p-3 sm:p-6 w-full">
         {/* Company Header */}
         <div className="flex items-center gap-4 mb-8 pb-6 border-b">
           {companyData?.logo ? (
@@ -330,7 +330,7 @@ export default function PublicFeedbackPage() {
               <Input
                 type="text"
                 placeholder="Search"
-                className="pl-8 w-64"
+                className="pl-8 w-full sm:w-64"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -345,7 +345,7 @@ export default function PublicFeedbackPage() {
                   Create A New Post
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl">
+              <DialogContent className="max-w-2xl mx-4">
                 <DialogHeader>
                   <DialogTitle>Create a New Post</DialogTitle>
                 </DialogHeader>
@@ -357,7 +357,7 @@ export default function PublicFeedbackPage() {
                       {types.map((type) => (
                         <Badge
                           key={type.id}
-                          className={`cursor-pointer ${
+                          className={`cursor-pointer text-xs sm:text-sm ${
                             selectedTypes.includes(type.id!)
                               ? "bg-blue-600 text-white"
                               : "bg-muted hover:bg-muted/80"
@@ -416,15 +416,15 @@ export default function PublicFeedbackPage() {
         </div>
 
         {/* Posts List */}
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {posts.length === 0 ? (
             <Card>
-              <CardContent className="text-center py-12">
-                <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">
+              <CardContent className="text-center py-8 sm:py-12 px-4 sm:px-6">
+                <MessageSquare className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+                <h3 className="text-lg sm:text-xl font-semibold mb-2">
                   No Submissions Yet
                 </h3>
-                <p className="text-muted-foreground mb-6">
+                <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">
                   Be the first to share your thoughts!
                 </p>
                 <Button
@@ -439,10 +439,10 @@ export default function PublicFeedbackPage() {
           ) : (
             posts.map((post) => (
               <Card key={post.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
+                <CardContent className="p-4 sm:p-6">
                   {/* Post Header with PINNED label for first post */}
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex flex-col">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-0 mb-3">
+                    <div className="flex flex-col w-full">
                       {post.types.length > 0 && (
                         <div className="mb-2 flex flex-wrap gap-1">
                           {post.types.map((type) => {
@@ -460,27 +460,27 @@ export default function PublicFeedbackPage() {
                           })}
                         </div>
                       )}
-                      <CardTitle className="text-xl font-bold mb-2">
+                      <CardTitle className="text-lg sm:text-xl font-bold mb-2">
                         {post.title}
                       </CardTitle>
-                      <p className="text-muted-foreground text-sm line-clamp-3">
+                      <p className="text-sm sm:text-base text-muted-foreground line-clamp-3">
                         {post.description}
                       </p>
                     </div>
                   </div>
 
                   {/* Post Footer */}
-                  <div className="flex items-center justify-between mt-4">
-                    <div className="flex items-center space-x-4 text-muted-foreground text-sm">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mt-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 text-muted-foreground text-xs sm:text-sm">
                       <div className="flex items-center space-x-2">
-                        <User className="h-4 w-4" />
+                        <User className="h-3 w-3 sm:h-4 sm:w-4" />
                         <span>
                           Anonymous User from{" "}
                           {capitalizeCompanyName(companyName)}
                         </span>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <Calendar className="h-4 w-4" />
+                        <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
                         <span>
                           {(() => {
                             try {
@@ -518,7 +518,7 @@ export default function PublicFeedbackPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="flex items-center gap-1"
+                        className="flex items-center gap-1 flex-1 sm:flex-none"
                         onClick={() => handleToggleUpvote(post.id!)}
                       >
                         <ArrowUp className="h-4 w-4" />
@@ -527,7 +527,7 @@ export default function PublicFeedbackPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="flex items-center gap-1"
+                        className="flex items-center gap-1 flex-1 sm:flex-none"
                         onClick={() => loadComments(post.id!)}
                       >
                         <MessageSquare className="h-4 w-4" />
@@ -539,7 +539,9 @@ export default function PublicFeedbackPage() {
                   {/* Comments Section */}
                   {showComments === post.id && (
                     <div className="mt-4 pt-4 border-t">
-                      <h4 className="font-semibold mb-3">Comments</h4>
+                      <h4 className="font-semibold mb-3 text-sm sm:text-base">
+                        Comments
+                      </h4>
 
                       {/* Add Comment */}
                       <div className="space-y-2 mb-4">
@@ -547,9 +549,9 @@ export default function PublicFeedbackPage() {
                           placeholder="Your name"
                           value={userName}
                           onChange={(e) => setUserName(e.target.value)}
-                          className="max-w-xs"
+                          className="max-w-full sm:max-w-xs"
                         />
-                        <div className="flex gap-2">
+                        <div className="flex flex-col sm:flex-row gap-2">
                           <Textarea
                             placeholder="Add a comment..."
                             value={commentContent}
@@ -559,9 +561,10 @@ export default function PublicFeedbackPage() {
                           />
                           <Button
                             onClick={() => handleAddComment(post.id!)}
-                            className="flex items-center gap-1"
+                            className="flex items-center justify-center gap-1 w-full sm:w-auto"
                           >
                             <Send className="h-4 w-4" />
+                            <span className="sm:hidden">Send</span>
                           </Button>
                         </div>
                       </div>
@@ -575,11 +578,13 @@ export default function PublicFeedbackPage() {
                               key={comment.id}
                               className="bg-muted p-3 rounded-lg"
                             >
-                              <div className="flex items-center gap-2 mb-1">
-                                <User className="h-4 w-4 text-muted-foreground" />
-                                <span className="font-medium text-sm">
-                                  {comment.userName}
-                                </span>
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
+                                <div className="flex items-center gap-2">
+                                  <User className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                                  <span className="font-medium text-xs sm:text-sm">
+                                    {comment.userName}
+                                  </span>
+                                </div>
                                 <span className="text-xs text-muted-foreground">
                                   {comment.createdAt &&
                                   typeof comment.createdAt.toDate === "function"
@@ -599,7 +604,9 @@ export default function PublicFeedbackPage() {
                                     : "Recently"}
                                 </span>
                               </div>
-                              <p className="text-sm">{comment.content}</p>
+                              <p className="text-xs sm:text-sm">
+                                {comment.content}
+                              </p>
                             </div>
                           ))}
                       </div>
