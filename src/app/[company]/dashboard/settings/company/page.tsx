@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { CompanyService, CompanyData } from "@/lib/services/company";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -25,9 +25,11 @@ import {
 import { AddCompanyDialog } from "@/components/ui/add-company-dialog";
 import { LogoUpload } from "@/components/ui/logo-upload";
 import { Loader2, Trash2, Save } from "lucide-react";
+import { capitalizeCompanyName } from "@/lib/utils";
 
 export default function CompanySettingsPage() {
   const params = useParams();
+  const router = useRouter();
   const { user } = useAuth();
   const companySlugName = decodeURIComponent(params.company as string);
 
@@ -71,6 +73,9 @@ export default function CompanySettingsPage() {
     try {
       setUpdatingCompany(true);
 
+      let companyNameChanged = false;
+      let newCompanySlug = "";
+
       // Save company name if it changed
       if (newCompanyName !== company.name) {
         await CompanyService.updateCompanyName(
@@ -78,6 +83,8 @@ export default function CompanySettingsPage() {
           newCompanyName,
           user.uid
         );
+        companyNameChanged = true;
+        newCompanySlug = newCompanyName;
       }
 
       // Save other company details
@@ -99,6 +106,13 @@ export default function CompanySettingsPage() {
       });
 
       alert("Company information saved successfully");
+
+      // Redirect to new company URL if name changed
+      if (companyNameChanged) {
+        router.push(
+          `/${encodeURIComponent(newCompanySlug)}/dashboard/settings/company`
+        );
+      }
     } catch (e: unknown) {
       const error = e as { message?: string };
       alert(error?.message || "Failed to save company information");
@@ -171,7 +185,10 @@ export default function CompanySettingsPage() {
     <div className="space-y-6 p-6">
       <Card>
         <CardHeader>
-          <CardTitle>Company Settings</CardTitle>
+          <CardTitle>
+            Company Settings -{" "}
+            {company ? capitalizeCompanyName(company.name) : "Loading..."}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Logo Upload Section */}
@@ -187,9 +204,15 @@ export default function CompanySettingsPage() {
               <label className="text-sm font-medium">Company Name</label>
               <Input
                 value={newCompanyName}
-                onChange={(e) => setNewCompanyName(e.target.value)}
+                onChange={(e) =>
+                  setNewCompanyName(e.target.value.toLowerCase())
+                }
                 className="mt-1"
+                placeholder="Enter company name in lowercase"
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                Company names are stored in lowercase for consistency
+              </p>
             </div>
             <div>
               <label className="text-sm font-medium">Website</label>

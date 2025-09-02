@@ -36,6 +36,7 @@ import {
 import { Label } from "@/components/ui/label";
 
 import Image from "next/image";
+import { capitalizeCompanyName } from "@/lib/utils";
 
 export default function PublicFeedbackPage() {
   const params = useParams();
@@ -311,7 +312,9 @@ export default function PublicFeedbackPage() {
           )}
           <div>
             <h1 className="text-3xl font-bold text-foreground">
-              {companyData?.name || companyName}
+              {companyData?.name
+                ? capitalizeCompanyName(companyData.name)
+                : capitalizeCompanyName(companyName)}
             </h1>
             <p className="text-muted-foreground">
               Share your feedback and help us improve
@@ -471,7 +474,10 @@ export default function PublicFeedbackPage() {
                     <div className="flex items-center space-x-4 text-muted-foreground text-sm">
                       <div className="flex items-center space-x-2">
                         <User className="h-4 w-4" />
-                        <span>Anonymous User from {companyName}</span>
+                        <span>
+                          Anonymous User from{" "}
+                          {capitalizeCompanyName(companyName)}
+                        </span>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Calendar className="h-4 w-4" />

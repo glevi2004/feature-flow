@@ -91,9 +91,12 @@ export function AddCompanyDialog({
             <Label>Company Name</Label>
             <Input
               value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              placeholder="Acme Inc"
+              onChange={(e) => setCompanyName(e.target.value.toLowerCase())}
+              placeholder="acme inc (lowercase)"
             />
+            <p className="text-xs text-muted-foreground mt-1">
+              Company names are stored in lowercase for consistency
+            </p>
           </div>
           <div>
             <Label>Website (optional)</Label>
