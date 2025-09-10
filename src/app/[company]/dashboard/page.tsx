@@ -77,6 +77,7 @@ const STATUS_OPTIONS = [
 function DashboardPage() {
   const { user } = useAuth();
   const [posts, setPosts] = useState<FeedbackPost[]>([]);
+  const [filteredPosts, setFilteredPosts] = useState<FeedbackPost[]>([]);
   const [types, setTypes] = useState<FeedbackType[]>([]);
   const [tags, setTags] = useState<FeedbackTag[]>([]);
   const [loading, setLoading] = useState(true);
@@ -139,6 +140,28 @@ function DashboardPage() {
     }
   }, [user, loadCompanyData]);
 
+  // Filter posts based on search query
+  useEffect(() => {
+    let filtered = posts;
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      filtered = posts.filter((post) => {
+        const query = searchQuery.toLowerCase();
+        return (
+          post.title.toLowerCase().includes(query) ||
+          post.description.toLowerCase().includes(query) ||
+          post.types.some((type) => {
+            const typeData = types.find((t) => t.id === type);
+            return typeData?.name.toLowerCase().includes(query);
+          })
+        );
+      });
+    }
+
+    setFilteredPosts(filtered);
+  }, [searchQuery, posts, types]);
+
   const getTagColor = (tagId: string) => {
     const tag = tags.find((t) => t.id === tagId);
     return tag?.color || "#6B7280";
@@ -181,11 +204,16 @@ function DashboardPage() {
       await FeedbackService.updatePostStatus(postId, newStatus);
 
       // Update local state
-      setPosts(
-        posts.map((post) =>
-          post.id === postId ? { ...post, status: newStatus } : post
-        )
+      const updatedPosts = posts.map((post) =>
+        post.id === postId ? { ...post, status: newStatus } : post
       );
+      setPosts(updatedPosts);
+
+      // Update filteredPosts as well
+      const updatedFilteredPosts = filteredPosts.map((post) =>
+        post.id === postId ? { ...post, status: newStatus } : post
+      );
+      setFilteredPosts(updatedFilteredPosts);
     } catch (error) {
       console.error("Error updating post status:", error);
     } finally {
@@ -232,9 +260,17 @@ function DashboardPage() {
   };
 
   const handlePostUpdate = async (updatedPost: FeedbackPost) => {
-    setPosts(
-      posts.map((post) => (post.id === updatedPost.id ? updatedPost : post))
+    const updatedPosts = posts.map((post) =>
+      post.id === updatedPost.id ? updatedPost : post
     );
+    setPosts(updatedPosts);
+
+    // Update filteredPosts as well
+    const updatedFilteredPosts = filteredPosts.map((post) =>
+      post.id === updatedPost.id ? updatedPost : post
+    );
+    setFilteredPosts(updatedFilteredPosts);
+
     // Reload tags to ensure we have the latest tag data
     await reloadTags();
   };
@@ -253,7 +289,9 @@ function DashboardPage() {
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
           <div>
-            <h1 className="text-2xl font-bold">Posts ({posts.length})</h1>
+            <h1 className="text-2xl font-bold">
+              Posts ({filteredPosts.length})
+            </h1>
             <p className="text-muted-foreground">
               Manage your feedback and feature requests
             </p>
@@ -319,12 +357,16 @@ function DashboardPage() {
 
         {/* Posts List */}
         <div className="space-y-3">
-          {posts.length === 0 ? (
+          {filteredPosts.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">No posts found</p>
+              <p className="text-muted-foreground">
+                {searchQuery.trim()
+                  ? "No posts found matching your search"
+                  : "No posts found"}
+              </p>
             </div>
           ) : (
-            posts.map((post) => (
+            filteredPosts.map((post) => (
               <div
                 key={post.id}
                 className="flex items-center justify-between p-4 bg-card border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
