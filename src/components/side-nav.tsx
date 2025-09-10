@@ -544,18 +544,18 @@ export function SideNav({ onClose }: SideNavProps) {
         </Button>
 
         <div
-          className={`bg-background border-r border-border py-5 overflow-hidden transition-all duration-300 h-full ${
-            isCollapsed ? "w-0 px-0" : "w-56 px-4"
+          className={`bg-background border-r border-border py-5 overflow-hidden transition-all duration-300 h-full px-1 ${
+            isCollapsed ? "w-0 px-0" : "w-56"
           }`}
         >
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-6 px-4">
             <h2 className="text-xl font-bold">{quickLinks.title}</h2>
           </div>
 
-          <div className="space-y-8">
+          <div className="space-y-8 overflow-y-auto max-h-[calc(100vh-120px)] px-2">
             {quickLinks.sections.map((section, sectionIndex) => (
               <div key={sectionIndex}>
-                <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide">
+                <h3 className="text-sm font-medium text-muted-foreground mb-3 uppercase tracking-wide px-2">
                   {section.title}
                 </h3>
                 <div className="space-y-1">
