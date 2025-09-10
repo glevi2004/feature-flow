@@ -15,7 +15,6 @@ import {
 
 import {
   Search,
-  Filter,
   Clock,
   ChevronDown,
   X,
@@ -76,16 +75,16 @@ const STATUS_OPTIONS = [
 
 function DashboardPage() {
   const { user } = useAuth();
-  const { 
-    statusFilter, 
-    typeFilter, 
-    tagFilter, 
-    setStatusFilter, 
-    setTypeFilter, 
-    setTagFilter, 
-    clearAllFilters: clearAllContextFilters 
+  const {
+    statusFilter,
+    typeFilter,
+    tagFilter,
+    setStatusFilter,
+    setTypeFilter,
+    setTagFilter,
+    clearAllFilters: clearAllContextFilters,
   } = useDashboardFilters();
-  
+
   const [posts, setPosts] = useState<FeedbackPost[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<FeedbackPost[]>([]);
   const [types, setTypes] = useState<FeedbackType[]>([]);
@@ -180,7 +179,9 @@ function DashboardPage() {
 
     // Apply tag filter
     if (tagFilter) {
-      filtered = filtered.filter((post) => post.tags && post.tags.includes(tagFilter));
+      filtered = filtered.filter(
+        (post) => post.tags && post.tags.includes(tagFilter)
+      );
     }
 
     setFilteredPosts(filtered);
@@ -210,7 +211,6 @@ function DashboardPage() {
       month: "short",
     });
   };
-
 
   const clearAllFilters = () => {
     clearAllContextFilters();
@@ -342,10 +342,6 @@ function DashboardPage() {
               />
             </div>
             <Button variant="outline" size="sm">
-              <Filter className="h-4 w-4 mr-2" />
-              Filters
-            </Button>
-            <Button variant="outline" size="sm">
               <Clock className="h-4 w-4 mr-2" />
               Recent posts
               <ChevronDown className="h-4 w-4 ml-1" />
@@ -378,7 +374,8 @@ function DashboardPage() {
                   className="flex items-center gap-1 px-3 py-1"
                 >
                   <Radio className="h-3 w-3" />
-                  Type: {types.find(t => t.id === typeFilter)?.name || "Unknown"}
+                  Type:{" "}
+                  {types.find((t) => t.id === typeFilter)?.name || "Unknown"}
                   <button
                     onClick={clearTypeFilter}
                     className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
@@ -393,7 +390,7 @@ function DashboardPage() {
                   className="flex items-center gap-1 px-3 py-1"
                 >
                   <Radio className="h-3 w-3" />
-                  Tag: {tags.find(t => t.id === tagFilter)?.name || "Unknown"}
+                  Tag: {tags.find((t) => t.id === tagFilter)?.name || "Unknown"}
                   <button
                     onClick={clearTagFilter}
                     className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
@@ -537,7 +534,11 @@ function DashboardPage() {
                         disabled={updatingStatus === post.id}
                         onClick={(e) => {
                           e.stopPropagation();
-                          setStatusFilter(statusFilter === (post.status || "Under Review") ? null : (post.status || "Under Review"));
+                          setStatusFilter(
+                            statusFilter === (post.status || "Under Review")
+                              ? null
+                              : post.status || "Under Review"
+                          );
                         }}
                       >
                         {(() => {

@@ -77,13 +77,13 @@ interface QuickLinks {
 
 export function SideNav({ onClose }: SideNavProps) {
   const { user, signOut } = useAuth();
-  const { 
-    statusFilter, 
-    typeFilter, 
-    tagFilter, 
-    setStatusFilter, 
-    setTypeFilter, 
-    setTagFilter 
+  const {
+    statusFilter,
+    typeFilter,
+    tagFilter,
+    setStatusFilter,
+    setTypeFilter,
+    setTagFilter,
   } = useDashboardFilters();
   const pathname = usePathname();
   const [companyName, setCompanyName] = useState("");
@@ -204,7 +204,7 @@ export function SideNav({ onClose }: SideNavProps) {
           title: "Quick Filters",
           items: [
             { label: "My Tasks", icon: User, hasArrow: true },
-            { label: "Priority", icon: Activity, hasArrow: true },
+            { label: "Tags", icon: Tag, hasArrow: true },
           ],
         },
       ],
@@ -598,7 +598,9 @@ export function SideNav({ onClose }: SideNavProps) {
                                       : "hover:bg-muted"
                                   }`}
                                   onClick={() => {
-                                    setTagFilter(tagFilter === tag.id ? null : tag.id!);
+                                    setTagFilter(
+                                      tagFilter === tag.id ? null : tag.id!
+                                    );
                                   }}
                                 >
                                   <div
@@ -649,7 +651,9 @@ export function SideNav({ onClose }: SideNavProps) {
                                       : "hover:bg-muted"
                                   }`}
                                   onClick={() => {
-                                    setTypeFilter(typeFilter === type.id ? null : type.id!);
+                                    setTypeFilter(
+                                      typeFilter === type.id ? null : type.id!
+                                    );
                                   }}
                                 >
                                   <span className="text-sm flex-shrink-0">
@@ -766,14 +770,16 @@ export function SideNav({ onClose }: SideNavProps) {
                           </div>
                         </DropdownButton>
                       ) : (
-                        <button 
+                        <button
                           className={`flex items-center justify-between w-full p-2 rounded-md transition-colors text-left ${
                             statusFilter === item.label
                               ? "bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
                               : "hover:bg-muted"
                           }`}
                           onClick={() => {
-                            setStatusFilter(statusFilter === item.label ? null : item.label);
+                            setStatusFilter(
+                              statusFilter === item.label ? null : item.label
+                            );
                           }}
                         >
                           <div className="flex items-center gap-3">

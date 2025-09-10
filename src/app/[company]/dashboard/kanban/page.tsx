@@ -19,6 +19,7 @@ import {
   CheckSquare,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useDashboardFilters } from "@/contexts/DashboardFilterContext";
 import { CompanyService } from "@/lib/services/company";
 import {
   FeedbackService,
@@ -105,6 +106,7 @@ const BOARD_COLUMNS = [
 
 function BoardPage() {
   const { user } = useAuth();
+  const { tagFilter } = useDashboardFilters();
   const [posts, setPosts] = useState<FeedbackPost[]>([]);
   const [types, setTypes] = useState<FeedbackType[]>([]);
   const [tags, setTags] = useState<FeedbackTag[]>([]);
@@ -247,14 +249,26 @@ function BoardPage() {
   };
 
   const filteredPosts = posts.filter((post) => {
-    if (!searchQuery) return true;
-    return (
-      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.types.some((type) =>
-        type.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    );
+    // Apply search filter
+    if (searchQuery) {
+      const matchesSearch = (
+        post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.types.some((type) =>
+          type.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      );
+      if (!matchesSearch) return false;
+    }
+
+    // Apply tag filter
+    if (tagFilter) {
+      if (!post.tags || !post.tags.includes(tagFilter)) {
+        return false;
+      }
+    }
+
+    return true;
   });
 
   if (loading) {

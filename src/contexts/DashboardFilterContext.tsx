@@ -12,9 +12,15 @@ interface DashboardFilterContextType {
   clearAllFilters: () => void;
 }
 
-const DashboardFilterContext = createContext<DashboardFilterContextType | undefined>(undefined);
+const DashboardFilterContext = createContext<
+  DashboardFilterContextType | undefined
+>(undefined);
 
-export function DashboardFilterProvider({ children }: { children: React.ReactNode }) {
+export function DashboardFilterProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
   const [tagFilter, setTagFilter] = useState<string | null>(null);
@@ -45,7 +51,9 @@ export function DashboardFilterProvider({ children }: { children: React.ReactNod
 export function useDashboardFilters() {
   const context = useContext(DashboardFilterContext);
   if (context === undefined) {
-    throw new Error("useDashboardFilters must be used within a DashboardFilterProvider");
+    throw new Error(
+      "useDashboardFilters must be used within a DashboardFilterProvider"
+    );
   }
   return context;
 }
