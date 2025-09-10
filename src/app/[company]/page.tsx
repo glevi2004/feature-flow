@@ -56,6 +56,7 @@ export default function PublicFeedbackPage() {
   } = usePublicAuth();
 
   const [posts, setPosts] = useState<FeedbackPost[]>([]);
+  const [filteredPosts, setFilteredPosts] = useState<FeedbackPost[]>([]);
   const [types, setTypes] = useState<FeedbackType[]>([]);
   const [loading, setLoading] = useState(true);
   const [companyId, setCompanyId] = useState<string>("");
@@ -94,23 +95,9 @@ export default function PublicFeedbackPage() {
         FeedbackService.getCompanyPosts(companyData.id),
         FeedbackService.getCompanyTypes(companyData.id),
       ]);
-      let postsData = initialPostsData;
 
-      // Apply search filter
-      if (searchQuery) {
-        postsData = postsData.filter(
-          (post) =>
-            post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            post.description
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            post.types.some((type) =>
-              type.toLowerCase().includes(searchQuery.toLowerCase())
-            )
-        );
-      }
-
-      // Apply sorting
+      // Apply sorting only
+      let postsData = [...initialPostsData];
       if (sortBy === "new") {
         postsData.sort((a, b) => {
           const dateA =
@@ -166,17 +153,40 @@ export default function PublicFeedbackPage() {
       }
 
       setPosts(postsData);
+      setFilteredPosts(postsData);
       setTypes(typesData);
     } catch (error) {
       console.error("Error loading company data:", error);
     } finally {
       setLoading(false);
     }
-  }, [companyName, sortBy, searchQuery]);
+  }, [companyName, sortBy]);
 
   useEffect(() => {
     loadCompanyData();
   }, [loadCompanyData]);
+
+  // Filter posts based on search query
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredPosts(posts);
+      return;
+    }
+
+    const filtered = posts.filter((post) => {
+      const query = searchQuery.toLowerCase();
+      return (
+        post.title.toLowerCase().includes(query) ||
+        post.description.toLowerCase().includes(query) ||
+        post.types.some((type) => {
+          const typeData = types.find((t) => t.id === type);
+          return typeData?.name.toLowerCase().includes(query);
+        })
+      );
+    });
+
+    setFilteredPosts(filtered);
+  }, [searchQuery, posts, types]);
 
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -205,7 +215,9 @@ export default function PublicFeedbackPage() {
         status: "Under Review",
       });
 
-      setPosts([newPost as FeedbackPost, ...posts]);
+      const updatedPosts = [newPost as FeedbackPost, ...posts];
+      setPosts(updatedPosts);
+      setFilteredPosts(updatedPosts);
       setTitle("");
       setDescription("");
       setSelectedTypes([]);
@@ -230,23 +242,23 @@ export default function PublicFeedbackPage() {
       const userId = user.uid;
       await FeedbackService.toggleUpvote(postId, userId);
 
-      setPosts(
-        posts.map((post) => {
-          if (post.id === postId) {
-            const isUpvoted = post.upvotes.includes(userId);
-            return {
-              ...post,
-              upvotes: isUpvoted
-                ? post.upvotes.filter((id: string) => id !== userId)
-                : [...post.upvotes, userId],
-              upvotesCount: isUpvoted
-                ? post.upvotesCount - 1
-                : post.upvotesCount + 1,
-            };
-          }
-          return post;
-        })
-      );
+      const updatedPosts = posts.map((post) => {
+        if (post.id === postId) {
+          const isUpvoted = post.upvotes.includes(userId);
+          return {
+            ...post,
+            upvotes: isUpvoted
+              ? post.upvotes.filter((id: string) => id !== userId)
+              : [...post.upvotes, userId],
+            upvotesCount: isUpvoted
+              ? post.upvotesCount - 1
+              : post.upvotesCount + 1,
+          };
+        }
+        return post;
+      });
+      setPosts(updatedPosts);
+      setFilteredPosts(updatedPosts);
     } catch (error) {
       console.error("Error toggling upvote:", error);
       showError("Error", "Failed to update upvote");
@@ -279,14 +291,14 @@ export default function PublicFeedbackPage() {
       setComments([...comments, newComment as FeedbackComment]);
       setCommentContent("");
 
-      setPosts(
-        posts.map((post) => {
-          if (post.id === postId) {
-            return { ...post, commentsCount: post.commentsCount + 1 };
-          }
-          return post;
-        })
-      );
+      const updatedPosts = posts.map((post) => {
+        if (post.id === postId) {
+          return { ...post, commentsCount: post.commentsCount + 1 };
+        }
+        return post;
+      });
+      setPosts(updatedPosts);
+      setFilteredPosts(updatedPosts);
 
       showSuccess("Success!", "Comment added successfully");
     } catch (error) {
@@ -364,18 +376,18 @@ export default function PublicFeedbackPage() {
       });
 
       // Update the post in the local state
-      setPosts(
-        posts.map((post) =>
-          post.id === editingPost.id
-            ? {
-                ...post,
-                title: title.trim(),
-                description: description.trim(),
-                types: selectedTypes,
-              }
-            : post
-        )
+      const updatedPosts = posts.map((post) =>
+        post.id === editingPost.id
+          ? {
+              ...post,
+              title: title.trim(),
+              description: description.trim(),
+              types: selectedTypes,
+            }
+          : post
       );
+      setPosts(updatedPosts);
+      setFilteredPosts(updatedPosts);
 
       setTitle("");
       setDescription("");
@@ -402,7 +414,9 @@ export default function PublicFeedbackPage() {
       await FeedbackService.deletePost(postId, user.uid);
 
       // Remove the post from local state
-      setPosts(posts.filter((post) => post.id !== postId));
+      const updatedPosts = posts.filter((post) => post.id !== postId);
+      setPosts(updatedPosts);
+      setFilteredPosts(updatedPosts);
 
       showSuccess("Success!", "Post deleted successfully");
     } catch (error: any) {
@@ -678,7 +692,7 @@ export default function PublicFeedbackPage() {
 
         {/* Posts List */}
         <div className="space-y-3 sm:space-y-4">
-          {posts.length === 0 ? (
+          {filteredPosts.length === 0 ? (
             <Card>
               <CardContent className="text-center py-8 sm:py-12 px-4 sm:px-6">
                 <MessageSquare className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
@@ -698,7 +712,7 @@ export default function PublicFeedbackPage() {
               </CardContent>
             </Card>
           ) : (
-            posts.map((post) => (
+            filteredPosts.map((post) => (
               <Card key={post.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4 sm:p-6">
                   {/* Post Header with PINNED label for first post */}
