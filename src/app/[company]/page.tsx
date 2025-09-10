@@ -25,6 +25,8 @@ import {
   Calendar,
   LogIn,
   LogOut,
+  Edit,
+  Trash2,
 } from "lucide-react";
 
 import { Loading } from "@/components/ui/loading";
@@ -59,6 +61,8 @@ export default function PublicFeedbackPage() {
   const [companyId, setCompanyId] = useState<string>("");
   const [companyData, setCompanyData] = useState<CompanyData | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingPost, setEditingPost] = useState<FeedbackPost | null>(null);
   const [comments, setComments] = useState<FeedbackComment[]>([]);
   const [showComments, setShowComments] = useState<string | null>(null);
 
@@ -340,6 +344,84 @@ export default function PublicFeedbackPage() {
     }
   };
 
+  const handleEditPost = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingPost || !title.trim() || !description.trim()) {
+      showError("Validation Error", "Please fill in all required fields");
+      return;
+    }
+
+    if (!user) {
+      showError("Authentication Required", "Please sign in to edit posts");
+      return;
+    }
+
+    try {
+      await FeedbackService.editPost(editingPost.id!, user.uid, {
+        title: title.trim(),
+        description: description.trim(),
+        types: selectedTypes,
+      });
+
+      // Update the post in the local state
+      setPosts(
+        posts.map((post) =>
+          post.id === editingPost.id
+            ? {
+                ...post,
+                title: title.trim(),
+                description: description.trim(),
+                types: selectedTypes,
+              }
+            : post
+        )
+      );
+
+      setTitle("");
+      setDescription("");
+      setSelectedTypes([]);
+      setShowEditModal(false);
+      setEditingPost(null);
+      showSuccess("Success!", "Post updated successfully");
+    } catch (error: any) {
+      console.error("Error editing post:", error);
+      showError(
+        "Error",
+        error.message || "Failed to update post. Please try again."
+      );
+    }
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    if (!user) {
+      showError("Authentication Required", "Please sign in to delete posts");
+      return;
+    }
+
+    try {
+      await FeedbackService.deletePost(postId, user.uid);
+
+      // Remove the post from local state
+      setPosts(posts.filter((post) => post.id !== postId));
+
+      showSuccess("Success!", "Post deleted successfully");
+    } catch (error: any) {
+      console.error("Error deleting post:", error);
+      showError(
+        "Error",
+        error.message || "Failed to delete post. Please try again."
+      );
+    }
+  };
+
+  const openEditModal = (post: FeedbackPost) => {
+    setEditingPost(post);
+    setTitle(post.title);
+    setDescription(post.description);
+    setSelectedTypes(post.types);
+    setShowEditModal(true);
+  };
+
   if (loading) {
     return (
       <div className="h-[100vh] flex items-center justify-center">
@@ -506,6 +588,91 @@ export default function PublicFeedbackPage() {
                 </form>
               </DialogContent>
             </Dialog>
+
+            {/* Edit Post Modal */}
+            <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+              <DialogContent className="max-w-2xl mx-4">
+                <DialogHeader>
+                  <DialogTitle>Edit Post</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleEditPost} className="space-y-4">
+                  {/* Types Selection */}
+                  <div>
+                    <Label htmlFor="edit-types">Types</Label>
+                    <div className="flex flex-wrap gap-2 p-2 border rounded-md min-h-[40px]">
+                      {types.map((type) => (
+                        <Badge
+                          key={type.id}
+                          className={`cursor-pointer text-xs sm:text-sm ${
+                            selectedTypes.includes(type.id!)
+                              ? "text-white"
+                              : "bg-muted hover:bg-muted/80 text-foreground"
+                          }`}
+                          style={{
+                            backgroundColor: selectedTypes.includes(type.id!)
+                              ? type.color
+                              : undefined,
+                          }}
+                          onClick={() => {
+                            setSelectedTypes((prev) =>
+                              prev.includes(type.id!)
+                                ? prev.filter((t) => t !== type.id)
+                                : [...prev, type.id!]
+                            );
+                          }}
+                        >
+                          {type.emoji} {type.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Post Title */}
+                  <div>
+                    <Label htmlFor="edit-title">Post Title</Label>
+                    <Input
+                      id="edit-title"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder="Enter post title"
+                      required
+                    />
+                  </div>
+
+                  {/* Description */}
+                  <div>
+                    <Label htmlFor="edit-description">Description</Label>
+                    <Textarea
+                      id="edit-description"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Describe your feedback or feature request"
+                      rows={4}
+                      required
+                    />
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button type="submit" className="flex-1">
+                      Update Post
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setShowEditModal(false);
+                        setEditingPost(null);
+                        setTitle("");
+                        setDescription("");
+                        setSelectedTypes([]);
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
@@ -631,6 +798,44 @@ export default function PublicFeedbackPage() {
                           {post.commentsCount || 0}
                         </span>
                       </Button>
+
+                      {/* Edit and Delete buttons - only show for post author and when status is "Under Review" */}
+                      {user &&
+                        user.uid === post.userId &&
+                        post.status === "Under Review" && (
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="flex items-center gap-1"
+                              onClick={() => openEditModal(post)}
+                            >
+                              <Edit className="h-4 w-4" />
+                              <span className="hidden sm:inline text-sm">
+                                Edit
+                              </span>
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="flex items-center gap-1 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+                              onClick={() => {
+                                if (
+                                  confirm(
+                                    "Are you sure you want to delete this post? This action cannot be undone."
+                                  )
+                                ) {
+                                  handleDeletePost(post.id!);
+                                }
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              <span className="hidden sm:inline text-sm">
+                                Delete
+                              </span>
+                            </Button>
+                          </>
+                        )}
                     </div>
                   </div>
 
