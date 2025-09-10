@@ -491,88 +491,36 @@ export default function PublicFeedbackPage() {
       {/* Main Content Area */}
       <div className="flex-1 max-w-4xl mx-auto p-3 sm:p-6 w-full">
         {/* Company Header */}
-        <div className="flex items-center gap-4 mb-8 pb-6 border-b">
-          {companyData?.logo ? (
-            <div className="relative w-16 h-16 flex-shrink-0">
-              <Image
-                src={companyData.logo}
-                alt={`${companyData.name} logo`}
-                fill
-                className="object-contain rounded-lg"
-              />
+        <div className="flex items-center justify-between mb-8 pb-6 border-b">
+          <div className="flex items-center gap-4">
+            {companyData?.logo ? (
+              <div className="relative w-16 h-16 flex-shrink-0">
+                <Image
+                  src={companyData.logo}
+                  alt={`${companyData.name} logo`}
+                  fill
+                  className="object-contain rounded-lg"
+                />
+              </div>
+            ) : (
+              <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+                <User className="h-8 w-8 text-muted-foreground" />
+              </div>
+            )}
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">
+                {companyData?.name
+                  ? capitalizeCompanyName(companyData.name)
+                  : capitalizeCompanyName(companyName)}
+              </h1>
+              <p className="text-muted-foreground">
+                Share your feedback and help us improve
+              </p>
             </div>
-          ) : (
-            <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
-              <User className="h-8 w-8 text-muted-foreground" />
-            </div>
-          )}
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">
-              {companyData?.name
-                ? capitalizeCompanyName(companyData.name)
-                : capitalizeCompanyName(companyName)}
-            </h1>
-            <p className="text-muted-foreground">
-              Share your feedback and help us improve
-            </p>
-          </div>
-        </div>
-
-        {/* Header/Navigation */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-          <div className="flex items-center space-x-2">
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Search"
-                className="pl-8 w-full sm:w-64"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Filter className="h-4 w-4" />
-                  <span className="ml-2">Filters</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() => setSortBy("trending")}
-                  className={sortBy === "trending" ? "bg-accent" : ""}
-                >
-                  <Flame className="h-4 w-4 mr-2" />
-                  Trending
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setSortBy("top")}
-                  className={sortBy === "top" ? "bg-accent" : ""}
-                >
-                  <ArrowUp className="h-4 w-4 mr-2" />
-                  Upvotes
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setSortBy("comments")}
-                  className={sortBy === "comments" ? "bg-accent" : ""}
-                >
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  Comments
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setSortBy("new")}
-                  className={sortBy === "new" ? "bg-accent" : ""}
-                >
-                  <Clock className="h-4 w-4 mr-2" />
-                  Newest
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
 
+          {/* Authentication Section */}
           <div className="flex items-center space-x-2">
-            {/* Authentication Section */}
             {user ? (
               <div className="flex items-center space-x-2">
                 <div className="flex items-center space-x-2">
@@ -603,167 +551,183 @@ export default function PublicFeedbackPage() {
                 Sign In
               </Button>
             )}
-
-            <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
-              <DialogTrigger asChild>
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2">
-                  <Plus className="h-4 w-4" />
-                  Create A New Post
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl mx-4">
-                <DialogHeader>
-                  <DialogTitle>Create a New Post</DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleCreatePost} className="space-y-4">
-                  {/* Types Selection */}
-                  <div>
-                    <Label htmlFor="types">Types</Label>
-                    <div className="flex flex-wrap gap-2 p-2 border rounded-md min-h-[40px]">
-                      {types.map((type) => (
-                        <Badge
-                          key={type.id}
-                          className={`cursor-pointer text-xs sm:text-sm ${
-                            selectedTypes.includes(type.id!)
-                              ? "text-white"
-                              : "bg-muted hover:bg-muted/80 text-foreground"
-                          }`}
-                          style={{
-                            backgroundColor: selectedTypes.includes(type.id!)
-                              ? type.color
-                              : undefined,
-                          }}
-                          onClick={() => {
-                            setSelectedTypes((prev) =>
-                              prev.includes(type.id!)
-                                ? prev.filter((t) => t !== type.id)
-                                : [...prev, type.id!]
-                            );
-                          }}
-                        >
-                          {type.emoji} {type.name}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Post Title */}
-                  <div>
-                    <Label htmlFor="title">Post Title</Label>
-                    <Input
-                      id="title"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      placeholder="Enter post title"
-                      required
-                    />
-                  </div>
-
-                  {/* Description */}
-                  <div>
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea
-                      id="description"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Describe your feedback or feature request"
-                      rows={4}
-                      required
-                    />
-                  </div>
-
-                  <Button type="submit" className="w-full">
-                    Submit Post
-                  </Button>
-                </form>
-              </DialogContent>
-            </Dialog>
-
-            {/* Edit Post Modal */}
-            <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-              <DialogContent className="max-w-2xl mx-4">
-                <DialogHeader>
-                  <DialogTitle>Edit Post</DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleEditPost} className="space-y-4">
-                  {/* Types Selection */}
-                  <div>
-                    <Label htmlFor="edit-types">Types</Label>
-                    <div className="flex flex-wrap gap-2 p-2 border rounded-md min-h-[40px]">
-                      {types.map((type) => (
-                        <Badge
-                          key={type.id}
-                          className={`cursor-pointer text-xs sm:text-sm ${
-                            selectedTypes.includes(type.id!)
-                              ? "text-white"
-                              : "bg-muted hover:bg-muted/80 text-foreground"
-                          }`}
-                          style={{
-                            backgroundColor: selectedTypes.includes(type.id!)
-                              ? type.color
-                              : undefined,
-                          }}
-                          onClick={() => {
-                            setSelectedTypes((prev) =>
-                              prev.includes(type.id!)
-                                ? prev.filter((t) => t !== type.id)
-                                : [...prev, type.id!]
-                            );
-                          }}
-                        >
-                          {type.emoji} {type.name}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Post Title */}
-                  <div>
-                    <Label htmlFor="edit-title">Post Title</Label>
-                    <Input
-                      id="edit-title"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      placeholder="Enter post title"
-                      required
-                    />
-                  </div>
-
-                  {/* Description */}
-                  <div>
-                    <Label htmlFor="edit-description">Description</Label>
-                    <Textarea
-                      id="edit-description"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      placeholder="Describe your feedback or feature request"
-                      rows={4}
-                      required
-                    />
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Button type="submit" className="flex-1">
-                      Update Post
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setShowEditModal(false);
-                        setEditingPost(null);
-                        setTitle("");
-                        setDescription("");
-                        setSelectedTypes([]);
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </form>
-              </DialogContent>
-            </Dialog>
           </div>
+        </div>
+
+        {/* Header/Navigation */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center space-x-2">
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search"
+                className="pl-8 w-full sm:w-64"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+            <DialogTrigger asChild>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Create A New Post
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl mx-4">
+              <DialogHeader>
+                <DialogTitle>Create a New Post</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleCreatePost} className="space-y-4">
+                {/* Types Selection */}
+                <div>
+                  <Label htmlFor="types">Types</Label>
+                  <div className="flex flex-wrap gap-2 p-2 border rounded-md min-h-[40px]">
+                    {types.map((type) => (
+                      <Badge
+                        key={type.id}
+                        className={`cursor-pointer text-xs sm:text-sm ${
+                          selectedTypes.includes(type.id!)
+                            ? "text-white"
+                            : "bg-muted hover:bg-muted/80 text-foreground"
+                        }`}
+                        style={{
+                          backgroundColor: selectedTypes.includes(type.id!)
+                            ? type.color
+                            : undefined,
+                        }}
+                        onClick={() => {
+                          setSelectedTypes((prev) =>
+                            prev.includes(type.id!)
+                              ? prev.filter((t) => t !== type.id)
+                              : [...prev, type.id!]
+                          );
+                        }}
+                      >
+                        {type.emoji} {type.name}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Post Title */}
+                <div>
+                  <Label htmlFor="title">Post Title</Label>
+                  <Input
+                    id="title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Enter post title"
+                    required
+                  />
+                </div>
+
+                {/* Description */}
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Describe your feedback or feature request"
+                    rows={4}
+                    required
+                  />
+                </div>
+
+                <Button type="submit" className="w-full">
+                  Submit Post
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
+
+          {/* Edit Post Modal */}
+          <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+            <DialogContent className="max-w-2xl mx-4">
+              <DialogHeader>
+                <DialogTitle>Edit Post</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleEditPost} className="space-y-4">
+                {/* Types Selection */}
+                <div>
+                  <Label htmlFor="edit-types">Types</Label>
+                  <div className="flex flex-wrap gap-2 p-2 border rounded-md min-h-[40px]">
+                    {types.map((type) => (
+                      <Badge
+                        key={type.id}
+                        className={`cursor-pointer text-xs sm:text-sm ${
+                          selectedTypes.includes(type.id!)
+                            ? "text-white"
+                            : "bg-muted hover:bg-muted/80 text-foreground"
+                        }`}
+                        style={{
+                          backgroundColor: selectedTypes.includes(type.id!)
+                            ? type.color
+                            : undefined,
+                        }}
+                        onClick={() => {
+                          setSelectedTypes((prev) =>
+                            prev.includes(type.id!)
+                              ? prev.filter((t) => t !== type.id)
+                              : [...prev, type.id!]
+                          );
+                        }}
+                      >
+                        {type.emoji} {type.name}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Post Title */}
+                <div>
+                  <Label htmlFor="edit-title">Post Title</Label>
+                  <Input
+                    id="edit-title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Enter post title"
+                    required
+                  />
+                </div>
+
+                {/* Description */}
+                <div>
+                  <Label htmlFor="edit-description">Description</Label>
+                  <Textarea
+                    id="edit-description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Describe your feedback or feature request"
+                    rows={4}
+                    required
+                  />
+                </div>
+
+                <div className="flex gap-2">
+                  <Button type="submit" className="flex-1">
+                    Update Post
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setShowEditModal(false);
+                      setEditingPost(null);
+                      setTitle("");
+                      setDescription("");
+                      setSelectedTypes([]);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Filter Buttons */}
