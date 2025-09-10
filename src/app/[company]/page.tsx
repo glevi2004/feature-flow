@@ -34,6 +34,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { ToastContainer, useToast } from "@/components/ui/toast";
 
 import Image from "next/image";
 import { capitalizeCompanyName } from "@/lib/utils";
@@ -41,6 +42,7 @@ import { capitalizeCompanyName } from "@/lib/utils";
 export default function PublicFeedbackPage() {
   const params = useParams();
   const companyName = decodeURIComponent(params.company as string);
+  const { toasts, removeToast, showSuccess, showError } = useToast();
 
   const [posts, setPosts] = useState<FeedbackPost[]>([]);
   const [types, setTypes] = useState<FeedbackType[]>([]);
@@ -167,7 +169,7 @@ export default function PublicFeedbackPage() {
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !description.trim()) {
-      alert("Please fill in all required fields");
+      showError("Validation Error", "Please fill in all required fields");
       return;
     }
 
@@ -187,10 +189,10 @@ export default function PublicFeedbackPage() {
       setDescription("");
       setSelectedTypes([]);
       setShowCreateModal(false);
-      alert("Post created successfully!");
+      showSuccess("Success!", "Your post has been created successfully");
     } catch (error) {
       console.error("Error creating post:", error);
-      alert("Failed to create post");
+      showError("Error", "Failed to create post. Please try again.");
     }
   };
 
@@ -218,13 +220,13 @@ export default function PublicFeedbackPage() {
       );
     } catch (error) {
       console.error("Error toggling upvote:", error);
-      alert("Failed to update upvote");
+      showError("Error", "Failed to update upvote");
     }
   };
 
   const handleAddComment = async (postId: string) => {
     if (!commentContent.trim() || !userName.trim()) {
-      alert("Please enter your name and comment");
+      showError("Validation Error", "Please enter your name and comment");
       return;
     }
 
@@ -249,10 +251,10 @@ export default function PublicFeedbackPage() {
         })
       );
 
-      alert("Comment added successfully!");
+      showSuccess("Success!", "Comment added successfully");
     } catch (error) {
       console.error("Error adding comment:", error);
-      alert("Failed to add comment");
+      showError("Error", "Failed to add comment");
     }
   };
 
@@ -292,6 +294,7 @@ export default function PublicFeedbackPage() {
 
   return (
     <div className="min-h-screen bg-background flex w-full">
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
       {/* Main Content Area */}
       <div className="flex-1 max-w-4xl mx-auto p-3 sm:p-6 w-full">
         {/* Company Header */}
