@@ -23,6 +23,7 @@ import {
   Send,
   Activity,
   X,
+  LogIn,
 } from "lucide-react";
 import {
   FeedbackPost,
@@ -32,6 +33,7 @@ import {
 } from "@/lib/services/feedback";
 import { FeedbackService } from "@/lib/services/feedback";
 import { TagsService, FeedbackTag } from "@/lib/services/tags";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface PostModalProps {
   post: FeedbackPost | null;
@@ -58,10 +60,10 @@ export function PostModal({
   onClose,
   onPostUpdate,
 }: PostModalProps) {
+  const { user, signInWithGoogle } = useAuth();
   const [currentPost, setCurrentPost] = useState<FeedbackPost | null>(null);
   const [comments, setComments] = useState<FeedbackComment[]>([]);
   const [newComment, setNewComment] = useState("");
-  const [userName, setUserName] = useState("");
   const [loadingComments, setLoadingComments] = useState(false);
   const [submittingComment, setSubmittingComment] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
@@ -111,8 +113,13 @@ export function PostModal({
   }, [currentPost, isOpen, loadComments, loadTags]);
 
   const handleAddComment = async () => {
-    if (!currentPost || !newComment.trim() || !userName.trim()) {
-      alert("Please enter your name and comment");
+    if (!currentPost || !newComment.trim()) {
+      alert("Please enter a comment");
+      return;
+    }
+
+    if (!user) {
+      alert("Please sign in to add comments");
       return;
     }
 
@@ -121,12 +128,15 @@ export function PostModal({
       const newCommentData = await FeedbackService.addComment({
         postId: currentPost.id!,
         companyId,
-        userId: `anonymous-${Date.now()}`,
-        userName: userName.trim(),
+        userId: user.uid,
+        userName: user.displayName || "Anonymous User",
         content: newComment.trim(),
       });
 
-      setComments([...comments, { ...newCommentData, createdAt: Timestamp.now() }]);
+      setComments([
+        ...comments,
+        { ...newCommentData, createdAt: Timestamp.now() },
+      ]);
       setNewComment("");
 
       const updatedPost = {
@@ -283,13 +293,7 @@ export function PostModal({
 
             {/* Comment Input */}
             <div className="mb-6">
-              <div className="space-y-3">
-                <Input
-                  placeholder="Your name"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
-                  className="max-w-xs"
-                />
+              {user ? (
                 <div className="flex gap-2">
                   <Textarea
                     placeholder="Write a comment..."
@@ -306,7 +310,22 @@ export function PostModal({
                     <Send className="h-4 w-4" />
                   </Button>
                 </div>
-              </div>
+              ) : (
+                <div className="text-center py-4 border rounded-lg bg-muted/50">
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Sign in to add comments
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={signInWithGoogle}
+                    className="flex items-center gap-2"
+                  >
+                    <LogIn className="h-4 w-4" />
+                    Sign In with Google
+                  </Button>
+                </div>
+              )}
             </div>
 
             {/* Comments Section */}
