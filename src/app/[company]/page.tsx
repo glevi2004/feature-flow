@@ -362,8 +362,8 @@ export default function PublicFeedbackPage() {
                           key={type.id}
                           className={`cursor-pointer text-xs sm:text-sm ${
                             selectedTypes.includes(type.id!)
-                              ? "bg-blue-600 text-white"
-                              : "bg-muted hover:bg-muted/80"
+                              ? "text-white"
+                              : "bg-muted hover:bg-muted/80 text-foreground"
                           }`}
                           style={{
                             backgroundColor: selectedTypes.includes(type.id!)
