@@ -416,4 +416,93 @@ export class FeedbackService {
       throw error;
     }
   }
+
+  // Edit a post (only if user is the author and status is "Under Review")
+  static async editPost(
+    postId: string,
+    userId: string,
+    updates: {
+      title?: string;
+      description?: string;
+      types?: string[];
+      tags?: string[];
+    }
+  ) {
+    try {
+      const postRef = doc(db, "feedback_posts", postId);
+      const postSnap = await getDoc(postRef);
+
+      if (!postSnap.exists()) {
+        throw new Error("Post not found");
+      }
+
+      const post = postSnap.data() as FeedbackPost;
+
+      // Check if user is the author
+      if (post.userId !== userId) {
+        throw new Error("You can only edit your own posts");
+      }
+
+      // Check if post is still under review
+      if (post.status !== "Under Review") {
+        throw new Error("You can only edit posts that are under review");
+      }
+
+      // Update the post
+      await updateDoc(postRef, {
+        ...updates,
+        updatedAt: serverTimestamp(),
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error editing post:", error);
+      throw error;
+    }
+  }
+
+  // Delete a post (only if user is the author and status is "Under Review")
+  static async deletePost(postId: string, userId: string) {
+    try {
+      const postRef = doc(db, "feedback_posts", postId);
+      const postSnap = await getDoc(postRef);
+
+      if (!postSnap.exists()) {
+        throw new Error("Post not found");
+      }
+
+      const post = postSnap.data() as FeedbackPost;
+
+      // Check if user is the author
+      if (post.userId !== userId) {
+        throw new Error("You can only delete your own posts");
+      }
+
+      // Check if post is still under review
+      if (post.status !== "Under Review") {
+        throw new Error("You can only delete posts that are under review");
+      }
+
+      // Delete all comments associated with this post
+      const commentsQuery = query(
+        collection(db, "feedback_comments"),
+        where("postId", "==", postId)
+      );
+      const commentsSnapshot = await getDocs(commentsQuery);
+
+      const deleteCommentPromises = commentsSnapshot.docs.map((commentDoc) =>
+        deleteDoc(doc(db, "feedback_comments", commentDoc.id))
+      );
+
+      await Promise.all(deleteCommentPromises);
+
+      // Delete the post
+      await deleteDoc(postRef);
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      throw error;
+    }
+  }
 }
