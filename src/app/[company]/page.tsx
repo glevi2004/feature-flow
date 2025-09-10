@@ -23,6 +23,8 @@ import {
   Filter,
   ArrowUp,
   Calendar,
+  LogIn,
+  LogOut,
 } from "lucide-react";
 
 import { Loading } from "@/components/ui/loading";
@@ -35,6 +37,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { ToastContainer, useToast } from "@/components/ui/toast";
+import { usePublicAuth } from "@/contexts/PublicAuthContext";
 
 import Image from "next/image";
 import { capitalizeCompanyName } from "@/lib/utils";
@@ -43,6 +46,12 @@ export default function PublicFeedbackPage() {
   const params = useParams();
   const companyName = decodeURIComponent(params.company as string);
   const { toasts, removeToast, showSuccess, showError } = useToast();
+  const {
+    user,
+    loading: authLoading,
+    signInWithGoogle,
+    signOut,
+  } = usePublicAuth();
 
   const [posts, setPosts] = useState<FeedbackPost[]>([]);
   const [types, setTypes] = useState<FeedbackType[]>([]);
@@ -58,7 +67,6 @@ export default function PublicFeedbackPage() {
   const [description, setDescription] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [commentContent, setCommentContent] = useState("");
-  const [userName, setUserName] = useState("");
 
   // Filter/Sort states
   const [sortBy] = useState("trending"); // 'trending', 'top', 'new'
@@ -173,10 +181,19 @@ export default function PublicFeedbackPage() {
       return;
     }
 
+    if (!user) {
+      showError(
+        "Authentication Required",
+        "Please sign in with Google to create a post"
+      );
+      return;
+    }
+
     try {
       const newPost = await FeedbackService.createPost({
         companyId,
-        userId: `anonymous-${Date.now()}`,
+        userId: user.uid,
+        userName: user.displayName,
         title: title.trim(),
         description: description.trim(),
         types: selectedTypes,
@@ -197,8 +214,16 @@ export default function PublicFeedbackPage() {
   };
 
   const handleToggleUpvote = async (postId: string) => {
+    if (!user) {
+      showError(
+        "Authentication Required",
+        "Please sign in with Google to upvote"
+      );
+      return;
+    }
+
     try {
-      const userId = `anonymous-${Date.now()}`;
+      const userId = user.uid;
       await FeedbackService.toggleUpvote(postId, userId);
 
       setPosts(
@@ -225,8 +250,16 @@ export default function PublicFeedbackPage() {
   };
 
   const handleAddComment = async (postId: string) => {
-    if (!commentContent.trim() || !userName.trim()) {
-      showError("Validation Error", "Please enter your name and comment");
+    if (!commentContent.trim()) {
+      showError("Validation Error", "Please enter a comment");
+      return;
+    }
+
+    if (!user) {
+      showError(
+        "Authentication Required",
+        "Please sign in with Google to comment"
+      );
       return;
     }
 
@@ -234,8 +267,8 @@ export default function PublicFeedbackPage() {
       const newComment = await FeedbackService.addComment({
         postId,
         companyId,
-        userId: `anonymous-${Date.now()}`,
-        userName: userName.trim(),
+        userId: user.uid,
+        userName: user.displayName,
         content: commentContent.trim(),
       });
 
@@ -284,6 +317,29 @@ export default function PublicFeedbackPage() {
     return `${Math.floor(diffInSeconds / 31536000)} years ago`;
   };
 
+  const handleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+      showSuccess("Welcome!", "Successfully signed in with Google");
+    } catch (error) {
+      console.error("Error signing in:", error);
+      showError(
+        "Sign In Failed",
+        "Failed to sign in with Google. Please try again."
+      );
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      showSuccess("Signed Out", "You have been signed out successfully");
+    } catch (error) {
+      console.error("Error signing out:", error);
+      showError("Sign Out Failed", "Failed to sign out. Please try again.");
+    }
+  };
+
   if (loading) {
     return (
       <div className="h-[100vh] flex items-center justify-center">
@@ -326,7 +382,7 @@ export default function PublicFeedbackPage() {
         </div>
 
         {/* Header/Navigation */}
-        <div className="flex items-center justify-end mb-8">
+        <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-2">
             <div className="relative">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -341,6 +397,41 @@ export default function PublicFeedbackPage() {
             <Button variant="ghost" size="sm">
               <Filter className="h-4 w-4" />
             </Button>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            {/* Authentication Section */}
+            {user ? (
+              <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2">
+                  {user.photoURL ? (
+                    <Image
+                      src={user.photoURL}
+                      alt={user.displayName}
+                      width={32}
+                      height={32}
+                      className="rounded-full"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+                      <User className="h-4 w-4" />
+                    </div>
+                  )}
+                  <span className="text-sm font-medium hidden sm:inline">
+                    {user.displayName}
+                  </span>
+                </div>
+                <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <Button variant="outline" size="sm" onClick={handleSignIn}>
+                <LogIn className="h-4 w-4 mr-2" />
+                Sign In
+              </Button>
+            )}
+
             <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
               <DialogTrigger asChild>
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2">
@@ -478,7 +569,7 @@ export default function PublicFeedbackPage() {
                       <div className="flex items-center space-x-2">
                         <User className="h-3 w-3 sm:h-4 sm:w-4" />
                         <span>
-                          Anonymous User from{" "}
+                          {post.userName || "Anonymous User"} from{" "}
                           {capitalizeCompanyName(companyName)}
                         </span>
                       </div>
@@ -525,7 +616,9 @@ export default function PublicFeedbackPage() {
                         onClick={() => handleToggleUpvote(post.id!)}
                       >
                         <ArrowUp className="h-4 w-4" />
-                        <span className="text-sm">{post.upvotesCount}</span>
+                        <span className="text-sm">
+                          {post.upvotesCount || 0}
+                        </span>
                       </Button>
                       <Button
                         variant="ghost"
@@ -534,7 +627,9 @@ export default function PublicFeedbackPage() {
                         onClick={() => loadComments(post.id!)}
                       >
                         <MessageSquare className="h-4 w-4" />
-                        <span className="text-sm">{post.commentsCount}</span>
+                        <span className="text-sm">
+                          {post.commentsCount || 0}
+                        </span>
                       </Button>
                     </div>
                   </div>
@@ -548,28 +643,40 @@ export default function PublicFeedbackPage() {
 
                       {/* Add Comment */}
                       <div className="space-y-2 mb-4">
-                        <Input
-                          placeholder="Your name"
-                          value={userName}
-                          onChange={(e) => setUserName(e.target.value)}
-                          className="max-w-full sm:max-w-xs"
-                        />
-                        <div className="flex flex-col sm:flex-row gap-2">
-                          <Textarea
-                            placeholder="Add a comment..."
-                            value={commentContent}
-                            onChange={(e) => setCommentContent(e.target.value)}
-                            rows={2}
-                            className="flex-1"
-                          />
-                          <Button
-                            onClick={() => handleAddComment(post.id!)}
-                            className="flex items-center justify-center gap-1 w-full sm:w-auto"
-                          >
-                            <Send className="h-4 w-4" />
-                            <span className="sm:hidden">Send</span>
-                          </Button>
-                        </div>
+                        {user ? (
+                          <div className="flex flex-col sm:flex-row gap-2">
+                            <Textarea
+                              placeholder="Add a comment..."
+                              value={commentContent}
+                              onChange={(e) =>
+                                setCommentContent(e.target.value)
+                              }
+                              rows={2}
+                              className="flex-1"
+                            />
+                            <Button
+                              onClick={() => handleAddComment(post.id!)}
+                              className="flex items-center justify-center gap-1 w-full sm:w-auto"
+                            >
+                              <Send className="h-4 w-4" />
+                              <span className="sm:hidden">Send</span>
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="text-center py-4">
+                            <p className="text-sm text-muted-foreground mb-2">
+                              Sign in with Google to add comments
+                            </p>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={handleSignIn}
+                            >
+                              <LogIn className="h-4 w-4 mr-2" />
+                              Sign In
+                            </Button>
+                          </div>
+                        )}
                       </div>
 
                       {/* Comments List */}
