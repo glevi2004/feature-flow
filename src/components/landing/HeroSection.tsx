@@ -27,8 +27,7 @@ export function HeroSection() {
               </Link>
               <Button
                 size="lg"
-                variant="outline"
-                className="text-lg px-8 py-3 border-[#30363d] text-white hover:bg-[#21262d]"
+                className="text-lg px-8 py-3 border border-[#30363d] text-white bg-[#161b22] hover:bg-[#21262d]"
               >
                 Watch Demo
               </Button>
