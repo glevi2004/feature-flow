@@ -1,5 +1,14 @@
 import Link from "next/link";
-import { BookOpen, Play, Users, Zap, Settings, BarChart3, ArrowRight, CheckCircle } from "lucide-react";
+import {
+  BookOpen,
+  Play,
+  Users,
+  Zap,
+  Settings,
+  BarChart3,
+  ArrowRight,
+  CheckCircle,
+} from "lucide-react";
 
 export default function TutorialsPage() {
   return (
@@ -7,22 +16,26 @@ export default function TutorialsPage() {
       <div className="space-y-4">
         <h1 className="text-4xl font-bold">Tutorials</h1>
         <p className="text-xl text-muted-foreground">
-          Step-by-step guides to help you master Feature Ship and optimize your feature development workflow.
+          Step-by-step guides to help you master Feature Ship and optimize your
+          feature development workflow.
         </p>
       </div>
 
       <div className="space-y-8">
         <section className="space-y-6">
           <h2 className="text-2xl font-semibold">Getting Started Tutorials</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="p-6 border rounded-lg">
               <div className="flex items-center gap-3 mb-4">
                 <Play className="h-8 w-8 text-blue-500" />
-                <h3 className="text-lg font-semibold">Setting Up Your First Project</h3>
+                <h3 className="text-lg font-semibold">
+                  Setting Up Your First Project
+                </h3>
               </div>
               <p className="text-muted-foreground mb-4">
-                Learn how to create your company, invite team members, and set up your first feature request in Feature Ship.
+                Learn how to create your company, invite team members, and set
+                up your first feature request in Feature Ship.
               </p>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
@@ -52,10 +65,13 @@ export default function TutorialsPage() {
             <div className="p-6 border rounded-lg">
               <div className="flex items-center gap-3 mb-4">
                 <Users className="h-8 w-8 text-green-500" />
-                <h3 className="text-lg font-semibold">Team Collaboration Setup</h3>
+                <h3 className="text-lg font-semibold">
+                  Team Collaboration Setup
+                </h3>
               </div>
               <p className="text-muted-foreground mb-4">
-                Configure your team structure, roles, and permissions to enable effective collaboration on feature development.
+                Configure your team structure, roles, and permissions to enable
+                effective collaboration on feature development.
               </p>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
@@ -85,19 +101,24 @@ export default function TutorialsPage() {
         </section>
 
         <section className="space-y-6">
-          <h2 className="text-2xl font-semibold">Feature Management Tutorials</h2>
-          
+          <h2 className="text-2xl font-semibold">
+            Feature Management Tutorials
+          </h2>
+
           <div className="space-y-6">
             <div className="border rounded-lg overflow-hidden">
               <div className="bg-muted px-6 py-4 border-b">
                 <div className="flex items-center gap-3">
                   <BookOpen className="h-5 w-5" />
-                  <h3 className="text-lg font-semibold">Creating and Managing Features</h3>
+                  <h3 className="text-lg font-semibold">
+                    Creating and Managing Features
+                  </h3>
                 </div>
               </div>
               <div className="p-6">
                 <p className="text-muted-foreground mb-4">
-                  Master the art of creating, organizing, and managing feature requests effectively.
+                  Master the art of creating, organizing, and managing feature
+                  requests effectively.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -124,7 +145,8 @@ export default function TutorialsPage() {
                 </div>
                 <div className="mt-4 p-4 bg-blue-50 rounded-lg">
                   <p className="text-sm text-blue-800">
-                    <strong>Pro Tip:</strong> Use templates for common feature types to speed up the creation process.
+                    <strong>Pro Tip:</strong> Use templates for common feature
+                    types to speed up the creation process.
                   </p>
                 </div>
               </div>
@@ -134,12 +156,15 @@ export default function TutorialsPage() {
               <div className="bg-muted px-6 py-4 border-b">
                 <div className="flex items-center gap-3">
                   <Zap className="h-5 w-5" />
-                  <h3 className="text-lg font-semibold">Advanced Filtering and Search</h3>
+                  <h3 className="text-lg font-semibold">
+                    Advanced Filtering and Search
+                  </h3>
                 </div>
               </div>
               <div className="p-6">
                 <p className="text-muted-foreground mb-4">
-                  Learn how to use advanced filtering and search capabilities to find and organize features efficiently.
+                  Learn how to use advanced filtering and search capabilities to
+                  find and organize features efficiently.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -165,7 +190,8 @@ export default function TutorialsPage() {
                 </div>
                 <div className="mt-4 p-4 bg-green-50 rounded-lg">
                   <p className="text-sm text-green-800">
-                    <strong>Example:</strong> Search for "mobile" + filter by "Enhancement" type + "In Progress" status.
+                    <strong>Example:</strong> Search for "mobile" + filter by
+                    "Enhancement" type + "In Progress" status.
                   </p>
                 </div>
               </div>
@@ -175,7 +201,7 @@ export default function TutorialsPage() {
 
         <section className="space-y-6">
           <h2 className="text-2xl font-semibold">Workflow Optimization</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="p-6 border rounded-lg">
               <div className="flex items-center gap-3 mb-4">
@@ -183,20 +209,33 @@ export default function TutorialsPage() {
                 <h3 className="text-lg font-semibold">Kanban Board Mastery</h3>
               </div>
               <p className="text-muted-foreground mb-4">
-                Optimize your Kanban workflow for maximum productivity and clear project visibility.
+                Optimize your Kanban workflow for maximum productivity and clear
+                project visibility.
               </p>
               <div className="space-y-3">
                 <div className="p-3 bg-muted rounded">
-                  <h4 className="font-medium text-sm mb-1">Column Management</h4>
-                  <p className="text-xs text-muted-foreground">Organize features by development stage</p>
+                  <h4 className="font-medium text-sm mb-1">
+                    Column Management
+                  </h4>
+                  <p className="text-xs text-muted-foreground">
+                    Organize features by development stage
+                  </p>
                 </div>
                 <div className="p-3 bg-muted rounded">
-                  <h4 className="font-medium text-sm mb-1">Drag & Drop Workflow</h4>
-                  <p className="text-xs text-muted-foreground">Move features between status columns</p>
+                  <h4 className="font-medium text-sm mb-1">
+                    Drag & Drop Workflow
+                  </h4>
+                  <p className="text-xs text-muted-foreground">
+                    Move features between status columns
+                  </p>
                 </div>
                 <div className="p-3 bg-muted rounded">
-                  <h4 className="font-medium text-sm mb-1">Progress Tracking</h4>
-                  <p className="text-xs text-muted-foreground">Monitor development velocity</p>
+                  <h4 className="font-medium text-sm mb-1">
+                    Progress Tracking
+                  </h4>
+                  <p className="text-xs text-muted-foreground">
+                    Monitor development velocity
+                  </p>
                 </div>
               </div>
             </div>
@@ -207,20 +246,31 @@ export default function TutorialsPage() {
                 <h3 className="text-lg font-semibold">Custom Workflows</h3>
               </div>
               <p className="text-muted-foreground mb-4">
-                Create custom workflows that match your team's development process and requirements.
+                Create custom workflows that match your team's development
+                process and requirements.
               </p>
               <div className="space-y-3">
                 <div className="p-3 bg-muted rounded">
-                  <h4 className="font-medium text-sm mb-1">Status Customization</h4>
-                  <p className="text-xs text-muted-foreground">Define custom status workflows</p>
+                  <h4 className="font-medium text-sm mb-1">
+                    Status Customization
+                  </h4>
+                  <p className="text-xs text-muted-foreground">
+                    Define custom status workflows
+                  </p>
                 </div>
                 <div className="p-3 bg-muted rounded">
-                  <h4 className="font-medium text-sm mb-1">Approval Processes</h4>
-                  <p className="text-xs text-muted-foreground">Set up review and approval steps</p>
+                  <h4 className="font-medium text-sm mb-1">
+                    Approval Processes
+                  </h4>
+                  <p className="text-xs text-muted-foreground">
+                    Set up review and approval steps
+                  </p>
                 </div>
                 <div className="p-3 bg-muted rounded">
                   <h4 className="font-medium text-sm mb-1">Automation Rules</h4>
-                  <p className="text-xs text-muted-foreground">Automate repetitive tasks</p>
+                  <p className="text-xs text-muted-foreground">
+                    Automate repetitive tasks
+                  </p>
                 </div>
               </div>
             </div>
@@ -229,15 +279,18 @@ export default function TutorialsPage() {
 
         <section className="space-y-6">
           <h2 className="text-2xl font-semibold">Integration Tutorials</h2>
-          
+
           <div className="space-y-4">
             <div className="border rounded-lg overflow-hidden">
               <div className="bg-muted px-6 py-4 border-b">
-                <h3 className="text-lg font-semibold">Slack Integration Setup</h3>
+                <h3 className="text-lg font-semibold">
+                  Slack Integration Setup
+                </h3>
               </div>
               <div className="p-6">
                 <p className="text-muted-foreground mb-4">
-                  Connect Feature Ship with Slack to receive real-time notifications and updates.
+                  Connect Feature Ship with Slack to receive real-time
+                  notifications and updates.
                 </p>
                 <div className="bg-background p-4 rounded border">
                   <pre className="text-sm">
@@ -261,7 +314,8 @@ export default function TutorialsPage() {
               </div>
               <div className="p-6">
                 <p className="text-muted-foreground mb-4">
-                  Learn how to integrate Feature Ship with your existing tools using our REST API.
+                  Learn how to integrate Feature Ship with your existing tools
+                  using our REST API.
                 </p>
                 <div className="bg-background p-4 rounded border">
                   <pre className="text-sm">
@@ -288,12 +342,15 @@ const response = await fetch('https://api.feature-ship.com/v1/features', {
 
         <section className="space-y-6">
           <h2 className="text-2xl font-semibold">Advanced Topics</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="p-6 border rounded-lg">
-              <h3 className="text-lg font-semibold mb-3">Analytics and Reporting</h3>
+              <h3 className="text-lg font-semibold mb-3">
+                Analytics and Reporting
+              </h3>
               <p className="text-muted-foreground mb-4">
-                Use analytics to gain insights into your development process and team performance.
+                Use analytics to gain insights into your development process and
+                team performance.
               </p>
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• Track development velocity</li>
@@ -305,9 +362,12 @@ const response = await fetch('https://api.feature-ship.com/v1/features', {
             </div>
 
             <div className="p-6 border rounded-lg">
-              <h3 className="text-lg font-semibold mb-3">Public Feedback Site</h3>
+              <h3 className="text-lg font-semibold mb-3">
+                Public Feedback Site
+              </h3>
               <p className="text-muted-foreground mb-4">
-                Set up a public feedback portal to collect feature requests from your users.
+                Set up a public feedback portal to collect feature requests from
+                your users.
               </p>
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• Configure public site</li>
@@ -322,25 +382,27 @@ const response = await fetch('https://api.feature-ship.com/v1/features', {
 
         <section className="space-y-6">
           <h2 className="text-2xl font-semibold">Troubleshooting Guides</h2>
-          
+
           <div className="space-y-4">
             <div className="p-4 border-l-4 border-blue-500 bg-blue-50 rounded-r-lg">
               <h3 className="font-medium mb-2">Common Issues and Solutions</h3>
               <p className="text-sm text-muted-foreground">
-                Learn how to resolve common issues like missing features, notification problems, 
-                and integration failures.
+                Learn how to resolve common issues like missing features,
+                notification problems, and integration failures.
               </p>
             </div>
             <div className="p-4 border-l-4 border-green-500 bg-green-50 rounded-r-lg">
               <h3 className="font-medium mb-2">Performance Optimization</h3>
               <p className="text-sm text-muted-foreground">
-                Tips for optimizing Feature Ship performance with large datasets and many team members.
+                Tips for optimizing Feature Ship performance with large datasets
+                and many team members.
               </p>
             </div>
             <div className="p-4 border-l-4 border-purple-500 bg-purple-50 rounded-r-lg">
               <h3 className="font-medium mb-2">Data Migration</h3>
               <p className="text-sm text-muted-foreground">
-                Guide for migrating data from other tools and platforms to Feature Ship.
+                Guide for migrating data from other tools and platforms to
+                Feature Ship.
               </p>
             </div>
           </div>
@@ -350,13 +412,15 @@ const response = await fetch('https://api.feature-ship.com/v1/features', {
           <h2 className="text-2xl font-semibold">Next Steps</h2>
           <div className="bg-muted p-6 rounded-lg">
             <p className="text-muted-foreground mb-4">
-              Ready to put your knowledge into practice? Here are some recommended next steps:
+              Ready to put your knowledge into practice? Here are some
+              recommended next steps:
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 border rounded">
                 <h4 className="font-medium mb-2">Practice with Sample Data</h4>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Create sample features and practice the workflows you've learned.
+                  Create sample features and practice the workflows you've
+                  learned.
                 </p>
                 <Link
                   href="/documentation/getting-started"

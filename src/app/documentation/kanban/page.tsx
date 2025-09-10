@@ -1,5 +1,16 @@
 import Link from "next/link";
-import { Kanban, ArrowRight, Move, Eye, Search, Filter, CheckCircle, Clock, Play, CheckSquare } from "lucide-react";
+import {
+  Kanban,
+  ArrowRight,
+  Move,
+  Eye,
+  Search,
+  Filter,
+  CheckCircle,
+  Clock,
+  Play,
+  CheckSquare,
+} from "lucide-react";
 
 export default function KanbanPage() {
   return (
@@ -7,7 +18,8 @@ export default function KanbanPage() {
       <div className="space-y-4">
         <h1 className="text-4xl font-bold">Kanban Board</h1>
         <p className="text-xl text-muted-foreground">
-          Master the Kanban board to visualize and manage your feature development workflow effectively.
+          Master the Kanban board to visualize and manage your feature
+          development workflow effectively.
         </p>
       </div>
 
@@ -16,9 +28,10 @@ export default function KanbanPage() {
           <h2 className="text-2xl font-semibold">Overview</h2>
           <div className="bg-muted p-6 rounded-lg">
             <p className="text-muted-foreground mb-4">
-              The Kanban board provides a visual representation of your feature development pipeline. 
-              Features are organized into columns based on their current status, making it easy to 
-              track progress and identify bottlenecks in your development process.
+              The Kanban board provides a visual representation of your feature
+              development pipeline. Features are organized into columns based on
+              their current status, making it easy to track progress and
+              identify bottlenecks in your development process.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
               <div className="text-center p-4">
@@ -55,33 +68,42 @@ export default function KanbanPage() {
 
         <section className="space-y-6">
           <h2 className="text-2xl font-semibold">Board Columns</h2>
-          
+
           <div className="space-y-6">
             <div className="border rounded-lg overflow-hidden">
               <div className="bg-blue-50 px-6 py-4 border-b">
                 <div className="flex items-center gap-3">
                   <Clock className="h-5 w-5 text-blue-600" />
-                  <h3 className="text-lg font-semibold text-blue-900">Backlog (Under Review)</h3>
+                  <h3 className="text-lg font-semibold text-blue-900">
+                    Backlog (Under Review)
+                  </h3>
                 </div>
               </div>
               <div className="p-6">
                 <p className="text-muted-foreground mb-4">
-                  Features that are being reviewed or evaluated. This is where new feature requests 
-                  start their journey through your development pipeline.
+                  Features that are being reviewed or evaluated. This is where
+                  new feature requests start their journey through your
+                  development pipeline.
                 </p>
                 <div className="bg-background p-4 rounded border">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <span className="text-sm font-medium">User Authentication</span>
+                      <span className="text-sm font-medium">
+                        User Authentication
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <span className="text-sm font-medium">Mobile App Design</span>
+                      <span className="text-sm font-medium">
+                        Mobile App Design
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <span className="text-sm font-medium">API Integration</span>
+                      <span className="text-sm font-medium">
+                        API Integration
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -92,23 +114,30 @@ export default function KanbanPage() {
               <div className="bg-green-50 px-6 py-4 border-b">
                 <div className="flex items-center gap-3">
                   <CheckCircle className="h-5 w-5 text-green-600" />
-                  <h3 className="text-lg font-semibold text-green-900">Next Up (Accepted)</h3>
+                  <h3 className="text-lg font-semibold text-green-900">
+                    Next Up (Accepted)
+                  </h3>
                 </div>
               </div>
               <div className="p-6">
                 <p className="text-muted-foreground mb-4">
-                  Features that have been approved and are ready to be planned for development. 
-                  These features have passed the review process and are prioritized for implementation.
+                  Features that have been approved and are ready to be planned
+                  for development. These features have passed the review process
+                  and are prioritized for implementation.
                 </p>
                 <div className="bg-background p-4 rounded border">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-sm font-medium">Dashboard Redesign</span>
+                      <span className="text-sm font-medium">
+                        Dashboard Redesign
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-sm font-medium">Notification System</span>
+                      <span className="text-sm font-medium">
+                        Notification System
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -119,23 +148,29 @@ export default function KanbanPage() {
               <div className="bg-purple-50 px-6 py-4 border-b">
                 <div className="flex items-center gap-3">
                   <Play className="h-5 w-5 text-purple-600" />
-                  <h3 className="text-lg font-semibold text-purple-900">In Progress (Planned)</h3>
+                  <h3 className="text-lg font-semibold text-purple-900">
+                    In Progress (Planned)
+                  </h3>
                 </div>
               </div>
               <div className="p-6">
                 <p className="text-muted-foreground mb-4">
-                  Features that are currently being developed. This column shows active work 
-                  and helps track development progress in real-time.
+                  Features that are currently being developed. This column shows
+                  active work and helps track development progress in real-time.
                 </p>
                 <div className="bg-background p-4 rounded border">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                      <span className="text-sm font-medium">Search Functionality</span>
+                      <span className="text-sm font-medium">
+                        Search Functionality
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                      <span className="text-sm font-medium">User Profile Management</span>
+                      <span className="text-sm font-medium">
+                        User Profile Management
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -146,13 +181,16 @@ export default function KanbanPage() {
               <div className="bg-emerald-50 px-6 py-4 border-b">
                 <div className="flex items-center gap-3">
                   <CheckSquare className="h-5 w-5 text-emerald-600" />
-                  <h3 className="text-lg font-semibold text-emerald-900">Done (Completed)</h3>
+                  <h3 className="text-lg font-semibold text-emerald-900">
+                    Done (Completed)
+                  </h3>
                 </div>
               </div>
               <div className="p-6">
                 <p className="text-muted-foreground mb-4">
-                  Features that have been completed and are ready for deployment or testing. 
-                  This column shows your team's accomplishments and completed work.
+                  Features that have been completed and are ready for deployment
+                  or testing. This column shows your team's accomplishments and
+                  completed work.
                 </p>
                 <div className="bg-background p-4 rounded border">
                   <div className="space-y-2">
@@ -176,12 +214,15 @@ export default function KanbanPage() {
           <div className="bg-muted p-6 rounded-lg">
             <div className="flex items-center gap-3 mb-4">
               <Move className="h-6 w-6 text-blue-500" />
-              <h3 className="text-lg font-semibold">Move Features Between Columns</h3>
+              <h3 className="text-lg font-semibold">
+                Move Features Between Columns
+              </h3>
             </div>
             <p className="text-muted-foreground mb-4">
-              The Kanban board supports drag and drop functionality, allowing you to easily move features 
-              between columns to update their status. This provides an intuitive way to track progress 
-              and manage your development workflow.
+              The Kanban board supports drag and drop functionality, allowing
+              you to easily move features between columns to update their
+              status. This provides an intuitive way to track progress and
+              manage your development workflow.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 border rounded">
@@ -218,13 +259,16 @@ export default function KanbanPage() {
               </div>
               <div className="p-6">
                 <p className="text-muted-foreground mb-4">
-                  Use the search bar to quickly find specific features across all columns. 
-                  Search works on feature titles, descriptions, and types.
+                  Use the search bar to quickly find specific features across
+                  all columns. Search works on feature titles, descriptions, and
+                  types.
                 </p>
                 <div className="bg-background p-4 rounded border">
                   <div className="flex items-center gap-2 text-sm">
                     <Search className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Search posts...</span>
+                    <span className="text-muted-foreground">
+                      Search posts...
+                    </span>
                   </div>
                 </div>
               </div>
@@ -239,14 +283,23 @@ export default function KanbanPage() {
               </div>
               <div className="p-6">
                 <p className="text-muted-foreground mb-4">
-                  Filter features by tags using the side navigation. This allows you to focus 
-                  on specific categories or types of features across all columns.
+                  Filter features by tags using the side navigation. This allows
+                  you to focus on specific categories or types of features
+                  across all columns.
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Mobile</span>
-                  <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">API</span>
-                  <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">UI/UX</span>
-                  <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">Performance</span>
+                  <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                    Mobile
+                  </span>
+                  <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                    API
+                  </span>
+                  <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
+                    UI/UX
+                  </span>
+                  <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
+                    Performance
+                  </span>
                 </div>
               </div>
             </div>
@@ -257,7 +310,8 @@ export default function KanbanPage() {
           <h2 className="text-2xl font-semibold">Feature Cards</h2>
           <div className="bg-muted p-6 rounded-lg">
             <p className="text-muted-foreground mb-4">
-              Each feature is displayed as a card with essential information and visual indicators.
+              Each feature is displayed as a card with essential information and
+              visual indicators.
             </p>
             <div className="bg-background p-4 rounded border">
               <div className="space-y-3">
@@ -265,12 +319,19 @@ export default function KanbanPage() {
                   <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
                   <span className="text-sm font-medium">Under Review</span>
                   <div className="ml-auto flex gap-1">
-                    <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Enhancement</span>
-                    <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">Mobile</span>
+                    <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">
+                      Enhancement
+                    </span>
+                    <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
+                      Mobile
+                    </span>
                   </div>
                 </div>
                 <h4 className="font-semibold">User Authentication System</h4>
-                <p className="text-sm text-muted-foreground">Implement secure login and registration with OAuth support and two-factor authentication...</p>
+                <p className="text-sm text-muted-foreground">
+                  Implement secure login and registration with OAuth support and
+                  two-factor authentication...
+                </p>
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <ArrowRight className="h-3 w-3" />
@@ -296,28 +357,30 @@ export default function KanbanPage() {
             <div className="p-4 border-l-4 border-blue-500 bg-blue-50 rounded-r-lg">
               <h3 className="font-medium mb-2">Limit Work in Progress</h3>
               <p className="text-sm text-muted-foreground">
-                Keep the number of features in the "In Progress" column manageable. 
-                Too many active features can lead to context switching and delays.
+                Keep the number of features in the "In Progress" column
+                manageable. Too many active features can lead to context
+                switching and delays.
               </p>
             </div>
             <div className="p-4 border-l-4 border-green-500 bg-green-50 rounded-r-lg">
               <h3 className="font-medium mb-2">Regular Status Updates</h3>
               <p className="text-sm text-muted-foreground">
-                Move features through columns as work progresses. This keeps the board 
-                accurate and helps identify bottlenecks quickly.
+                Move features through columns as work progresses. This keeps the
+                board accurate and helps identify bottlenecks quickly.
               </p>
             </div>
             <div className="p-4 border-l-4 border-purple-500 bg-purple-50 rounded-r-lg">
               <h3 className="font-medium mb-2">Use Tags for Organization</h3>
               <p className="text-sm text-muted-foreground">
-                Apply relevant tags to features for better organization and filtering. 
-                This makes it easier to find related features across columns.
+                Apply relevant tags to features for better organization and
+                filtering. This makes it easier to find related features across
+                columns.
               </p>
             </div>
             <div className="p-4 border-l-4 border-yellow-500 bg-yellow-50 rounded-r-lg">
               <h3 className="font-medium mb-2">Review Completed Work</h3>
               <p className="text-sm text-muted-foreground">
-                Regularly review the "Done" column to celebrate achievements and 
+                Regularly review the "Done" column to celebrate achievements and
                 identify patterns in successful feature development.
               </p>
             </div>
@@ -330,7 +393,8 @@ export default function KanbanPage() {
             <div className="p-4 border rounded-lg">
               <h3 className="font-medium mb-2">Dashboard</h3>
               <p className="text-sm text-muted-foreground mb-3">
-                Learn about the dashboard interface and advanced filtering capabilities.
+                Learn about the dashboard interface and advanced filtering
+                capabilities.
               </p>
               <Link
                 href="/documentation/dashboard"
