@@ -27,6 +27,11 @@ import {
   LogOut,
   Edit,
   Trash2,
+  TrendingUp,
+  ThumbsUp,
+  MessageCircle,
+  Clock,
+  Flame,
 } from "lucide-react";
 
 import { Loading } from "@/components/ui/loading";
@@ -37,6 +42,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { ToastContainer, useToast } from "@/components/ui/toast";
 import { usePublicAuth } from "@/contexts/PublicAuthContext";
@@ -74,7 +85,7 @@ export default function PublicFeedbackPage() {
   const [commentContent, setCommentContent] = useState("");
 
   // Filter/Sort states
-  const [sortBy] = useState("trending"); // 'trending', 'top', 'new'
+  const [sortBy, setSortBy] = useState("trending"); // 'trending', 'top', 'new'
   const [searchQuery, setSearchQuery] = useState("");
 
   const loadCompanyData = useCallback(async () => {
@@ -96,10 +107,26 @@ export default function PublicFeedbackPage() {
         FeedbackService.getCompanyTypes(companyData.id),
       ]);
 
-      // Apply sorting only
-      let postsData = [...initialPostsData];
+      setPosts(initialPostsData);
+      setTypes(typesData);
+    } catch (error) {
+      console.error("Error loading company data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [companyName]);
+
+  useEffect(() => {
+    loadCompanyData();
+  }, [loadCompanyData]);
+
+  // Sort posts based on sortBy
+  const sortPosts = useCallback(
+    (postsToSort: FeedbackPost[]) => {
+      const sorted = [...postsToSort];
+
       if (sortBy === "new") {
-        postsData.sort((a, b) => {
+        sorted.sort((a, b) => {
           const dateA =
             a.createdAt && typeof a.createdAt.toDate === "function"
               ? a.createdAt.toDate()
@@ -119,10 +146,12 @@ export default function PublicFeedbackPage() {
           return dateB.getTime() - dateA.getTime();
         });
       } else if (sortBy === "top") {
-        postsData.sort((a, b) => b.upvotesCount - a.upvotesCount);
+        sorted.sort((a, b) => b.upvotesCount - a.upvotesCount);
+      } else if (sortBy === "comments") {
+        sorted.sort((a, b) => b.commentsCount - a.commentsCount);
       } else if (sortBy === "trending") {
         // Simple trending algorithm: upvotes + recency
-        postsData.sort((a, b) => {
+        sorted.sort((a, b) => {
           const dateA =
             a.createdAt && typeof a.createdAt.toDate === "function"
               ? a.createdAt.toDate()
@@ -152,41 +181,34 @@ export default function PublicFeedbackPage() {
         });
       }
 
-      setPosts(postsData);
-      setFilteredPosts(postsData);
-      setTypes(typesData);
-    } catch (error) {
-      console.error("Error loading company data:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [companyName, sortBy]);
+      return sorted;
+    },
+    [sortBy]
+  );
 
+  // Filter and sort posts based on search query and sortBy
   useEffect(() => {
-    loadCompanyData();
-  }, [loadCompanyData]);
+    let filtered = posts;
 
-  // Filter posts based on search query
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredPosts(posts);
-      return;
+    // Apply search filter
+    if (searchQuery.trim()) {
+      filtered = posts.filter((post) => {
+        const query = searchQuery.toLowerCase();
+        return (
+          post.title.toLowerCase().includes(query) ||
+          post.description.toLowerCase().includes(query) ||
+          post.types.some((type) => {
+            const typeData = types.find((t) => t.id === type);
+            return typeData?.name.toLowerCase().includes(query);
+          })
+        );
+      });
     }
 
-    const filtered = posts.filter((post) => {
-      const query = searchQuery.toLowerCase();
-      return (
-        post.title.toLowerCase().includes(query) ||
-        post.description.toLowerCase().includes(query) ||
-        post.types.some((type) => {
-          const typeData = types.find((t) => t.id === type);
-          return typeData?.name.toLowerCase().includes(query);
-        })
-      );
-    });
-
-    setFilteredPosts(filtered);
-  }, [searchQuery, posts, types]);
+    // Apply sorting
+    const sorted = sortPosts(filtered);
+    setFilteredPosts(sorted);
+  }, [searchQuery, posts, types, sortPosts]);
 
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -242,6 +264,7 @@ export default function PublicFeedbackPage() {
       const userId = user.uid;
       await FeedbackService.toggleUpvote(postId, userId);
 
+      // Update posts array
       const updatedPosts = posts.map((post) => {
         if (post.id === postId) {
           const isUpvoted = post.upvotes.includes(userId);
@@ -257,8 +280,26 @@ export default function PublicFeedbackPage() {
         }
         return post;
       });
+
+      // Update filteredPosts array with the same changes
+      const updatedFilteredPosts = filteredPosts.map((post) => {
+        if (post.id === postId) {
+          const isUpvoted = post.upvotes.includes(userId);
+          return {
+            ...post,
+            upvotes: isUpvoted
+              ? post.upvotes.filter((id: string) => id !== userId)
+              : [...post.upvotes, userId],
+            upvotesCount: isUpvoted
+              ? post.upvotesCount - 1
+              : post.upvotesCount + 1,
+          };
+        }
+        return post;
+      });
+
       setPosts(updatedPosts);
-      setFilteredPosts(updatedPosts);
+      setFilteredPosts(updatedFilteredPosts);
     } catch (error) {
       console.error("Error toggling upvote:", error);
       showError("Error", "Failed to update upvote");
@@ -478,7 +519,7 @@ export default function PublicFeedbackPage() {
         </div>
 
         {/* Header/Navigation */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div className="flex items-center space-x-2">
             <div className="relative">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -490,9 +531,44 @@ export default function PublicFeedbackPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button variant="ghost" size="sm">
-              <Filter className="h-4 w-4" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Filter className="h-4 w-4" />
+                  <span className="ml-2">Filters</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => setSortBy("trending")}
+                  className={sortBy === "trending" ? "bg-accent" : ""}
+                >
+                  <Flame className="h-4 w-4 mr-2" />
+                  Trending
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setSortBy("top")}
+                  className={sortBy === "top" ? "bg-accent" : ""}
+                >
+                  <ArrowUp className="h-4 w-4 mr-2" />
+                  Upvotes
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setSortBy("comments")}
+                  className={sortBy === "comments" ? "bg-accent" : ""}
+                >
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Comments
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setSortBy("new")}
+                  className={sortBy === "new" ? "bg-accent" : ""}
+                >
+                  <Clock className="h-4 w-4 mr-2" />
+                  Newest
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <div className="flex items-center space-x-2">
@@ -688,6 +764,62 @@ export default function PublicFeedbackPage() {
               </DialogContent>
             </Dialog>
           </div>
+        </div>
+
+        {/* Filter Buttons */}
+        <div className="flex items-center gap-2 mb-6">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setSortBy("trending")}
+            className={`flex items-center gap-2 ${
+              sortBy === "trending"
+                ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:text-white dark:bg-blue-600 dark:text-white dark:border-blue-600 dark:hover:bg-blue-700 dark:hover:text-white"
+                : ""
+            }`}
+          >
+            <Flame className="h-4 w-4" />
+            Trending
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setSortBy("top")}
+            className={`flex items-center gap-2 ${
+              sortBy === "top"
+                ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:text-white dark:bg-blue-600 dark:text-white dark:border-blue-600 dark:hover:bg-blue-700 dark:hover:text-white"
+                : ""
+            }`}
+          >
+            <ArrowUp className="h-4 w-4" />
+            Upvotes
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setSortBy("comments")}
+            className={`flex items-center gap-2 ${
+              sortBy === "comments"
+                ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:text-white dark:bg-blue-600 dark:text-white dark:border-blue-600 dark:hover:bg-blue-700 dark:hover:text-white"
+                : ""
+            }`}
+          >
+            <MessageSquare className="h-4 w-4" />
+            Comments
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setSortBy("new")}
+            className={`flex items-center gap-2 ${
+              sortBy === "new"
+                ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700 hover:text-white dark:bg-blue-600 dark:text-white dark:border-blue-600 dark:hover:bg-blue-700 dark:hover:text-white"
+                : ""
+            }`}
+          >
+            <Clock className="h-4 w-4" />
+            Newest
+          </Button>
         </div>
 
         {/* Posts List */}
