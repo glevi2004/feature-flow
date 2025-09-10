@@ -126,6 +126,9 @@ export default function LoginPage() {
           <div className="text-center">
             <h2 className="text-2xl font-bold mb-2">Welcome back</h2>
             <p className="text-gray-600">Sign in to your {app_name} account</p>
+            <p className="text-sm text-blue-600 mt-2">
+              Used our feedback page? Sign in with the same Google account.
+            </p>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
