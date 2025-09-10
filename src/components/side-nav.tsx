@@ -209,39 +209,39 @@ export function SideNav({ onClose }: SideNavProps) {
         },
       ],
     },
-    analytics: {
-      title: "Analytics",
-      sections: [
-        {
-          title: "Metrics",
-          items: [
-            { label: "Overview", icon: BarChart3 },
-            { label: "Trends", icon: Activity },
-            { label: "Reports", icon: FileText },
-          ],
-        },
-      ],
-    },
-    notifications: {
-      title: "Notifications",
-      sections: [
-        {
-          title: "Filters",
-          items: [
-            { label: "All", icon: Bell },
-            { label: "Unread", icon: Circle },
-            { label: "Important", icon: Activity },
-          ],
-        },
-        {
-          title: "Settings",
-          items: [
-            { label: "Preferences", icon: Settings },
-            { label: "Email Alerts", icon: Bell },
-          ],
-        },
-      ],
-    },
+    // analytics: {
+    //   title: "Analytics",
+    //   sections: [
+    //     {
+    //       title: "Metrics",
+    //       items: [
+    //         { label: "Overview", icon: BarChart3 },
+    //         { label: "Trends", icon: Activity },
+    //         { label: "Reports", icon: FileText },
+    //       ],
+    //     },
+    //   ],
+    // },
+    // notifications: {
+    //   title: "Notifications",
+    //   sections: [
+    //     {
+    //       title: "Filters",
+    //       items: [
+    //         { label: "All", icon: Bell },
+    //         { label: "Unread", icon: Circle },
+    //         { label: "Important", icon: Activity },
+    //       ],
+    //     },
+    //     {
+    //       title: "Settings",
+    //       items: [
+    //         { label: "Preferences", icon: Settings },
+    //         { label: "Email Alerts", icon: Bell },
+    //       ],
+    //     },
+    //   ],
+    // },
     settings: {
       title: "Settings",
       sections: [
@@ -277,17 +277,20 @@ export function SideNav({ onClose }: SideNavProps) {
   const getQuickLinks = (): QuickLinks => {
     if (isActive("/kanban")) {
       return pageConfigs.kanban;
-    } else if (isActive("/analytics")) {
-      return pageConfigs.analytics;
-    } else if (isActive("/notifications")) {
-      return pageConfigs.notifications;
-    } else if (isActive("/settings")) {
+    }
+    // else if (isActive("/analytics")) {
+    //   return pageConfigs.analytics;
+    // }
+    // else if (isActive("/notifications")) {
+    //   return pageConfigs.notifications;
+    // }
+    else if (isActive("/settings")) {
       return pageConfigs.settings;
     } else if (
       isActive("/dashboard") &&
       !isActive("/kanban") &&
-      !isActive("/analytics") &&
-      !isActive("/notifications") &&
+      // !isActive("/analytics") &&
+      // !isActive("/notifications") &&
       !isActive("/settings")
     ) {
       return pageConfigs.dashboard;
@@ -400,7 +403,7 @@ export function SideNav({ onClose }: SideNavProps) {
               </TooltipContent>
             </Tooltip>
 
-            <Tooltip>
+            {/* <Tooltip>
               <TooltipTrigger asChild>
                 <Link
                   href={`/${encodeURIComponent(
@@ -427,9 +430,9 @@ export function SideNav({ onClose }: SideNavProps) {
               >
                 Notifications
               </TooltipContent>
-            </Tooltip>
+            </Tooltip> */}
 
-            <Tooltip>
+            {/* <Tooltip>
               <TooltipTrigger asChild>
                 <Link
                   href={`/${encodeURIComponent(
@@ -456,7 +459,7 @@ export function SideNav({ onClose }: SideNavProps) {
               >
                 Analytics
               </TooltipContent>
-            </Tooltip>
+            </Tooltip> */}
 
             <Tooltip>
               <TooltipTrigger asChild>
