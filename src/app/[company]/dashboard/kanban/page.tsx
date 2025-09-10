@@ -9,7 +9,6 @@ import { PostModal } from "@/components/ui/post-modal";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Search,
-  Filter,
   ArrowUp,
   MessageSquare,
   Calendar,
@@ -251,13 +250,12 @@ function BoardPage() {
   const filteredPosts = posts.filter((post) => {
     // Apply search filter
     if (searchQuery) {
-      const matchesSearch = (
+      const matchesSearch =
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         post.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
         post.types.some((type) =>
           type.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      );
+        );
       if (!matchesSearch) return false;
     }
 
@@ -301,10 +299,6 @@ function BoardPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button variant="outline" size="sm">
-              <Filter className="h-4 w-4 mr-2" />
-              Filters
-            </Button>
           </div>
         </div>
 
