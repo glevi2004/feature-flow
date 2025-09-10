@@ -1,6 +1,6 @@
 "use client";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
+import { DocumentationSidebar } from "@/components/documentation-sidebar";
 import { Header } from "@/components/header";
 
 export default function DocumentationLayout({
@@ -14,9 +14,16 @@ export default function DocumentationLayout({
         <Header />
       </div>
       <SidebarProvider>
-        <AppSidebar />
-        <SidebarTrigger />
-        <main className="p-4">{children}</main>
+        <DocumentationSidebar />
+        <SidebarInset>
+          <div className="flex h-16 items-center gap-2 border-b px-4">
+            <SidebarTrigger />
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-semibold">Documentation</h1>
+            </div>
+          </div>
+          <main className="flex-1 p-6">{children}</main>
+        </SidebarInset>
       </SidebarProvider>
     </>
   );
