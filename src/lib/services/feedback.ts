@@ -29,6 +29,7 @@ export interface FeedbackPost {
   id?: string;
   companyId: string;
   userId: string;
+  userName?: string; // User's display name for public feedback
   title: string;
   description: string;
   types: string[];
@@ -93,7 +94,23 @@ export class FeedbackService {
       };
 
       const docRef = await addDoc(collection(db, "feedback_posts"), postData);
-      return { id: docRef.id, ...data };
+      // Get the created document to return with proper timestamps
+      const createdDoc = await getDoc(docRef);
+      if (createdDoc.exists()) {
+        return { id: docRef.id, ...createdDoc.data() } as FeedbackPost;
+      } else {
+        // Fallback if document doesn't exist
+        const now = Timestamp.now();
+        return {
+          id: docRef.id,
+          ...data,
+          upvotes: [],
+          upvotesCount: 0,
+          commentsCount: 0,
+          createdAt: now,
+          updatedAt: now,
+        } as FeedbackPost;
+      }
     } catch (error) {
       console.error("Error creating feedback post:", error);
       throw error;
@@ -113,7 +130,14 @@ export class FeedbackService {
       const posts: FeedbackPost[] = [];
 
       querySnapshot.forEach((doc) => {
-        posts.push({ id: doc.id, ...doc.data() } as FeedbackPost);
+        const data = doc.data();
+        posts.push({
+          id: doc.id,
+          ...data,
+          upvotesCount: data.upvotesCount || 0,
+          commentsCount: data.commentsCount || 0,
+          upvotes: data.upvotes || [],
+        } as FeedbackPost);
       });
 
       return posts;
