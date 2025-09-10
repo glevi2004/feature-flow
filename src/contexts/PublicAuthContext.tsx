@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import {
-  User,
   signInWithPopup,
   signOut as firebaseSignOut,
   onAuthStateChanged,

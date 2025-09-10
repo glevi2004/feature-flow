@@ -20,16 +20,12 @@ import {
   User,
   Plus,
   Search,
-  Filter,
   ArrowUp,
   Calendar,
   LogIn,
   LogOut,
   Edit,
   Trash2,
-  TrendingUp,
-  ThumbsUp,
-  MessageCircle,
   Clock,
   Flame,
 } from "lucide-react";
@@ -42,12 +38,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { Label } from "@/components/ui/label";
 import { ToastContainer, useToast } from "@/components/ui/toast";
 import { usePublicAuth } from "@/contexts/PublicAuthContext";
@@ -59,12 +50,7 @@ export default function PublicFeedbackPage() {
   const params = useParams();
   const companyName = decodeURIComponent(params.company as string);
   const { toasts, removeToast, showSuccess, showError } = useToast();
-  const {
-    user,
-    loading: authLoading,
-    signInWithGoogle,
-    signOut,
-  } = usePublicAuth();
+  const { user, signInWithGoogle, signOut } = usePublicAuth();
 
   const [posts, setPosts] = useState<FeedbackPost[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<FeedbackPost[]>([]);
@@ -436,12 +422,13 @@ export default function PublicFeedbackPage() {
       setShowEditModal(false);
       setEditingPost(null);
       showSuccess("Success!", "Post updated successfully");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error editing post:", error);
-      showError(
-        "Error",
-        error.message || "Failed to update post. Please try again."
-      );
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to update post. Please try again.";
+      showError("Error", errorMessage);
     }
   };
 
@@ -460,12 +447,13 @@ export default function PublicFeedbackPage() {
       setFilteredPosts(updatedPosts);
 
       showSuccess("Success!", "Post deleted successfully");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error deleting post:", error);
-      showError(
-        "Error",
-        error.message || "Failed to delete post. Please try again."
-      );
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to delete post. Please try again.";
+      showError("Error", errorMessage);
     }
   };
 

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -318,7 +317,7 @@ export function PostModal({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={signInWithGoogle}
+                    onClick={() => signInWithGoogle()}
                     className="flex items-center gap-2"
                   >
                     <LogIn className="h-4 w-4" />

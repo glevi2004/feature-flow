@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { X, CheckCircle, AlertCircle, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +27,11 @@ export function Toast({
 }: ToastComponentProps) {
   const [isVisible, setIsVisible] = useState(false);
 
+  const handleClose = useCallback(() => {
+    setIsVisible(false);
+    setTimeout(() => onRemove(id), 300); // Wait for animation to complete
+  }, [onRemove, id]);
+
   useEffect(() => {
     // Trigger animation
     const timer = setTimeout(() => setIsVisible(true), 100);
@@ -40,12 +45,7 @@ export function Toast({
       clearTimeout(timer);
       clearTimeout(removeTimer);
     };
-  }, [duration]);
-
-  const handleClose = () => {
-    setIsVisible(false);
-    setTimeout(() => onRemove(id), 300); // Wait for animation to complete
-  };
+  }, [duration, handleClose]);
 
   const getIcon = () => {
     switch (type) {
