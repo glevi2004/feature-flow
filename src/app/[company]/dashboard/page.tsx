@@ -29,6 +29,7 @@ import {
   CheckSquare,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useDashboardFilters } from "@/contexts/DashboardFilterContext";
 
 import { CompanyService } from "@/lib/services/company";
 import {
@@ -75,6 +76,16 @@ const STATUS_OPTIONS = [
 
 function DashboardPage() {
   const { user } = useAuth();
+  const { 
+    statusFilter, 
+    typeFilter, 
+    tagFilter, 
+    setStatusFilter, 
+    setTypeFilter, 
+    setTagFilter, 
+    clearAllFilters: clearAllContextFilters 
+  } = useDashboardFilters();
+  
   const [posts, setPosts] = useState<FeedbackPost[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<FeedbackPost[]>([]);
   const [types, setTypes] = useState<FeedbackType[]>([]);
@@ -83,8 +94,6 @@ function DashboardPage() {
 
   const [companyId, setCompanyId] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
-  const [typeFilter, setTypeFilter] = useState<string | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
   const [statusSearch, setStatusSearch] = useState("");
   const [openStatusDropdown, setOpenStatusDropdown] = useState<string | null>(
@@ -140,7 +149,7 @@ function DashboardPage() {
     }
   }, [user, loadCompanyData]);
 
-  // Filter posts based on search query, status filter, and type filter
+  // Filter posts based on search query, status filter, type filter, and tag filter
   useEffect(() => {
     let filtered = posts;
 
@@ -169,8 +178,13 @@ function DashboardPage() {
       filtered = filtered.filter((post) => post.types.includes(typeFilter));
     }
 
+    // Apply tag filter
+    if (tagFilter) {
+      filtered = filtered.filter((post) => post.tags && post.tags.includes(tagFilter));
+    }
+
     setFilteredPosts(filtered);
-  }, [searchQuery, statusFilter, typeFilter, posts, types]);
+  }, [searchQuery, statusFilter, typeFilter, tagFilter, posts, types]);
 
   const getTagColor = (tagId: string) => {
     const tag = tags.find((t) => t.id === tagId);
@@ -199,17 +213,8 @@ function DashboardPage() {
 
 
   const clearAllFilters = () => {
-    setStatusFilter(null);
-    setTypeFilter(null);
+    clearAllContextFilters();
     setSearchQuery("");
-  };
-
-  const handleStatusFilterClick = (status: string) => {
-    setStatusFilter(statusFilter === status ? null : status);
-  };
-
-  const handleTypeFilterClick = (typeId: string) => {
-    setTypeFilter(typeFilter === typeId ? null : typeId);
   };
 
   const clearStatusFilter = () => {
@@ -218,6 +223,10 @@ function DashboardPage() {
 
   const clearTypeFilter = () => {
     setTypeFilter(null);
+  };
+
+  const clearTagFilter = () => {
+    setTagFilter(null);
   };
 
   const updatePostStatus = async (
@@ -345,7 +354,7 @@ function DashboardPage() {
         </div>
 
         {/* Active Filters */}
-        {(statusFilter || typeFilter || searchQuery.trim()) && (
+        {(statusFilter || typeFilter || tagFilter || searchQuery.trim()) && (
           <div className="flex items-center justify-between mb-4 p-3 bg-muted/50 rounded-lg">
             <div className="flex items-center gap-2 flex-wrap">
               {statusFilter && (
@@ -372,6 +381,21 @@ function DashboardPage() {
                   Type: {types.find(t => t.id === typeFilter)?.name || "Unknown"}
                   <button
                     onClick={clearTypeFilter}
+                    className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+              )}
+              {tagFilter && (
+                <Badge
+                  variant="secondary"
+                  className="flex items-center gap-1 px-3 py-1"
+                >
+                  <Radio className="h-3 w-3" />
+                  Tag: {tags.find(t => t.id === tagFilter)?.name || "Unknown"}
+                  <button
+                    onClick={clearTagFilter}
                     className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
                   >
                     <X className="h-3 w-3" />
@@ -463,7 +487,7 @@ function DashboardPage() {
                             style={{ backgroundColor: typeData?.color }}
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleTypeFilterClick(type);
+                              setTypeFilter(typeFilter === type ? null : type);
                             }}
                           >
                             {typeData?.emoji} {typeData?.name || "Unknown Type"}
@@ -513,7 +537,7 @@ function DashboardPage() {
                         disabled={updatingStatus === post.id}
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleStatusFilterClick(post.status || "Under Review");
+                          setStatusFilter(statusFilter === (post.status || "Under Review") ? null : (post.status || "Under Review"));
                         }}
                       >
                         {(() => {

@@ -7,6 +7,7 @@ import { SideNav } from "@/components/side-nav";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/header";
 import { Loading } from "@/components/ui/loading";
+import { DashboardFilterProvider } from "@/contexts/DashboardFilterContext";
 
 export default function DashboardLayout({
   children,
@@ -41,20 +42,22 @@ export default function DashboardLayout({
       enableSystem
       disableTransitionOnChange
     >
-      <Header />
-      <div
-        className="flex bg-background w-full"
-        style={{ height: "calc(100vh - 3.5rem)", marginTop: "3.5rem" }}
-      >
-        <div className="mr-8">
-          <SideNav />
-        </div>
+      <DashboardFilterProvider>
+        <Header />
+        <div
+          className="flex bg-background w-full"
+          style={{ height: "calc(100vh - 3.5rem)", marginTop: "3.5rem" }}
+        >
+          <div className="mr-8">
+            <SideNav />
+          </div>
 
-        <div className="flex-1 overflow-auto bg-background">
-          <div className="p-4"></div>
-          {children}
+          <div className="flex-1 overflow-auto bg-background">
+            <div className="p-4"></div>
+            {children}
+          </div>
         </div>
-      </div>
+      </DashboardFilterProvider>
     </ThemeProvider>
   );
 }

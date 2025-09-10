@@ -27,6 +27,7 @@ import { TagsService, FeedbackTag } from "@/lib/services/tags";
 import { FeedbackService, FeedbackType } from "@/lib/services/feedback";
 import { useAuth } from "@/contexts/AuthContext";
 import { CompanyService } from "@/lib/services/company";
+import { useDashboardFilters } from "@/contexts/DashboardFilterContext";
 import { DropdownButton } from "@/components/ui/dropdown-button";
 import {
   DropdownMenu,
@@ -76,6 +77,14 @@ interface QuickLinks {
 
 export function SideNav({ onClose }: SideNavProps) {
   const { user, signOut } = useAuth();
+  const { 
+    statusFilter, 
+    typeFilter, 
+    tagFilter, 
+    setStatusFilter, 
+    setTypeFilter, 
+    setTagFilter 
+  } = useDashboardFilters();
   const pathname = usePathname();
   const [companyName, setCompanyName] = useState("");
   const [companyId, setCompanyId] = useState("");
@@ -583,7 +592,14 @@ export function SideNav({ onClose }: SideNavProps) {
                               {tags.map((tag) => (
                                 <button
                                   key={tag.id}
-                                  className="flex items-center gap-2 w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                                  className={`flex items-center gap-2 w-full p-2 rounded-md transition-colors text-left ${
+                                    tagFilter === tag.id
+                                      ? "bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                                      : "hover:bg-muted"
+                                  }`}
+                                  onClick={() => {
+                                    setTagFilter(tagFilter === tag.id ? null : tag.id!);
+                                  }}
                                 >
                                   <div
                                     className="w-3 h-3 rounded-full flex-shrink-0"
@@ -627,7 +643,14 @@ export function SideNav({ onClose }: SideNavProps) {
                               {types.map((type) => (
                                 <button
                                   key={type.id}
-                                  className="flex items-center gap-2 w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+                                  className={`flex items-center gap-2 w-full p-2 rounded-md transition-colors text-left ${
+                                    typeFilter === type.id
+                                      ? "bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                                      : "hover:bg-muted"
+                                  }`}
+                                  onClick={() => {
+                                    setTypeFilter(typeFilter === type.id ? null : type.id!);
+                                  }}
                                 >
                                   <span className="text-sm flex-shrink-0">
                                     {type.emoji}
@@ -743,7 +766,16 @@ export function SideNav({ onClose }: SideNavProps) {
                           </div>
                         </DropdownButton>
                       ) : (
-                        <button className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left">
+                        <button 
+                          className={`flex items-center justify-between w-full p-2 rounded-md transition-colors text-left ${
+                            statusFilter === item.label
+                              ? "bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                              : "hover:bg-muted"
+                          }`}
+                          onClick={() => {
+                            setStatusFilter(statusFilter === item.label ? null : item.label);
+                          }}
+                        >
                           <div className="flex items-center gap-3">
                             <item.icon
                               className={`h-4 w-4 ${
