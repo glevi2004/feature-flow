@@ -19,7 +19,6 @@ import {
   Clock,
   ChevronDown,
   X,
-  Save,
   ArrowUp,
   Radio,
   Check,
@@ -84,7 +83,8 @@ function DashboardPage() {
 
   const [companyId, setCompanyId] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [typeFilter, setTypeFilter] = useState<string | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
   const [statusSearch, setStatusSearch] = useState("");
   const [openStatusDropdown, setOpenStatusDropdown] = useState<string | null>(
@@ -140,13 +140,13 @@ function DashboardPage() {
     }
   }, [user, loadCompanyData]);
 
-  // Filter posts based on search query
+  // Filter posts based on search query, status filter, and type filter
   useEffect(() => {
     let filtered = posts;
 
     // Apply search filter
     if (searchQuery.trim()) {
-      filtered = posts.filter((post) => {
+      filtered = filtered.filter((post) => {
         const query = searchQuery.toLowerCase();
         return (
           post.title.toLowerCase().includes(query) ||
@@ -159,8 +159,18 @@ function DashboardPage() {
       });
     }
 
+    // Apply status filter
+    if (statusFilter) {
+      filtered = filtered.filter((post) => post.status === statusFilter);
+    }
+
+    // Apply type filter
+    if (typeFilter) {
+      filtered = filtered.filter((post) => post.types.includes(typeFilter));
+    }
+
     setFilteredPosts(filtered);
-  }, [searchQuery, posts, types]);
+  }, [searchQuery, statusFilter, typeFilter, posts, types]);
 
   const getTagColor = (tagId: string) => {
     const tag = tags.find((t) => t.id === tagId);
@@ -187,12 +197,27 @@ function DashboardPage() {
     });
   };
 
-  const removeFilter = (filter: string) => {
-    setActiveFilters(activeFilters.filter((f) => f !== filter));
-  };
 
   const clearAllFilters = () => {
-    setActiveFilters([]);
+    setStatusFilter(null);
+    setTypeFilter(null);
+    setSearchQuery("");
+  };
+
+  const handleStatusFilterClick = (status: string) => {
+    setStatusFilter(statusFilter === status ? null : status);
+  };
+
+  const handleTypeFilterClick = (typeId: string) => {
+    setTypeFilter(typeFilter === typeId ? null : typeId);
+  };
+
+  const clearStatusFilter = () => {
+    setStatusFilter(null);
+  };
+
+  const clearTypeFilter = () => {
+    setTypeFilter(null);
   };
 
   const updatePostStatus = async (
@@ -320,37 +345,63 @@ function DashboardPage() {
         </div>
 
         {/* Active Filters */}
-        {activeFilters.length > 0 && (
+        {(statusFilter || typeFilter || searchQuery.trim()) && (
           <div className="flex items-center justify-between mb-4 p-3 bg-muted/50 rounded-lg">
             <div className="flex items-center gap-2 flex-wrap">
-              {activeFilters.map((filter) => (
+              {statusFilter && (
                 <Badge
-                  key={filter}
                   variant="secondary"
                   className="flex items-center gap-1 px-3 py-1"
                 >
                   <Radio className="h-3 w-3" />
-                  Status {filter}
+                  Status: {statusFilter}
                   <button
-                    onClick={() => removeFilter(filter)}
+                    onClick={clearStatusFilter}
                     className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
                   >
                     <X className="h-3 w-3" />
                   </button>
                 </Badge>
-              ))}
+              )}
+              {typeFilter && (
+                <Badge
+                  variant="secondary"
+                  className="flex items-center gap-1 px-3 py-1"
+                >
+                  <Radio className="h-3 w-3" />
+                  Type: {types.find(t => t.id === typeFilter)?.name || "Unknown"}
+                  <button
+                    onClick={clearTypeFilter}
+                    className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+              )}
+              {searchQuery.trim() && (
+                <Badge
+                  variant="secondary"
+                  className="flex items-center gap-1 px-3 py-1"
+                >
+                  <Search className="h-3 w-3" />
+                  Search: &quot;{searchQuery}&quot;
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="ml-1 hover:bg-muted-foreground/20 rounded-full p-0.5"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={clearAllFilters}
                 className="text-muted-foreground hover:text-foreground"
+                title="Clear all filters"
               >
                 <X className="h-4 w-4" />
               </button>
-              <Button variant="outline" size="sm">
-                <Save className="h-4 w-4 mr-2" />
-                Save filters
-              </Button>
             </div>
           </div>
         )}
@@ -408,8 +459,12 @@ function DashboardPage() {
                         return (
                           <Badge
                             key={type}
-                            className="px-2 py-0.5 rounded-full text-xs font-medium"
+                            className="px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer hover:opacity-80 transition-opacity"
                             style={{ backgroundColor: typeData?.color }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleTypeFilterClick(type);
+                            }}
                           >
                             {typeData?.emoji} {typeData?.name || "Unknown Type"}
                           </Badge>
@@ -454,8 +509,12 @@ function DashboardPage() {
                         variant="ghost"
                         className={`h-auto px-2 py-0.5 rounded-full text-xs font-medium transition-all duration-200 ${getStatusColor(
                           post.status || "Under Review"
-                        )} hover:opacity-80 hover:scale-105`}
+                        )} hover:opacity-80 hover:scale-105 cursor-pointer`}
                         disabled={updatingStatus === post.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleStatusFilterClick(post.status || "Under Review");
+                        }}
                       >
                         {(() => {
                           const StatusIcon = getStatusIcon(
