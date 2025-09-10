@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Kanban, ArrowRight, DragDrop, Eye, Search, Filter, CheckCircle, Clock, Play, CheckSquare } from "lucide-react";
+import { Kanban, ArrowRight, Move, Eye, Search, Filter, CheckCircle, Clock, Play, CheckSquare } from "lucide-react";
 
 export default function KanbanPage() {
   return (
@@ -175,7 +175,7 @@ export default function KanbanPage() {
           <h2 className="text-2xl font-semibold">Drag & Drop Functionality</h2>
           <div className="bg-muted p-6 rounded-lg">
             <div className="flex items-center gap-3 mb-4">
-              <DragDrop className="h-6 w-6 text-blue-500" />
+              <Move className="h-6 w-6 text-blue-500" />
               <h3 className="text-lg font-semibold">Move Features Between Columns</h3>
             </div>
             <p className="text-muted-foreground mb-4">

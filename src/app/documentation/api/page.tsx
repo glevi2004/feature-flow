@@ -1,14 +1,56 @@
+import Link from "next/link";
+import { Code, Key, Globe, Zap, Shield, Book } from "lucide-react";
+
 export default function ApiPage() {
   return (
     <div className="space-y-8">
       <div className="space-y-4">
         <h1 className="text-4xl font-bold">API Reference</h1>
         <p className="text-xl text-muted-foreground">
-          Complete API documentation for integrating with Feature Ship.
+          Complete API documentation for integrating with Feature Ship and building custom solutions.
         </p>
       </div>
 
       <div className="space-y-8">
+        <section className="space-y-6">
+          <h2 className="text-2xl font-semibold">Overview</h2>
+          <div className="bg-muted p-6 rounded-lg">
+            <p className="text-muted-foreground mb-4">
+              The Feature Ship API is a RESTful API that allows you to programmatically access and manage 
+              your features, comments, and team data. All API requests are made over HTTPS and return JSON responses.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+              <div className="text-center p-4">
+                <Code className="h-8 w-8 mx-auto mb-2 text-blue-500" />
+                <h3 className="font-medium">RESTful API</h3>
+                <p className="text-sm text-muted-foreground">Standard HTTP methods</p>
+              </div>
+              <div className="text-center p-4">
+                <Key className="h-8 w-8 mx-auto mb-2 text-green-500" />
+                <h3 className="font-medium">Secure Authentication</h3>
+                <p className="text-sm text-muted-foreground">API key based</p>
+              </div>
+              <div className="text-center p-4">
+                <Globe className="h-8 w-8 mx-auto mb-2 text-purple-500" />
+                <h3 className="font-medium">JSON Responses</h3>
+                <p className="text-sm text-muted-foreground">Structured data</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="space-y-6">
+          <h2 className="text-2xl font-semibold">Base URL</h2>
+          <div className="bg-muted p-6 rounded-lg">
+            <p className="text-muted-foreground mb-4">
+              All API requests should be made to the following base URL:
+            </p>
+            <div className="bg-background p-4 rounded border">
+              <code className="text-sm">https://api.feature-ship.com/v1</code>
+            </div>
+          </div>
+        </section>
+
         <section className="space-y-6">
           <h2 className="text-2xl font-semibold">Authentication</h2>
           <div className="bg-muted p-6 rounded-lg">
