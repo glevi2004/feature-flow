@@ -144,8 +144,12 @@ export default function RegisterPage() {
       const authError = error as { code?: string; message?: string };
       if (authError.code === "auth/account-exists-with-different-credential") {
         setError(
-          "An account with this email already exists. Please try signing in with a different method."
+          "An account with this email already exists. Please try signing in instead."
         );
+      } else if (authError.code === "auth/popup-closed-by-user") {
+        setError("Sign-in was cancelled. Please try again.");
+      } else if (authError.code === "auth/popup-blocked") {
+        setError("Popup was blocked. Please allow popups and try again.");
       } else {
         setError("An error occurred during sign up. Please try again.");
       }
@@ -496,6 +500,10 @@ export default function RegisterPage() {
               <h2 className="text-2xl font-bold mb-2">Sign up to {app_name}</h2>
               <p className="text-gray-600">
                 You&apos;re almost ready to get started!
+              </p>
+              <p className="text-sm text-blue-600 mt-2">
+                Already used our feedback page? Use the same Google account to
+                continue seamlessly.
               </p>
             </div>
             <div className="space-y-3">
