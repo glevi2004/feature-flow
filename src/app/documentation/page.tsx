@@ -18,7 +18,8 @@ export default function DocumentationPage() {
             <div className="p-6 border rounded-lg">
               <h3 className="text-lg font-semibold mb-2">Quick Start Guide</h3>
               <p className="text-muted-foreground mb-4">
-                Learn the basics of Feature Ship and set up your first project with our comprehensive getting started guide.
+                Learn the basics of Feature Ship and set up your first project
+                with our comprehensive getting started guide.
               </p>
               <Link
                 href="/documentation/getting-started"
@@ -30,7 +31,8 @@ export default function DocumentationPage() {
             <div className="p-6 border rounded-lg">
               <h3 className="text-lg font-semibold mb-2">Installation</h3>
               <p className="text-muted-foreground mb-4">
-                Detailed installation guide with multiple setup options and configuration instructions.
+                Detailed installation guide with multiple setup options and
+                configuration instructions.
               </p>
               <Link
                 href="/documentation/installation"
@@ -48,7 +50,8 @@ export default function DocumentationPage() {
             <div className="p-6 border rounded-lg">
               <h3 className="text-lg font-semibold mb-2">Features Overview</h3>
               <p className="text-muted-foreground mb-4">
-                Explore all the powerful features available in Feature Ship for managing your development workflow.
+                Explore all the powerful features available in Feature Ship for
+                managing your development workflow.
               </p>
               <Link
                 href="/documentation/features"
@@ -60,7 +63,8 @@ export default function DocumentationPage() {
             <div className="p-6 border rounded-lg">
               <h3 className="text-lg font-semibold mb-2">Dashboard</h3>
               <p className="text-muted-foreground mb-4">
-                Master the dashboard interface with advanced filtering, search, and feature management capabilities.
+                Master the dashboard interface with advanced filtering, search,
+                and feature management capabilities.
               </p>
               <Link
                 href="/documentation/dashboard"
@@ -72,7 +76,8 @@ export default function DocumentationPage() {
             <div className="p-6 border rounded-lg">
               <h3 className="text-lg font-semibold mb-2">Kanban Board</h3>
               <p className="text-muted-foreground mb-4">
-                Learn how to effectively use the Kanban board for visual project management and workflow optimization.
+                Learn how to effectively use the Kanban board for visual project
+                management and workflow optimization.
               </p>
               <Link
                 href="/documentation/kanban"
@@ -90,7 +95,8 @@ export default function DocumentationPage() {
             <div className="p-6 border rounded-lg">
               <h3 className="text-lg font-semibold mb-2">Settings</h3>
               <p className="text-muted-foreground mb-4">
-                Configure your Feature Ship workspace, team settings, and customization options.
+                Configure your Feature Ship workspace, team settings, and
+                customization options.
               </p>
               <Link
                 href="/documentation/settings"
@@ -102,7 +108,8 @@ export default function DocumentationPage() {
             <div className="p-6 border rounded-lg">
               <h3 className="text-lg font-semibold mb-2">Analytics</h3>
               <p className="text-muted-foreground mb-4">
-                Gain insights into your development process with comprehensive analytics and reporting.
+                Gain insights into your development process with comprehensive
+                analytics and reporting.
               </p>
               <Link
                 href="/documentation/analytics"
@@ -120,7 +127,8 @@ export default function DocumentationPage() {
             <div className="p-6 border rounded-lg">
               <h3 className="text-lg font-semibold mb-2">API Reference</h3>
               <p className="text-muted-foreground mb-4">
-                Complete API documentation for integrating with Feature Ship and building custom solutions.
+                Complete API documentation for integrating with Feature Ship and
+                building custom solutions.
               </p>
               <Link
                 href="/documentation/api"
@@ -132,7 +140,8 @@ export default function DocumentationPage() {
             <div className="p-6 border rounded-lg">
               <h3 className="text-lg font-semibold mb-2">Integrations</h3>
               <p className="text-muted-foreground mb-4">
-                Connect Feature Ship with your favorite tools like Slack, Jira, GitHub, and more.
+                Connect Feature Ship with your favorite tools like Slack, Jira,
+                GitHub, and more.
               </p>
               <Link
                 href="/documentation/integrations"
@@ -150,7 +159,8 @@ export default function DocumentationPage() {
             <div className="p-6 border rounded-lg">
               <h3 className="text-lg font-semibold mb-2">Tutorials</h3>
               <p className="text-muted-foreground mb-4">
-                Step-by-step guides to help you master Feature Ship and optimize your workflow.
+                Step-by-step guides to help you master Feature Ship and optimize
+                your workflow.
               </p>
               <Link
                 href="/documentation/tutorials"
@@ -162,7 +172,8 @@ export default function DocumentationPage() {
             <div className="p-6 border rounded-lg">
               <h3 className="text-lg font-semibold mb-2">FAQ</h3>
               <p className="text-muted-foreground mb-4">
-                Find answers to frequently asked questions and get help with troubleshooting.
+                Find answers to frequently asked questions and get help with
+                troubleshooting.
               </p>
               <Link
                 href="/documentation/faq"
