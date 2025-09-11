@@ -32,19 +32,9 @@ const documentationSections = [
     title: "Getting Started",
     items: [
       {
-        title: "Introduction",
-        href: "/documentation",
-        icon: BookOpen,
-      },
-      {
-        title: "Quick Start",
+        title: "Getting Started",
         href: "/documentation/getting-started",
         icon: Play,
-      },
-      {
-        title: "Installation",
-        href: "/documentation/installation",
-        icon: Code,
       },
     ],
   },
