@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { Code, Key, Globe, Zap, Shield, Book } from "lucide-react";
+import { Code, Key, Globe } from "lucide-react";
 
 export default function ApiPage() {
   return (
@@ -7,7 +6,8 @@ export default function ApiPage() {
       <div className="space-y-4">
         <h1 className="text-4xl font-bold">API Reference</h1>
         <p className="text-xl text-muted-foreground">
-          Complete API documentation for integrating with Feature Ship and building custom solutions.
+          Complete API documentation for integrating with Feature Ship and
+          building custom solutions.
         </p>
       </div>
 
@@ -16,14 +16,18 @@ export default function ApiPage() {
           <h2 className="text-2xl font-semibold">Overview</h2>
           <div className="bg-muted p-6 rounded-lg">
             <p className="text-muted-foreground mb-4">
-              The Feature Ship API is a RESTful API that allows you to programmatically access and manage 
-              your features, comments, and team data. All API requests are made over HTTPS and return JSON responses.
+              The Feature Ship API is a RESTful API that allows you to
+              programmatically access and manage your features, comments, and
+              team data. All API requests are made over HTTPS and return JSON
+              responses.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
               <div className="text-center p-4">
                 <Code className="h-8 w-8 mx-auto mb-2 text-blue-500" />
                 <h3 className="font-medium">RESTful API</h3>
-                <p className="text-sm text-muted-foreground">Standard HTTP methods</p>
+                <p className="text-sm text-muted-foreground">
+                  Standard HTTP methods
+                </p>
               </div>
               <div className="text-center p-4">
                 <Key className="h-8 w-8 mx-auto mb-2 text-green-500" />
