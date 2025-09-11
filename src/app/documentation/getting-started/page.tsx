@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { Play, ArrowRight, CheckCircle, Zap, Users, Settings } from "lucide-react";
+import {
+  Play,
+  ArrowRight,
+  CheckCircle,
+  Zap,
+  Users,
+  Settings,
+} from "lucide-react";
 
 export default function GettingStartedPage() {
   return (
@@ -27,7 +34,9 @@ export default function GettingStartedPage() {
                 Sign up with your Google account to get started instantly.
               </p>
               <div className="bg-muted p-3 rounded text-sm">
-                <code>Click "Sign In with Google" on the homepage</code>
+                <code>
+                  Click &quot;Sign In with Google&quot; on the homepage
+                </code>
               </div>
             </div>
 
@@ -54,7 +63,8 @@ export default function GettingStartedPage() {
                 <h3 className="text-lg font-semibold">Start Managing</h3>
               </div>
               <p className="text-muted-foreground mb-4">
-                Create your first feature request and start organizing your workflow.
+                Create your first feature request and start organizing your
+                workflow.
               </p>
               <div className="bg-muted p-3 rounded text-sm">
                 <code>Use the dashboard to create and manage features</code>
@@ -73,7 +83,8 @@ export default function GettingStartedPage() {
                 <h3 className="text-lg font-semibold">Dashboard</h3>
               </div>
               <p className="text-muted-foreground mb-4">
-                Centralized view of all your feature requests with powerful search and filtering.
+                Centralized view of all your feature requests with powerful
+                search and filtering.
               </p>
               <Link
                 href="/documentation/dashboard"
