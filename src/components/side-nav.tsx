@@ -8,8 +8,6 @@ import {
   House,
   Kanban,
   Globe,
-  Bell,
-  BarChart3,
   Settings,
   User,
   LogOut,
