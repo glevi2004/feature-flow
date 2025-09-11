@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { Users, MessageSquare, CheckSquare, Github, Zap, Settings } from "lucide-react";
+import {
+  MessageSquare,
+  CheckSquare,
+  Github,
+  Zap,
+  Settings,
+} from "lucide-react";
 
 export default function IntegrationsPage() {
   return (
@@ -7,7 +13,8 @@ export default function IntegrationsPage() {
       <div className="space-y-4">
         <h1 className="text-4xl font-bold">Integrations</h1>
         <p className="text-xl text-muted-foreground">
-          Connect Feature Ship with your favorite tools to streamline your development workflow.
+          Connect Feature Ship with your favorite tools to streamline your
+          development workflow.
         </p>
       </div>
 
@@ -21,7 +28,8 @@ export default function IntegrationsPage() {
                 <h3 className="text-lg font-semibold">Slack</h3>
               </div>
               <p className="text-muted-foreground mb-4">
-                Get real-time notifications about feature updates, comments, and status changes directly in your Slack channels.
+                Get real-time notifications about feature updates, comments, and
+                status changes directly in your Slack channels.
               </p>
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• Feature status notifications</li>
@@ -37,7 +45,8 @@ export default function IntegrationsPage() {
                 <h3 className="text-lg font-semibold">Jira</h3>
               </div>
               <p className="text-muted-foreground mb-4">
-                Sync features with Jira issues for seamless project management and development tracking.
+                Sync features with Jira issues for seamless project management
+                and development tracking.
               </p>
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• Automatic issue creation</li>
@@ -53,7 +62,8 @@ export default function IntegrationsPage() {
                 <h3 className="text-lg font-semibold">ClickUp</h3>
               </div>
               <p className="text-muted-foreground mb-4">
-                Integrate with ClickUp to manage features alongside your tasks and projects.
+                Integrate with ClickUp to manage features alongside your tasks
+                and projects.
               </p>
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• Task creation from features</li>
@@ -69,7 +79,8 @@ export default function IntegrationsPage() {
                 <h3 className="text-lg font-semibold">GitHub</h3>
               </div>
               <p className="text-muted-foreground mb-4">
-                Connect with GitHub repositories to link features with pull requests and commits.
+                Connect with GitHub repositories to link features with pull
+                requests and commits.
               </p>
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• PR linking</li>
@@ -85,7 +96,8 @@ export default function IntegrationsPage() {
                 <h3 className="text-lg font-semibold">Zapier</h3>
               </div>
               <p className="text-muted-foreground mb-4">
-                Connect with 5000+ apps through Zapier for unlimited integration possibilities.
+                Connect with 5000+ apps through Zapier for unlimited integration
+                possibilities.
               </p>
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• Custom workflows</li>
@@ -101,7 +113,8 @@ export default function IntegrationsPage() {
                 <h3 className="text-lg font-semibold">Custom API</h3>
               </div>
               <p className="text-muted-foreground mb-4">
-                Build custom integrations using our REST API and webhooks for any tool or service.
+                Build custom integrations using our REST API and webhooks for
+                any tool or service.
               </p>
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• REST API access</li>
@@ -115,22 +128,30 @@ export default function IntegrationsPage() {
 
         <section className="space-y-6">
           <h2 className="text-2xl font-semibold">Setting Up Integrations</h2>
-          
+
           <div className="space-y-4">
             <div className="p-6 border rounded-lg">
-              <h3 className="text-lg font-semibold mb-3">Step 1: Access Integration Settings</h3>
+              <h3 className="text-lg font-semibold mb-3">
+                Step 1: Access Integration Settings
+              </h3>
               <p className="text-muted-foreground mb-4">
-                Navigate to your settings and find the Integrations section to begin setting up connections.
+                Navigate to your settings and find the Integrations section to
+                begin setting up connections.
               </p>
               <div className="bg-background p-4 rounded border">
-                <code className="text-sm">Settings → Integrations → Add Integration</code>
+                <code className="text-sm">
+                  Settings → Integrations → Add Integration
+                </code>
               </div>
             </div>
 
             <div className="p-6 border rounded-lg">
-              <h3 className="text-lg font-semibold mb-3">Step 2: Choose Your Integration</h3>
+              <h3 className="text-lg font-semibold mb-3">
+                Step 2: Choose Your Integration
+              </h3>
               <p className="text-muted-foreground mb-4">
-                Select from available integrations or explore custom options for your specific needs.
+                Select from available integrations or explore custom options for
+                your specific needs.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 bg-muted rounded">
@@ -155,9 +176,12 @@ export default function IntegrationsPage() {
             </div>
 
             <div className="p-6 border rounded-lg">
-              <h3 className="text-lg font-semibold mb-3">Step 3: Configure Settings</h3>
+              <h3 className="text-lg font-semibold mb-3">
+                Step 3: Configure Settings
+              </h3>
               <p className="text-muted-foreground mb-4">
-                Customize your integration settings to match your workflow and preferences.
+                Customize your integration settings to match your workflow and
+                preferences.
               </p>
               <div className="bg-background p-4 rounded border">
                 <pre className="text-sm">
@@ -176,15 +200,18 @@ export default function IntegrationsPage() {
 
         <section className="space-y-6">
           <h2 className="text-2xl font-semibold">Integration Examples</h2>
-          
+
           <div className="space-y-4">
             <div className="border rounded-lg overflow-hidden">
               <div className="bg-muted px-6 py-4 border-b">
-                <h3 className="text-lg font-semibold">Slack Notification Setup</h3>
+                <h3 className="text-lg font-semibold">
+                  Slack Notification Setup
+                </h3>
               </div>
               <div className="p-6">
                 <p className="text-muted-foreground mb-4">
-                  Set up Slack notifications to keep your team informed about feature updates.
+                  Set up Slack notifications to keep your team informed about
+                  feature updates.
                 </p>
                 <div className="bg-background p-4 rounded border">
                   <pre className="text-sm">
@@ -208,7 +235,8 @@ export default function IntegrationsPage() {
               </div>
               <div className="p-6">
                 <p className="text-muted-foreground mb-4">
-                  Sync features with Jira issues for comprehensive project management.
+                  Sync features with Jira issues for comprehensive project
+                  management.
                 </p>
                 <div className="bg-background p-4 rounded border">
                   <pre className="text-sm">
@@ -231,8 +259,9 @@ export default function IntegrationsPage() {
           <h2 className="text-2xl font-semibold">Webhooks</h2>
           <div className="bg-muted p-6 rounded-lg">
             <p className="text-muted-foreground mb-4">
-              Use webhooks to receive real-time notifications about events in Feature Ship. 
-              This allows you to build custom integrations and automate workflows.
+              Use webhooks to receive real-time notifications about events in
+              Feature Ship. This allows you to build custom integrations and
+              automate workflows.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 border rounded">
@@ -270,29 +299,31 @@ export default function IntegrationsPage() {
             <div className="p-4 border-l-4 border-blue-500 bg-blue-50 rounded-r-lg">
               <h3 className="font-medium mb-2">Start Simple</h3>
               <p className="text-sm text-muted-foreground">
-                Begin with basic integrations like Slack notifications before moving to more complex setups. 
-                This helps you understand the integration patterns.
+                Begin with basic integrations like Slack notifications before
+                moving to more complex setups. This helps you understand the
+                integration patterns.
               </p>
             </div>
             <div className="p-4 border-l-4 border-green-500 bg-green-50 rounded-r-lg">
               <h3 className="font-medium mb-2">Test Thoroughly</h3>
               <p className="text-sm text-muted-foreground">
-                Always test your integrations in a development environment before deploying to production. 
-                Use webhook testing tools to verify payloads.
+                Always test your integrations in a development environment
+                before deploying to production. Use webhook testing tools to
+                verify payloads.
               </p>
             </div>
             <div className="p-4 border-l-4 border-purple-500 bg-purple-50 rounded-r-lg">
               <h3 className="font-medium mb-2">Monitor Performance</h3>
               <p className="text-sm text-muted-foreground">
-                Keep an eye on integration performance and error rates. Set up monitoring and alerts 
-                to catch issues early.
+                Keep an eye on integration performance and error rates. Set up
+                monitoring and alerts to catch issues early.
               </p>
             </div>
             <div className="p-4 border-l-4 border-yellow-500 bg-yellow-50 rounded-r-lg">
               <h3 className="font-medium mb-2">Document Your Setup</h3>
               <p className="text-sm text-muted-foreground">
-                Document your integration configurations and workflows. This helps with troubleshooting 
-                and onboarding new team members.
+                Document your integration configurations and workflows. This
+                helps with troubleshooting and onboarding new team members.
               </p>
             </div>
           </div>
