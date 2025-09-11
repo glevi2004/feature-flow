@@ -17,7 +17,7 @@ export default function SettingsPage() {
       <div className="space-y-4">
         <h1 className="text-4xl font-bold">Settings</h1>
         <p className="text-xl text-muted-foreground">
-          Configure your Feature Ship workspace to match your team's needs and
+          Configure your Feature Ship workspace to match your team&apos;s needs and
           preferences.
         </p>
       </div>
@@ -141,7 +141,7 @@ export default function SettingsPage() {
               </div>
               <div className="p-6">
                 <p className="text-muted-foreground mb-4">
-                  Customize feature types and tags to match your team's workflow
+                  Customize feature types and tags to match your team&apos;s workflow
                   and categorization needs.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -297,7 +297,7 @@ export default function SettingsPage() {
                 Workflow Customization
               </h3>
               <p className="text-muted-foreground mb-4">
-                Adapt Feature Ship to match your team's specific workflow and
+                Adapt Feature Ship to match your team&apos;s specific workflow and
                 processes.
               </p>
               <ul className="text-sm text-muted-foreground space-y-1">
@@ -324,7 +324,7 @@ export default function SettingsPage() {
             <div className="p-4 border-l-4 border-green-500 bg-green-50 rounded-r-lg">
               <h3 className="font-medium mb-2">Define Clear Types and Tags</h3>
               <p className="text-sm text-muted-foreground">
-                Create meaningful types and tags that align with your team's
+                Create meaningful types and tags that align with your team&apos;s
                 workflow. This makes feature organization and filtering much
                 more effective.
               </p>
@@ -335,7 +335,7 @@ export default function SettingsPage() {
               </h3>
               <p className="text-sm text-muted-foreground">
                 Set up notification preferences to stay informed without being
-                overwhelmed. Consider your team's communication preferences and
+                overwhelmed. Consider your team&apos;s communication preferences and
                 work patterns.
               </p>
             </div>
