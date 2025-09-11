@@ -125,7 +125,7 @@ export default function TutorialsPage() {
                     <h4 className="font-medium mb-3">Step-by-Step Process</h4>
                     <ol className="text-sm text-muted-foreground space-y-2">
                       <li>1. Navigate to Dashboard</li>
-                      <li>2. Click "Create Feature"</li>
+                      <li>2. Click &quot;Create Feature&quot;</li>
                       <li>3. Fill in feature details</li>
                       <li>4. Assign types and tags</li>
                       <li>5. Set priority and assignee</li>
@@ -190,8 +190,8 @@ export default function TutorialsPage() {
                 </div>
                 <div className="mt-4 p-4 bg-green-50 rounded-lg">
                   <p className="text-sm text-green-800">
-                    <strong>Example:</strong> Search for "mobile" + filter by
-                    "Enhancement" type + "In Progress" status.
+                    <strong>Example:</strong> Search for &quot;mobile&quot; + filter by
+                    &quot;Enhancement&quot; type + &quot;In Progress&quot; status.
                   </p>
                 </div>
               </div>
@@ -246,7 +246,7 @@ export default function TutorialsPage() {
                 <h3 className="text-lg font-semibold">Custom Workflows</h3>
               </div>
               <p className="text-muted-foreground mb-4">
-                Create custom workflows that match your team's development
+                Create custom workflows that match your team&apos;s development
                 process and requirements.
               </p>
               <div className="space-y-3">
@@ -419,7 +419,7 @@ const response = await fetch('https://api.feature-ship.com/v1/features', {
               <div className="p-4 border rounded">
                 <h4 className="font-medium mb-2">Practice with Sample Data</h4>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Create sample features and practice the workflows you've
+                  Create sample features and practice the workflows you&apos;ve
                   learned.
                 </p>
                 <Link
