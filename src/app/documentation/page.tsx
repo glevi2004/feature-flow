@@ -15,7 +15,9 @@ export default function DocumentationPage() {
         <section className="space-y-6">
           <h2 className="text-2xl font-semibold">Getting Started</h2>
           <div className="p-6 border rounded-lg">
-            <h3 className="text-lg font-semibold mb-2">Getting Started Guide</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              Getting Started Guide
+            </h3>
             <p className="text-muted-foreground mb-4">
               Learn the basics of Feature Ship and get up and running in minutes
               with our simple getting started guide.
