@@ -14,33 +14,18 @@ export default function DocumentationPage() {
       <div className="space-y-8">
         <section className="space-y-6">
           <h2 className="text-2xl font-semibold">Getting Started</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-6 border rounded-lg">
-              <h3 className="text-lg font-semibold mb-2">Quick Start Guide</h3>
-              <p className="text-muted-foreground mb-4">
-                Learn the basics of Feature Ship and set up your first project
-                with our comprehensive getting started guide.
-              </p>
-              <Link
-                href="/documentation/getting-started"
-                className="text-blue-600 hover:underline"
-              >
-                Get Started →
-              </Link>
-            </div>
-            <div className="p-6 border rounded-lg">
-              <h3 className="text-lg font-semibold mb-2">Installation</h3>
-              <p className="text-muted-foreground mb-4">
-                Detailed installation guide with multiple setup options and
-                configuration instructions.
-              </p>
-              <Link
-                href="/documentation/installation"
-                className="text-blue-600 hover:underline"
-              >
-                Install Guide →
-              </Link>
-            </div>
+          <div className="p-6 border rounded-lg">
+            <h3 className="text-lg font-semibold mb-2">Getting Started Guide</h3>
+            <p className="text-muted-foreground mb-4">
+              Learn the basics of Feature Ship and get up and running in minutes
+              with our simple getting started guide.
+            </p>
+            <Link
+              href="/documentation/getting-started"
+              className="text-blue-600 hover:underline"
+            >
+              Get Started →
+            </Link>
           </div>
         </section>
 
