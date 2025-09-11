@@ -1,215 +1,173 @@
 import Link from "next/link";
-import { ArrowRight, Users, Zap, BarChart3, Settings } from "lucide-react";
+import { Play, ArrowRight, CheckCircle, Zap, Users, Settings } from "lucide-react";
 
 export default function GettingStartedPage() {
   return (
-    <div className="space-y-8">
-      <div className="space-y-4">
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="mb-8">
         <h1 className="text-4xl font-bold">Getting Started</h1>
-        <p className="text-xl text-muted-foreground">
-          Welcome to Feature Ship! This guide will help you get up and running quickly with our feature management platform.
+        <p className="text-xl text-muted-foreground mt-2">
+          Welcome to Feature Ship! Get up and running in minutes.
         </p>
       </div>
 
       <div className="space-y-8">
-        <section className="space-y-6">
-          <h2 className="text-2xl font-semibold">What is Feature Ship?</h2>
-          <div className="bg-muted p-6 rounded-lg">
-            <p className="text-muted-foreground mb-4">
-              Feature Ship is a comprehensive platform for managing feature requests, tracking development progress, 
-              and collaborating with your team. Whether you're a product manager, developer, or stakeholder, 
-              Feature Ship helps streamline your feature development workflow.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-              <div className="text-center p-4">
-                <Users className="h-8 w-8 mx-auto mb-2 text-blue-500" />
-                <h3 className="font-medium">Team Collaboration</h3>
-                <p className="text-sm text-muted-foreground">Work together seamlessly</p>
+        {/* Quick Start Steps */}
+        <section>
+          <h2 className="text-2xl font-semibold mb-6">Quick Start</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-6 border rounded-lg">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-blue-600 font-semibold">1</span>
+                </div>
+                <h3 className="text-lg font-semibold">Create Account</h3>
               </div>
-              <div className="text-center p-4">
-                <Zap className="h-8 w-8 mx-auto mb-2 text-yellow-500" />
-                <h3 className="font-medium">Fast Development</h3>
-                <p className="text-sm text-muted-foreground">Streamline your workflow</p>
+              <p className="text-muted-foreground mb-4">
+                Sign up with your Google account to get started instantly.
+              </p>
+              <div className="bg-muted p-3 rounded text-sm">
+                <code>Click "Sign In with Google" on the homepage</code>
               </div>
-              <div className="text-center p-4">
-                <BarChart3 className="h-8 w-8 mx-auto mb-2 text-green-500" />
-                <h3 className="font-medium">Data-Driven</h3>
-                <p className="text-sm text-muted-foreground">Make informed decisions</p>
+            </div>
+
+            <div className="p-6 border rounded-lg">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                  <span className="text-green-600 font-semibold">2</span>
+                </div>
+                <h3 className="text-lg font-semibold">Create Company</h3>
+              </div>
+              <p className="text-muted-foreground mb-4">
+                Set up your company profile and invite team members.
+              </p>
+              <div className="bg-muted p-3 rounded text-sm">
+                <code>Fill out company details in the setup wizard</code>
+              </div>
+            </div>
+
+            <div className="p-6 border rounded-lg">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                  <span className="text-purple-600 font-semibold">3</span>
+                </div>
+                <h3 className="text-lg font-semibold">Start Managing</h3>
+              </div>
+              <p className="text-muted-foreground mb-4">
+                Create your first feature request and start organizing your workflow.
+              </p>
+              <div className="bg-muted p-3 rounded text-sm">
+                <code>Use the dashboard to create and manage features</code>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="space-y-6">
-          <h2 className="text-2xl font-semibold">Quick Start Guide</h2>
-          
-          <div className="space-y-4">
-            <div className="flex gap-4 p-6 border rounded-lg">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-semibold">
-                1
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-medium mb-2">Create Your Account</h3>
-                <p className="text-muted-foreground mb-4">
-                  Sign up for Feature Ship using your email or Google account. 
-                  You'll be guided through the onboarding process to set up your first project.
-                </p>
-                <div className="bg-background p-3 rounded border text-sm">
-                  <code>Sign up at app.feature-ship.com</code>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-4 p-6 border rounded-lg">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-semibold">
-                2
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-medium mb-2">Set Up Your Company</h3>
-                <p className="text-muted-foreground mb-4">
-                  Create your company profile and invite team members. 
-                  Configure your organization settings and preferences.
-                </p>
-                <div className="bg-background p-3 rounded border text-sm">
-                  <code>Company Settings → Organization → Add Members</code>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-4 p-6 border rounded-lg">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-semibold">
-                3
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-medium mb-2">Create Your First Feature</h3>
-                <p className="text-muted-foreground mb-4">
-                  Start by creating a feature request. Add details, assign team members, 
-                  and set priorities to get your development process started.
-                </p>
-                <div className="bg-background p-3 rounded border text-sm">
-                  <code>Dashboard → Create Feature → Fill Details → Save</code>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-4 p-6 border rounded-lg">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-semibold">
-                4
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-medium mb-2">Organize with Kanban</h3>
-                <p className="text-muted-foreground mb-4">
-                  Use the Kanban board to visualize your feature development pipeline. 
-                  Drag and drop features between status columns to track progress.
-                </p>
-                <div className="bg-background p-3 rounded border text-sm">
-                  <code>Kanban → Drag Features → Update Status</code>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="space-y-6">
-          <h2 className="text-2xl font-semibold">Key Concepts</h2>
-          
+        {/* Key Features */}
+        <section>
+          <h2 className="text-2xl font-semibold mb-6">Key Features</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="p-6 border rounded-lg">
-              <h3 className="text-lg font-semibold mb-3">Features</h3>
+              <div className="flex items-center gap-3 mb-4">
+                <Zap className="h-6 w-6 text-blue-500" />
+                <h3 className="text-lg font-semibold">Dashboard</h3>
+              </div>
               <p className="text-muted-foreground mb-4">
-                Features are the core building blocks of your product. Each feature represents 
-                a specific functionality or improvement to your application.
-              </p>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• Title and description</li>
-                <li>• Status tracking (Under Review, Accepted, etc.)</li>
-                <li>• Priority levels</li>
-                <li>• Tags and categories</li>
-              </ul>
-            </div>
-
-            <div className="p-6 border rounded-lg">
-              <h3 className="text-lg font-semibold mb-3">Types & Tags</h3>
-              <p className="text-muted-foreground mb-4">
-                Organize your features using types (Bug, Enhancement, New Feature) 
-                and custom tags for better categorization and filtering.
-              </p>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• Predefined types</li>
-                <li>• Custom tags</li>
-                <li>• Color coding</li>
-                <li>• Filtering capabilities</li>
-              </ul>
-            </div>
-
-            <div className="p-6 border rounded-lg">
-              <h3 className="text-lg font-semibold mb-3">Status Workflow</h3>
-              <p className="text-muted-foreground mb-4">
-                Features move through different statuses during development. 
-                Track progress from initial review to completion.
-              </p>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• Under Review → Accepted</li>
-                <li>• Accepted → Planned</li>
-                <li>• Planned → Completed</li>
-                <li>• Rejected (if not viable)</li>
-              </ul>
-            </div>
-
-            <div className="p-6 border rounded-lg">
-              <h3 className="text-lg font-semibold mb-3">Team Collaboration</h3>
-              <p className="text-muted-foreground mb-4">
-                Work together with your team through comments, assignments, 
-                and real-time updates on feature development.
-              </p>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• Comments and discussions</li>
-                <li>• User assignments</li>
-                <li>• Activity tracking</li>
-                <li>• Notifications</li>
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        <section className="space-y-6">
-          <h2 className="text-2xl font-semibold">Next Steps</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="p-4 border rounded-lg">
-              <h3 className="font-medium mb-2">Installation Guide</h3>
-              <p className="text-sm text-muted-foreground mb-3">
-                Learn how to install and configure Feature Ship in your environment.
-              </p>
-              <Link
-                href="/documentation/installation"
-                className="text-blue-600 hover:underline text-sm flex items-center gap-1"
-              >
-                View Installation <ArrowRight className="h-3 w-3" />
-              </Link>
-            </div>
-            <div className="p-4 border rounded-lg">
-              <h3 className="font-medium mb-2">Dashboard Guide</h3>
-              <p className="text-sm text-muted-foreground mb-3">
-                Master the dashboard interface and learn advanced filtering techniques.
+                Centralized view of all your feature requests with powerful search and filtering.
               </p>
               <Link
                 href="/documentation/dashboard"
-                className="text-blue-600 hover:underline text-sm flex items-center gap-1"
+                className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700"
               >
-                Explore Dashboard <ArrowRight className="h-3 w-3" />
+                Learn more <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
-            <div className="p-4 border rounded-lg">
-              <h3 className="font-medium mb-2">Kanban Board</h3>
-              <p className="text-sm text-muted-foreground mb-3">
-                Learn how to effectively use the Kanban board for project management.
+
+            <div className="p-6 border rounded-lg">
+              <div className="flex items-center gap-3 mb-4">
+                <Users className="h-6 w-6 text-green-500" />
+                <h3 className="text-lg font-semibold">Kanban Board</h3>
+              </div>
+              <p className="text-muted-foreground mb-4">
+                Visual workflow management with drag-and-drop functionality.
               </p>
               <Link
                 href="/documentation/kanban"
-                className="text-blue-600 hover:underline text-sm flex items-center gap-1"
+                className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700"
               >
-                Learn Kanban <ArrowRight className="h-3 w-3" />
+                Learn more <ArrowRight className="h-4 w-4" />
               </Link>
+            </div>
+
+            <div className="p-6 border rounded-lg">
+              <div className="flex items-center gap-3 mb-4">
+                <Settings className="h-6 w-6 text-purple-500" />
+                <h3 className="text-lg font-semibold">Settings</h3>
+              </div>
+              <p className="text-muted-foreground mb-4">
+                Customize your workflow with statuses, types, and tags.
+              </p>
+              <Link
+                href="/documentation/settings"
+                className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700"
+              >
+                Learn more <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+
+            <div className="p-6 border rounded-lg">
+              <div className="flex items-center gap-3 mb-4">
+                <Play className="h-6 w-6 text-orange-500" />
+                <h3 className="text-lg font-semibold">Public Feedback</h3>
+              </div>
+              <p className="text-muted-foreground mb-4">
+                Collect feature requests directly from your users.
+              </p>
+              <Link
+                href="/documentation/features"
+                className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700"
+              >
+                Learn more <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Next Steps */}
+        <section>
+          <h2 className="text-2xl font-semibold mb-6">Next Steps</h2>
+          <div className="bg-muted p-6 rounded-lg">
+            <p className="text-muted-foreground mb-4">
+              Ready to dive deeper? Here are some recommended next steps:
+            </p>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                <Link
+                  href="/documentation/features"
+                  className="text-blue-600 hover:text-blue-700"
+                >
+                  Explore all features
+                </Link>
+              </div>
+              <div className="flex items-center gap-3">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                <Link
+                  href="/documentation/tutorials"
+                  className="text-blue-600 hover:text-blue-700"
+                >
+                  Follow step-by-step tutorials
+                </Link>
+              </div>
+              <div className="flex items-center gap-3">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                <Link
+                  href="/documentation/api"
+                  className="text-blue-600 hover:text-blue-700"
+                >
+                  Integrate with our API
+                </Link>
+              </div>
             </div>
           </div>
         </section>
