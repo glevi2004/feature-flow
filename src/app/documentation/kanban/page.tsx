@@ -1,6 +1,5 @@
 import Link from "next/link";
 import {
-  Kanban,
   ArrowRight,
   Move,
   Eye,
@@ -189,8 +188,8 @@ export default function KanbanPage() {
               <div className="p-6">
                 <p className="text-muted-foreground mb-4">
                   Features that have been completed and are ready for deployment
-                  or testing. This column shows your team's accomplishments and
-                  completed work.
+                  or testing. This column shows your team&apos;s accomplishments
+                  and completed work.
                 </p>
                 <div className="bg-background p-4 rounded border">
                   <div className="space-y-2">
@@ -357,8 +356,8 @@ export default function KanbanPage() {
             <div className="p-4 border-l-4 border-blue-500 bg-blue-50 rounded-r-lg">
               <h3 className="font-medium mb-2">Limit Work in Progress</h3>
               <p className="text-sm text-muted-foreground">
-                Keep the number of features in the "In Progress" column
-                manageable. Too many active features can lead to context
+                Keep the number of features in the &quot;In Progress&quot;
+                column manageable. Too many active features can lead to context
                 switching and delays.
               </p>
             </div>
@@ -380,8 +379,9 @@ export default function KanbanPage() {
             <div className="p-4 border-l-4 border-yellow-500 bg-yellow-50 rounded-r-lg">
               <h3 className="font-medium mb-2">Review Completed Work</h3>
               <p className="text-sm text-muted-foreground">
-                Regularly review the "Done" column to celebrate achievements and
-                identify patterns in successful feature development.
+                Regularly review the &quot;Done&quot; column to celebrate
+                achievements and identify patterns in successful feature
+                development.
               </p>
             </div>
           </div>
