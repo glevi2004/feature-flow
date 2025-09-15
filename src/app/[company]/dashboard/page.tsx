@@ -437,6 +437,11 @@ function DashboardPage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setSortBy("newest")}>
+                  <Clock className="h-4 w-4 mr-2" />
+                  Newest
+                  {sortBy === "newest" && <Check className="h-4 w-4 ml-auto" />}
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setSortBy("trending")}>
                   <Flame className="h-4 w-4 mr-2" />
                   Trending
@@ -457,11 +462,6 @@ function DashboardPage() {
                   {sortBy === "comments" && (
                     <Check className="h-4 w-4 ml-auto" />
                   )}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSortBy("newest")}>
-                  <Clock className="h-4 w-4 mr-2" />
-                  Newest
-                  {sortBy === "newest" && <Check className="h-4 w-4 ml-auto" />}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -591,6 +591,14 @@ function DashboardPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  {/* Comment count */}
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <MessageSquare className="h-4 w-4" />
+                    <span className="text-sm font-medium">
+                      {post.commentsCount || 0}
+                    </span>
+                  </div>
+                  
                   {/* Type badges */}
                   {post.types.length > 0 && (
                     <div className="flex flex-wrap gap-1">
