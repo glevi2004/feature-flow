@@ -594,7 +594,7 @@ function DashboardPage() {
                   {/* Comment count */}
                   {(post.commentsCount || 0) > 0 && (
                     <div className="flex items-center gap-1 text-muted-foreground">
-                      <MessageSquare className="h-4 w-4" />
+                      <MessageSquare className="h-3 w-3" />
                       <span className="text-sm font-medium">
                         {post.commentsCount}
                       </span>
