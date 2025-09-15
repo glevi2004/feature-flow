@@ -347,8 +347,38 @@ function BoardPage() {
                       onClick={() => handlePostClick(post)}
                     >
                       <CardContent className="p-3">
-                        {/* Post Badges - Status, Types, and Tags in one line */}
-                        <div className="mb-2 flex flex-wrap gap-1">
+                        {/* Post Title */}
+                        <h4 className="font-semibold text-sm mb-2 line-clamp-2">
+                          {post.title}
+                        </h4>
+
+                        {/* Post Description */}
+                        <p className="text-xs text-muted-foreground mb-3 line-clamp-3">
+                          {post.description}
+                        </p>
+
+                        {/* Post Footer */}
+                        <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
+                          <div className="flex items-center gap-1">
+                            <ArrowUp className="h-3 w-3" />
+                            <span>{post.upvotesCount}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <MessageSquare className="h-3 w-3" />
+                            <span>{post.commentsCount}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            <span>
+                              {post.createdAt
+                                ? formatDate(post.createdAt.toDate())
+                                : "Recently"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Post Badges - Status, Types, and Tags below title and comments */}
+                        <div className="flex flex-wrap gap-1">
                           {/* Status Badge */}
                           <Badge
                             className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
@@ -418,36 +448,6 @@ function BoardPage() {
                                   : 0)}
                             </Badge>
                           )}
-                        </div>
-
-                        {/* Post Title */}
-                        <h4 className="font-semibold text-sm mb-2 line-clamp-2">
-                          {post.title}
-                        </h4>
-
-                        {/* Post Description */}
-                        <p className="text-xs text-muted-foreground mb-3 line-clamp-3">
-                          {post.description}
-                        </p>
-
-                        {/* Post Footer */}
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <ArrowUp className="h-3 w-3" />
-                            <span>{post.upvotesCount}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <MessageSquare className="h-3 w-3" />
-                            <span>{post.commentsCount}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            <span>
-                              {post.createdAt
-                                ? formatDate(post.createdAt.toDate())
-                                : "Recently"}
-                            </span>
-                          </div>
                         </div>
                       </CardContent>
                     </Card>
