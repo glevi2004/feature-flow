@@ -592,12 +592,14 @@ function DashboardPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   {/* Comment count */}
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <MessageSquare className="h-4 w-4" />
-                    <span className="text-sm font-medium">
-                      {post.commentsCount || 0}
-                    </span>
-                  </div>
+                  {(post.commentsCount || 0) > 0 && (
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <MessageSquare className="h-4 w-4" />
+                      <span className="text-sm font-medium">
+                        {post.commentsCount}
+                      </span>
+                    </div>
+                  )}
                   
                   {/* Type badges */}
                   {post.types.length > 0 && (
