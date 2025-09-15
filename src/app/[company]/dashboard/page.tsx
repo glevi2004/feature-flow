@@ -26,6 +26,8 @@ import {
   XCircle,
   Calendar,
   CheckSquare,
+  Flame,
+  MessageSquare,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDashboardFilters } from "@/contexts/DashboardFilterContext";
@@ -93,6 +95,7 @@ function DashboardPage() {
 
   const [companyId, setCompanyId] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("newest"); // 'trending', 'upvotes', 'comments', 'newest'
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
   const [statusSearch, setStatusSearch] = useState("");
   const [openStatusDropdown, setOpenStatusDropdown] = useState<string | null>(
@@ -148,6 +151,72 @@ function DashboardPage() {
     }
   }, [user, loadCompanyData]);
 
+  // Sort posts based on sortBy
+  const sortPosts = useCallback(
+    (postsToSort: FeedbackPost[]) => {
+      const sorted = [...postsToSort];
+
+      if (sortBy === "newest") {
+        sorted.sort((a, b) => {
+          const dateA =
+            a.createdAt && typeof a.createdAt.toDate === "function"
+              ? a.createdAt.toDate()
+              : a.createdAt &&
+                typeof a.createdAt === "object" &&
+                "seconds" in a.createdAt
+              ? new Date(a.createdAt.seconds * 1000)
+              : new Date(a.createdAt || 0);
+          const dateB =
+            b.createdAt && typeof b.createdAt.toDate === "function"
+              ? b.createdAt.toDate()
+              : b.createdAt &&
+                typeof b.createdAt === "object" &&
+                "seconds" in b.createdAt
+              ? new Date(b.createdAt.seconds * 1000)
+              : new Date(b.createdAt || 0);
+          return dateB.getTime() - dateA.getTime();
+        });
+      } else if (sortBy === "upvotes") {
+        sorted.sort((a, b) => b.upvotesCount - a.upvotesCount);
+      } else if (sortBy === "comments") {
+        sorted.sort((a, b) => b.commentsCount - a.commentsCount);
+      } else if (sortBy === "trending") {
+        // Simple trending algorithm: upvotes + recency
+        sorted.sort((a, b) => {
+          const dateA =
+            a.createdAt && typeof a.createdAt.toDate === "function"
+              ? a.createdAt.toDate()
+              : a.createdAt &&
+                typeof a.createdAt === "object" &&
+                "seconds" in a.createdAt
+              ? new Date(a.createdAt.seconds * 1000)
+              : new Date(a.createdAt || 0);
+          const dateB =
+            b.createdAt && typeof b.createdAt.toDate === "function"
+              ? b.createdAt.toDate()
+              : b.createdAt &&
+                typeof b.createdAt === "object" &&
+                "seconds" in b.createdAt
+              ? new Date(b.createdAt.seconds * 1000)
+              : new Date(b.createdAt || 0);
+
+          const scoreA =
+            a.upvotesCount +
+            (new Date().getTime() - dateA.getTime()) /
+              (1000 * 60 * 60 * 24 * 7);
+          const scoreB =
+            b.upvotesCount +
+            (new Date().getTime() - dateB.getTime()) /
+              (1000 * 60 * 60 * 24 * 7);
+          return scoreB - scoreA;
+        });
+      }
+
+      return sorted;
+    },
+    [sortBy]
+  );
+
   // Filter posts based on search query, status filter, type filter, and tag filter
   useEffect(() => {
     let filtered = posts;
@@ -184,8 +253,18 @@ function DashboardPage() {
       );
     }
 
-    setFilteredPosts(filtered);
-  }, [searchQuery, statusFilter, typeFilter, tagFilter, posts, types]);
+    // Apply sorting
+    const sorted = sortPosts(filtered);
+    setFilteredPosts(sorted);
+  }, [
+    searchQuery,
+    statusFilter,
+    typeFilter,
+    tagFilter,
+    posts,
+    types,
+    sortPosts,
+  ]);
 
   const getTagColor = (tagId: string) => {
     const tag = tags.find((t) => t.id === tagId);
@@ -341,11 +420,51 @@ function DashboardPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button variant="outline" size="sm">
-              <Clock className="h-4 w-4 mr-2" />
-              Recent posts
-              <ChevronDown className="h-4 w-4 ml-1" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  {sortBy === "trending" && <Flame className="h-4 w-4 mr-2" />}
+                  {sortBy === "upvotes" && <ArrowUp className="h-4 w-4 mr-2" />}
+                  {sortBy === "comments" && (
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                  )}
+                  {sortBy === "newest" && <Clock className="h-4 w-4 mr-2" />}
+                  {sortBy === "trending" && "Trending"}
+                  {sortBy === "upvotes" && "Upvotes"}
+                  {sortBy === "comments" && "Comments"}
+                  {sortBy === "newest" && "Newest"}
+                  <ChevronDown className="h-4 w-4 ml-1" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setSortBy("trending")}>
+                  <Flame className="h-4 w-4 mr-2" />
+                  Trending
+                  {sortBy === "trending" && (
+                    <Check className="h-4 w-4 ml-auto" />
+                  )}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortBy("upvotes")}>
+                  <ArrowUp className="h-4 w-4 mr-2" />
+                  Upvotes
+                  {sortBy === "upvotes" && (
+                    <Check className="h-4 w-4 ml-auto" />
+                  )}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortBy("comments")}>
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Comments
+                  {sortBy === "comments" && (
+                    <Check className="h-4 w-4 ml-auto" />
+                  )}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSortBy("newest")}>
+                  <Clock className="h-4 w-4 mr-2" />
+                  Newest
+                  {sortBy === "newest" && <Check className="h-4 w-4 ml-auto" />}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
