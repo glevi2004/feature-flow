@@ -4,7 +4,7 @@ import { app_name } from "@/lib/constants";
 
 export function HeroSection() {
   return (
-    <section className="bg-[#0d1117] container mx-auto px-4 py-20 lg:mt-0">
+    <section className="bg-background container mx-auto px-4 py-20 lg:mt-0">
       <div className="max-w-4xl mx-auto">
         <div className="text-center">
           {/* Text Content */}
@@ -12,7 +12,7 @@ export function HeroSection() {
             <h1 className="text-5xl md:text-6xl font-bold mb-6 text-[#58a6ff]">
               Transform Customer Feedback Into Action
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
               {app_name} is a modern feedback platform designed to help teams
               collect, organize, and prioritize customer feedback effectively.
             </p>
