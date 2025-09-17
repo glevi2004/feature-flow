@@ -28,7 +28,7 @@ export function HeroSection() {
               </Link>
               <Button
                 size="lg"
-                className="bg-[#238636] hover:bg-[#2ea043] text-white text-lg px-8 py-3"
+                className="bg-blue-600 hover:bg-blue-600/80 text-white text-lg px-8 py-3"
               >
                 Watch Demo
               </Button>
