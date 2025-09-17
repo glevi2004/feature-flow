@@ -26,6 +26,7 @@ export function Navbar() {
         {/* Desktop Navigation - Centered */}
         <div className="hidden lg:flex items-center justify-center flex-1">
           <nav className="flex space-x-6">
+            {/* TODO: When more options are added uncomment these too*/}
             {/* <a
               href="#features"
               className="text-foreground hover:text-muted-foreground transition-colors text-sm"
