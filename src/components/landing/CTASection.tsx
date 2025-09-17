@@ -19,7 +19,7 @@ export function CTASection() {
               size="lg"
               className="bg-blue-600 hover:bg-blue-600/80 text-white text-lg px-8 py-3"
             >
-              Start Free Trial
+              Get Started
             </Button>
           </Link>
           <Button size="lg" variant="outline" className="text-lg px-8 py-3">
