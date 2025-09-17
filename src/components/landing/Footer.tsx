@@ -4,7 +4,7 @@ import { app_name } from "@/lib/constants";
 
 export function Footer() {
   return (
-    <footer className="bg-gray-900 text-white py-12">
+    <footer className="bg-background text-foreground py-12">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-4 gap-8">
           <div>
@@ -14,31 +14,31 @@ export function Footer() {
               </div>
               <span className="text-xl font-bold">{app_name}</span>
             </div>
-            <p className="text-gray-400">
+            <p className="text-muted-foreground">
               Modern feedback platform for teams to collect, organize, and
               prioritize customer feedback effectively.
             </p>
           </div>
           <div>
             <h3 className="font-semibold mb-4">Product</h3>
-            <ul className="space-y-2 text-gray-400">
+            <ul className="space-y-2 text-muted-foreground">
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="#" className="hover:text-foreground transition-colors">
                   Features
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="#" className="hover:text-foreground transition-colors">
                   Integrations
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="#" className="hover:text-foreground transition-colors">
                   Pricing
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="#" className="hover:text-foreground transition-colors">
                   Changelog
                 </a>
               </li>
@@ -46,24 +46,24 @@ export function Footer() {
           </div>
           <div>
             <h3 className="font-semibold mb-4">Company</h3>
-            <ul className="space-y-2 text-gray-400">
+            <ul className="space-y-2 text-muted-foreground">
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="#" className="hover:text-foreground transition-colors">
                   About
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="#" className="hover:text-foreground transition-colors">
                   Blog
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="#" className="hover:text-foreground transition-colors">
                   Careers
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="#" className="hover:text-foreground transition-colors">
                   Contact
                 </a>
               </li>
@@ -71,34 +71,34 @@ export function Footer() {
           </div>
           <div>
             <h3 className="font-semibold mb-4">Support</h3>
-            <ul className="space-y-2 text-gray-400">
+            <ul className="space-y-2 text-muted-foreground">
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="#" className="hover:text-foreground transition-colors">
                   Help Center
                 </a>
               </li>
               <li>
                 <Link
                   href="/documentation"
-                  className="hover:text-white transition-colors"
+                  className="hover:text-foreground transition-colors"
                 >
                   Documentation
                 </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="#" className="hover:text-foreground transition-colors">
                   API
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="#" className="hover:text-foreground transition-colors">
                   Status
                 </a>
               </li>
             </ul>
           </div>
         </div>
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+        <div className="border-t border-border mt-8 pt-8 text-center text-muted-foreground">
           <p>&copy; 2024 {app_name}. All rights reserved.</p>
         </div>
       </div>
