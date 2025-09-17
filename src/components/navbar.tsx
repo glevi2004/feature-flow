@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Package, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { app_name } from "@/lib/constants";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -65,6 +66,7 @@ export function Navbar() {
                 Get Started
               </Button>
             </Link>
+            <ModeToggle />
           </div>
 
           {/* Mobile Menu Button */}
@@ -131,6 +133,9 @@ export function Navbar() {
                   Get Started
                 </Button>
               </Link>
+              <div className="flex justify-center pt-2">
+                <ModeToggle />
+              </div>
             </div>
           </div>
         )}
