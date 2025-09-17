@@ -11,18 +11,17 @@ export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50">
-      <div className="w-full">
-        <div className="bg-background/95 backdrop-blur-md border border-border px-6 py-3 flex items-center justify-between shadow-sm">
-          <div className="flex items-center space-x-3">
+    <header className="fixed top-0 left-0 right-0 z-50 w-screen border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex h-14 items-center justify-between px-4 w-full">
+          <div className="flex items-center">
             <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
               <Package className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-semibold text-foreground">{app_name}</span>
+            <span className="text-lg font-semibold">{app_name}</span>
           </div>
 
           {/* Desktop Navigation - Centered */}
-          <div className="hidden lg:flex items-center justify-center flex-1 ml-12">
+          <div className="hidden lg:flex items-center justify-center flex-1">
             <nav className="flex space-x-6">
               <a
                 href="#features"
@@ -52,7 +51,7 @@ export function Navbar() {
           </div>
 
           {/* Desktop Auth Buttons */}
-          <div className="hidden lg:flex items-center space-x-4">
+          <div className="hidden lg:flex items-center space-x-2">
             <Link href="/login">
               <Button
                 variant="ghost"
@@ -88,7 +87,7 @@ export function Navbar() {
 
         {/* Mobile Dropdown Menu */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 bg-background/95 backdrop-blur-lg border border-border rounded-lg p-4 space-y-3">
+          <div className="md:hidden absolute top-14 left-4 right-4 bg-background/95 backdrop-blur-lg border border-border rounded-lg p-4 space-y-3 shadow-lg">
             <nav className="space-y-3">
               <a
                 href="#features"
@@ -139,7 +138,6 @@ export function Navbar() {
             </div>
           </div>
         )}
-      </div>
     </header>
   );
 }
