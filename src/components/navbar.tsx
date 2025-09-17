@@ -13,7 +13,10 @@ export function Navbar() {
   return (
     <header className="px-6 fixed top-0 left-0 right-0 z-50 w-screen border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-14 items-center justify-between px-4 w-full">
-        <div className="flex items-center">
+        <div
+          className="flex items-center cursor-pointer"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        >
           <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
             <Package className="w-5 h-5 text-white" />
           </div>
@@ -23,7 +26,7 @@ export function Navbar() {
         {/* Desktop Navigation - Centered */}
         <div className="hidden lg:flex items-center justify-center flex-1">
           <nav className="flex space-x-6">
-            <a
+            {/* <a
               href="#features"
               className="text-foreground hover:text-muted-foreground transition-colors text-sm"
             >
@@ -34,13 +37,13 @@ export function Navbar() {
               className="text-foreground hover:text-muted-foreground transition-colors text-sm"
             >
               Workflow
-            </a>
-            <Link
+            </a> */}
+            {/* <Link
               href="/documentation"
               className="text-foreground hover:text-muted-foreground transition-colors text-sm"
             >
               Documentation
-            </Link>
+            </Link> */}
           </nav>
         </div>
 

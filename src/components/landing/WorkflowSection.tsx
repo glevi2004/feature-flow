@@ -1,4 +1,10 @@
-import { ArrowRight, MessageSquare, Users, CheckCircle, BarChart3 } from "lucide-react";
+import {
+  ArrowRight,
+  MessageSquare,
+  Users,
+  CheckCircle,
+  BarChart3,
+} from "lucide-react";
 
 export function WorkflowSection() {
   return (
@@ -11,7 +17,8 @@ export function WorkflowSection() {
           How It Works
         </h2>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          A simple, powerful workflow to collect, manage, and act on customer feedback
+          A simple, powerful workflow to collect, manage, and act on customer
+          feedback
         </p>
       </div>
 
@@ -26,8 +33,8 @@ export function WorkflowSection() {
               1. Collect Feedback
             </h3>
             <p className="text-muted-foreground">
-              Customers submit feedback through your public portal or internal channels. 
-              All feedback is automatically organized and categorized.
+              Customers submit feedback through your public portal or internal
+              channels. All feedback is automatically organized and categorized.
             </p>
           </div>
 
@@ -40,7 +47,7 @@ export function WorkflowSection() {
               2. Review & Prioritize
             </h3>
             <p className="text-muted-foreground">
-              Your team reviews feedback, adds context, and prioritizes based on 
+              Your team reviews feedback, adds context, and prioritizes based on
               impact and effort using our kanban board and tagging system.
             </p>
           </div>
@@ -54,35 +61,9 @@ export function WorkflowSection() {
               3. Take Action
             </h3>
             <p className="text-muted-foreground">
-              Track progress, update status, and close the loop by notifying 
+              Track progress, update status, and close the loop by notifying
               customers when their feedback has been implemented.
             </p>
-          </div>
-        </div>
-
-        {/* Workflow Diagram */}
-        <div className="mt-16">
-          <div className="flex items-center justify-center space-x-4 mb-8">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                <MessageSquare className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-sm font-medium text-foreground">Collect</span>
-            </div>
-            <ArrowRight className="w-5 h-5 text-muted-foreground" />
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
-                <BarChart3 className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-sm font-medium text-foreground">Organize</span>
-            </div>
-            <ArrowRight className="w-5 h-5 text-muted-foreground" />
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-                <CheckCircle className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-sm font-medium text-foreground">Act</span>
-            </div>
           </div>
         </div>
       </div>
