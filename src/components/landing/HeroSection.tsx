@@ -20,14 +20,15 @@ export function HeroSection() {
               <Link href="/register">
                 <Button
                   size="lg"
-                  className="bg-[#238636] hover:bg-[#2ea043] text-white text-lg px-8 py-3 border border-[#30363d]"
+                  variant="outline"
+                  className="text-lg px-8 py-3 border border-border text-foreground bg-background hover:bg-accent"
                 >
                   Start Free Trial
                 </Button>
               </Link>
               <Button
                 size="lg"
-                className="text-lg px-8 py-3 border border-[#30363d] text-white bg-[#161b22] hover:bg-[#21262d]"
+                className="bg-[#238636] hover:bg-[#2ea043] text-white text-lg px-8 py-3"
               >
                 Watch Demo
               </Button>
