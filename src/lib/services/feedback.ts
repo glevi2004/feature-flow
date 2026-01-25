@@ -11,8 +11,6 @@ import {
   where,
   orderBy,
   serverTimestamp,
-  arrayUnion,
-  arrayRemove,
   increment,
   Timestamp,
   FieldValue,
@@ -35,8 +33,9 @@ export interface FeedbackPost {
   types: string[];
   tags: string[]; // Array of tag IDs
   status: FeedbackStatus; // Updated status field with specific options
-  upvotes: string[]; // Array of user IDs who upvoted the post
-  upvotesCount: number;
+  upvotes: string[]; // Deprecated: Array of user IDs (kept for backward compatibility)
+  // New upvotes are stored in feedback_posts/{postId}/upvotes/{userId} subcollection
+  upvotesCount: number; // Maintained server-side via API routes
   commentsCount: number;
   createdAt: Timestamp;
   updatedAt: Timestamp;
@@ -86,6 +85,8 @@ export class FeedbackService {
         ...data,
         tags: data.tags || [], // Initialize tags as empty array if not provided
         status: "Under Review", // Set default status
+        // Note: upvotes array is deprecated but kept for backward compatibility
+        // New upvotes are stored in feedback_posts/{postId}/upvotes/{userId} subcollection
         upvotes: [],
         upvotesCount: 0,
         commentsCount: 0,
@@ -163,36 +164,23 @@ export class FeedbackService {
     }
   }
 
-  // Toggle upvote on a post
-  static async toggleUpvote(postId: string, userId: string) {
+  // Toggle upvote on a post (now uses API route for server-side counter management)
+  static async toggleUpvote(postId: string, userId: string, authToken: string) {
     try {
-      const postRef = doc(db, "feedback_posts", postId);
-      const postSnap = await getDoc(postRef);
+      const response = await fetch(`/api/posts/${postId}/upvote`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
 
-      if (!postSnap.exists()) {
-        throw new Error("Post not found");
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to toggle upvote");
       }
 
-      const post = postSnap.data() as FeedbackPost;
-      const isUpvoted = post.upvotes.includes(userId);
-
-      if (isUpvoted) {
-        // Remove upvote
-        await updateDoc(postRef, {
-          upvotes: arrayRemove(userId),
-          upvotesCount: increment(-1),
-          updatedAt: serverTimestamp(),
-        });
-      } else {
-        // Add upvote
-        await updateDoc(postRef, {
-          upvotes: arrayUnion(userId),
-          upvotesCount: increment(1),
-          updatedAt: serverTimestamp(),
-        });
-      }
-
-      return { upvoted: !isUpvoted };
+      return await response.json();
     } catch (error) {
       console.error("Error toggling upvote:", error);
       throw error;
@@ -212,7 +200,9 @@ export class FeedbackService {
         commentData
       );
 
-      // Update post comment count
+      // Note: Comment count is now maintained server-side via Cloud Functions
+      // or can be calculated on-demand. For now, we'll still update it here
+      // but this should eventually move to server-side only.
       const postRef = doc(db, "feedback_posts", data.postId);
       await updateDoc(postRef, {
         commentsCount: increment(1),
@@ -249,16 +239,27 @@ export class FeedbackService {
     }
   }
 
-  // Create a new type for a company
-  static async createType(data: Omit<FeedbackType, "id" | "createdAt">) {
+  // Create a new type for a company (now uses API route for authorization)
+  static async createType(
+    data: Omit<FeedbackType, "id" | "createdAt">,
+    authToken: string
+  ) {
     try {
-      const typeData = {
-        ...data,
-        createdAt: serverTimestamp(),
-      };
+      const response = await fetch("/api/types", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify(data),
+      });
 
-      const docRef = await addDoc(collection(db, "feedback_types"), typeData);
-      return { id: docRef.id, ...data };
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to create type");
+      }
+
+      return await response.json();
     } catch (error) {
       console.error("Error creating type:", error);
       throw error;
@@ -288,75 +289,106 @@ export class FeedbackService {
     }
   }
 
-  // Update post status
-  static async updatePostStatus(postId: string, status: FeedbackStatus) {
+  // Update post status (now uses API route for authorization)
+  static async updatePostStatus(
+    postId: string,
+    status: FeedbackStatus,
+    authToken: string
+  ) {
     try {
-      const postRef = doc(db, "feedback_posts", postId);
-      await updateDoc(postRef, {
-        status,
-        updatedAt: serverTimestamp(),
+      const response = await fetch(`/api/posts/${postId}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({ status }),
       });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to update post status");
+      }
+
+      return await response.json();
     } catch (error) {
       console.error("Error updating post status:", error);
       throw error;
     }
   }
 
-  // Update post tags
-  static async updatePostTags(postId: string, tags: string[]) {
+  // Update post tags (now uses API route for authorization)
+  static async updatePostTags(
+    postId: string,
+    tags: string[],
+    authToken: string
+  ) {
     try {
-      const postRef = doc(db, "feedback_posts", postId);
-      await updateDoc(postRef, {
-        tags,
-        updatedAt: serverTimestamp(),
+      const response = await fetch(`/api/posts/${postId}/tags`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({ tags }),
       });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to update post tags");
+      }
+
+      return await response.json();
     } catch (error) {
       console.error("Error updating post tags:", error);
       throw error;
     }
   }
 
-  // Update a type
-  static async updateType(typeId: string, data: Partial<FeedbackType>) {
+  // Update a type (now uses API route for authorization)
+  static async updateType(
+    typeId: string,
+    data: Partial<FeedbackType>,
+    authToken: string
+  ) {
     try {
-      const typeRef = doc(db, "feedback_types", typeId);
-      await updateDoc(typeRef, {
-        ...data,
-        updatedAt: serverTimestamp(),
+      const response = await fetch(`/api/types/${typeId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify(data),
       });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to update type");
+      }
+
+      return await response.json();
     } catch (error) {
       console.error("Error updating type:", error);
       throw error;
     }
   }
 
-  // Delete a type and remove its references from posts
-  static async deleteType(typeId: string, companyId: string) {
+  // Delete a type and remove its references from posts (now uses API route)
+  static async deleteType(typeId: string, authToken: string) {
     try {
-      // First, get all posts that reference this type
-      const postsQuery = query(
-        collection(db, "feedback_posts"),
-        where("companyId", "==", companyId),
-        where("types", "array-contains", typeId)
-      );
-
-      const postsSnapshot = await getDocs(postsQuery);
-
-      // Remove the type from all posts that reference it
-      const updatePromises = postsSnapshot.docs.map(async (postDoc) => {
-        const postRef = doc(db, "feedback_posts", postDoc.id);
-        const postData = postDoc.data();
-        await updateDoc(postRef, {
-          types: postData.types.filter((type: string) => type !== typeId),
-          updatedAt: serverTimestamp(),
-        });
+      const response = await fetch(`/api/types/${typeId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
       });
 
-      // Wait for all updates to complete
-      await Promise.all(updatePromises);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to delete type");
+      }
 
-      // Finally, delete the type
-      await deleteDoc(doc(db, "feedback_types", typeId));
+      return await response.json();
     } catch (error) {
       console.error("Error deleting type:", error);
       throw error;
@@ -397,19 +429,34 @@ export class FeedbackService {
   }
 
   // Initialize default types for a company
-  static async initializeDefaultTypes(companyId: string) {
+  static async initializeDefaultTypes(companyId: string, authToken?: string) {
     try {
       const defaultTypes = [
         { name: "Feature Request", emoji: "💡", color: "#3B82F6" },
       ];
 
       for (const type of defaultTypes) {
-        await this.createType({
-          companyId,
-          name: type.name,
-          emoji: type.emoji,
-          color: type.color,
-        });
+        if (authToken) {
+          await this.createType(
+            {
+              companyId,
+              name: type.name,
+              emoji: type.emoji,
+              color: type.color,
+            },
+            authToken
+          );
+        } else {
+          // Fallback to direct Firestore creation if no authToken (e.g., during onboarding)
+          const typeData = {
+            companyId,
+            name: type.name,
+            emoji: type.emoji,
+            color: type.color,
+            createdAt: serverTimestamp(),
+          };
+          await addDoc(collection(db, "feedback_types"), typeData);
+        }
       }
     } catch (error) {
       console.error("Error initializing default types:", error);

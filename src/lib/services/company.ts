@@ -3,6 +3,7 @@ import {
   doc,
   getDoc,
   updateDoc,
+  setDoc,
   arrayUnion,
   arrayRemove,
   addDoc,
@@ -30,10 +31,19 @@ export interface CompanyData {
   createdAt: Date;
   createdBy: string; // User ID who created the company
   members: string[]; // Array of user IDs who are members
+  publicPortalEnabled?: boolean; // Whether the public feedback portal is enabled
+}
+
+export interface CompanyDirectoryEntry {
+  slug: string; // Normalized company name (lowercase)
+  companyId: string;
+  displayName: string; // Display name (capitalized)
+  logoUrl?: string;
+  publicPortalEnabled: boolean;
 }
 
 export class CompanyService {
-  // Check if a company name already exists
+  // Check if a company name already exists (using directory for public lookup)
   static async checkCompanyExists(companyName: string): Promise<boolean> {
     try {
       // Validate company name
@@ -55,7 +65,15 @@ export class CompanyService {
       // Normalize to lowercase for consistent comparison
       const normalizedName = trimmedName.toLowerCase();
 
-      // Query companies collection by name field
+      // Check directory first (public lookup)
+      const directoryDoc = await getDoc(
+        doc(db, "company_directory", normalizedName)
+      );
+      if (directoryDoc.exists()) {
+        return true;
+      }
+
+      // Fallback: Query companies collection by name field (for backward compatibility)
       const q = query(
         collection(db, "companies"),
         where("name", "==", normalizedName)
@@ -92,12 +110,23 @@ export class CompanyService {
         createdBy: userId,
         members: [userId],
         createdAt: new Date(),
+        publicPortalEnabled: true, // Default to enabled
         ...additionalData,
       };
 
       // Create company document with auto-generated ID
       const docRef = await addDoc(collection(db, "companies"), companyData);
       const companyId = docRef.id;
+
+      // Create public directory entry
+      const directoryEntry: CompanyDirectoryEntry = {
+        slug: normalizedName,
+        companyId: companyId,
+        displayName: companyName.trim(), // Keep original capitalization for display
+        logoUrl: additionalData?.logo,
+        publicPortalEnabled: companyData.publicPortalEnabled ?? true,
+      };
+      await setDoc(doc(db, "company_directory", normalizedName), directoryEntry);
 
       // Add company ID to user's companies array
       await updateDoc(doc(db, "users", userId), {
@@ -125,12 +154,33 @@ export class CompanyService {
     }
   }
 
-  // Get company data by name
+  // Get company data by name (public lookup via directory)
   static async getCompanyByName(companyName: string) {
     try {
       // Normalize to lowercase for consistent lookup
       const normalizedName = companyName.toLowerCase().trim();
 
+      // Try directory first (public lookup)
+      const directoryDoc = await getDoc(
+        doc(db, "company_directory", normalizedName)
+      );
+      if (directoryDoc.exists()) {
+        const directoryData = directoryDoc.data() as CompanyDirectoryEntry;
+        // Get full company data if user is a member
+        const company = await this.getCompany(directoryData.companyId);
+        if (company) {
+          return company;
+        }
+        // If not a member, return minimal public data
+        return {
+          id: directoryData.companyId,
+          name: directoryData.slug,
+          logo: directoryData.logoUrl,
+          publicPortalEnabled: directoryData.publicPortalEnabled,
+        } as Partial<CompanyData> as CompanyData;
+      }
+
+      // Fallback: Query companies collection (for backward compatibility)
       const q = query(
         collection(db, "companies"),
         where("name", "==", normalizedName)
@@ -143,6 +193,25 @@ export class CompanyService {
       return null;
     } catch (error) {
       console.error("Error getting company by name:", error);
+      throw error;
+    }
+  }
+
+  // Get public company directory entry (for public portal)
+  static async getCompanyDirectoryEntry(
+    companyName: string
+  ): Promise<CompanyDirectoryEntry | null> {
+    try {
+      const normalizedName = companyName.toLowerCase().trim();
+      const directoryDoc = await getDoc(
+        doc(db, "company_directory", normalizedName)
+      );
+      if (directoryDoc.exists()) {
+        return { slug: normalizedName, ...directoryDoc.data() } as CompanyDirectoryEntry;
+      }
+      return null;
+    } catch (error) {
+      console.error("Error getting company directory entry:", error);
       throw error;
     }
   }
@@ -230,6 +299,17 @@ export class CompanyService {
         updatedAt: new Date(),
       });
 
+      // Update directory entry
+      const directoryEntry: Partial<CompanyDirectoryEntry> = {
+        slug: normalizedName,
+        displayName: newName.trim(),
+      };
+      await setDoc(
+        doc(db, "company_directory", normalizedName),
+        directoryEntry,
+        { merge: true }
+      );
+
       return { success: true };
     } catch (error) {
       console.error("Error updating company name:", error);
@@ -274,6 +354,16 @@ export class CompanyService {
         updatedAt: new Date(),
       });
 
+      // Update directory entry
+      const companyData = await this.getCompany(companyId);
+      if (companyData) {
+        await setDoc(
+          doc(db, "company_directory", companyData.name),
+          { logoUrl: downloadURL },
+          { merge: true }
+        );
+      }
+
       return downloadURL;
     } catch (error) {
       console.error("Error uploading company logo:", error);
@@ -304,6 +394,16 @@ export class CompanyService {
         updatedAt: new Date(),
       });
 
+      // Update directory entry
+      const companyData = await this.getCompany(companyId);
+      if (companyData) {
+        await setDoc(
+          doc(db, "company_directory", companyData.name),
+          { logoUrl: null },
+          { merge: true }
+        );
+      }
+
       return { success: true };
     } catch (error) {
       console.error("Error removing company logo:", error);
@@ -328,9 +428,54 @@ export class CompanyService {
         updatedAt: new Date(),
       });
 
+      // Update directory entry if logo changed
+      if (updates.logo !== undefined) {
+        const companyData = await this.getCompany(companyId);
+        if (companyData) {
+          await setDoc(
+            doc(db, "company_directory", companyData.name),
+            { logoUrl: updates.logo || null },
+            { merge: true }
+          );
+        }
+      }
+
       return { success: true };
     } catch (error) {
       console.error("Error updating company:", error);
+      throw error;
+    }
+  }
+
+  // Update public portal enabled status
+  static async updatePublicPortalEnabled(
+    companyId: string,
+    enabled: boolean,
+    userId: string
+  ) {
+    try {
+      const companyData = await this.getCompany(companyId);
+      if (!companyData || !companyData.members.includes(userId)) {
+        throw new Error("Access denied");
+      }
+
+      await updateDoc(doc(db, "companies", companyId), {
+        publicPortalEnabled: enabled,
+        updatedAt: new Date(),
+      });
+
+      // Update directory entry
+      if (companyData.name) {
+        await setDoc(
+          doc(db, "company_directory", companyData.name),
+          { publicPortalEnabled: enabled },
+          { merge: true }
+        );
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating public portal status:", error);
       throw error;
     }
   }
@@ -390,6 +535,11 @@ export class CompanyService {
         await updateDoc(doc(db, "users", memberId), {
           companies: arrayRemove(companyId),
         });
+      }
+
+      // Delete directory entry
+      if (company.name) {
+        await deleteDoc(doc(db, "company_directory", company.name));
       }
 
       // TODO: Consider cascading deletes for related collections (posts/types/tags)

@@ -2,16 +2,14 @@ import { db } from "@/lib/firebase/firebaseConfig";
 import {
   collection,
   doc,
-  addDoc,
   getDocs,
   getDoc,
-  updateDoc,
-  deleteDoc,
   query,
   where,
   orderBy,
-  serverTimestamp,
   Timestamp,
+  addDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 
 export interface FeedbackTag {
@@ -23,16 +21,27 @@ export interface FeedbackTag {
 }
 
 export class TagsService {
-  // Create a new tag for a company
-  static async createTag(data: Omit<FeedbackTag, "id" | "createdAt">) {
+  // Create a new tag for a company (now uses API route for authorization)
+  static async createTag(
+    data: Omit<FeedbackTag, "id" | "createdAt">,
+    authToken: string
+  ) {
     try {
-      const tagData = {
-        ...data,
-        createdAt: serverTimestamp(),
-      };
+      const response = await fetch("/api/tags", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify(data),
+      });
 
-      const docRef = await addDoc(collection(db, "feedback_tags"), tagData);
-      return { id: docRef.id, ...data };
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to create tag");
+      }
+
+      return await response.json();
     } catch (error) {
       console.error("Error creating tag:", error);
       throw error;
@@ -111,47 +120,50 @@ export class TagsService {
     }
   }
 
-  // Update a tag
-  static async updateTag(tagId: string, data: Partial<FeedbackTag>) {
+  // Update a tag (now uses API route for authorization)
+  static async updateTag(
+    tagId: string,
+    data: Partial<FeedbackTag>,
+    authToken: string
+  ) {
     try {
-      const tagRef = doc(db, "feedback_tags", tagId);
-      await updateDoc(tagRef, {
-        ...data,
-        updatedAt: serverTimestamp(),
+      const response = await fetch(`/api/tags/${tagId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify(data),
       });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to update tag");
+      }
+
+      return await response.json();
     } catch (error) {
       console.error("Error updating tag:", error);
       throw error;
     }
   }
 
-  // Delete a tag and remove its references from posts
-  static async deleteTag(tagId: string, companyId: string) {
+  // Delete a tag and remove its references from posts (now uses API route)
+  static async deleteTag(tagId: string, authToken: string) {
     try {
-      // First, get all posts that reference this tag
-      const postsQuery = query(
-        collection(db, "feedback_posts"),
-        where("companyId", "==", companyId),
-        where("tags", "array-contains", tagId)
-      );
-
-      const postsSnapshot = await getDocs(postsQuery);
-
-      // Remove the tag from all posts that reference it
-      const updatePromises = postsSnapshot.docs.map(async (postDoc) => {
-        const postRef = doc(db, "feedback_posts", postDoc.id);
-        const postData = postDoc.data();
-        await updateDoc(postRef, {
-          tags: postData.tags.filter((tag: string) => tag !== tagId),
-          updatedAt: serverTimestamp(),
-        });
+      const response = await fetch(`/api/tags/${tagId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
       });
 
-      // Wait for all updates to complete
-      await Promise.all(updatePromises);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to delete tag");
+      }
 
-      // Finally, delete the tag
-      await deleteDoc(doc(db, "feedback_tags", tagId));
+      return await response.json();
     } catch (error) {
       console.error("Error deleting tag:", error);
       throw error;
@@ -175,7 +187,7 @@ export class TagsService {
   }
 
   // Initialize default tags for a company if none exist
-  static async initializeDefaultTags(companyId: string) {
+  static async initializeDefaultTags(companyId: string, authToken?: string) {
     try {
       // Check if company already has tags
       const existing = await this.getCompanyTags(companyId);
@@ -189,12 +201,27 @@ export class TagsService {
 
       const created: FeedbackTag[] = [];
       for (const tag of defaultTags) {
-        const createdTag = await this.createTag({
-          companyId,
-          name: tag.name,
-          color: tag.color,
-        } as Omit<FeedbackTag, "id" | "createdAt">);
-        created.push(createdTag);
+        if (authToken) {
+          const createdTag = await this.createTag(
+            {
+              companyId,
+              name: tag.name,
+              color: tag.color,
+            },
+            authToken
+          );
+          created.push(createdTag);
+        } else {
+          // Fallback to direct Firestore creation if no authToken (e.g., during onboarding)
+          const tagData = {
+            companyId,
+            name: tag.name,
+            color: tag.color,
+            createdAt: serverTimestamp(),
+          };
+          const docRef = await addDoc(collection(db, "feedback_tags"), tagData);
+          created.push({ id: docRef.id, ...tagData } as unknown as FeedbackTag);
+        }
       }
 
       return created;
