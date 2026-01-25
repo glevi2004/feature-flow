@@ -25,13 +25,6 @@ export function HeroSection() {
                   Get Started
                 </Button>
               </Link>
-              <Button
-                size="lg"
-                variant="outline"
-                className="text-lg px-8 py-3 border border-border text-foreground bg-background hover:bg-accent"
-              >
-                Watch Demo
-              </Button>
             </div>
           </div>
         </div>

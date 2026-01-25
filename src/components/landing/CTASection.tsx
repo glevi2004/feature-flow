@@ -22,9 +22,6 @@ export function CTASection() {
               Get Started
             </Button>
           </Link>
-          <Button size="lg" variant="outline" className="text-lg px-8 py-3">
-            Schedule Demo
-          </Button>
         </div>
       </div>
     </section>
