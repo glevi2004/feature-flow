@@ -1,6 +1,10 @@
 # Feature Ship
 
-A modern feedback platform designed to help teams collect, organize, and prioritize customer feedback effectively. Built with Next.js 15, Firebase, and TypeScript.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+A modern, secure feedback platform designed to help teams collect, organize, and prioritize customer feedback effectively. Built with Next.js 15, Firebase, and TypeScript.
+
+**Production-ready, secure, and open source.**
 
 ## 🚀 Features
 
@@ -162,10 +166,15 @@ src/
 
 ### Security Features
 
-- **Firebase Security Rules**: Database-level security
-- **User Data Protection**: Secure user data handling
-- **Role-based Access**: Company and organization-based permissions
-- **Session Management**: Secure session handling
+- **Firebase Security Rules**: Strict database-level security with tenant isolation
+- **Firebase Storage Rules**: Secure file uploads with size and type restrictions
+- **User Data Protection**: Secure user data handling with least-privilege access
+- **Role-based Access**: Company membership-based permissions
+- **Server-side Authorization**: Privileged operations (status/tags/types) handled via API routes
+- **Audit Logging**: All privileged actions are logged for security monitoring
+- **Schema Validation**: Input validation in Firestore rules prevents data tampering
+- **Public/Private Data Separation**: Company directory for public lookups, private data protected
+- **Session Management**: Secure session handling with token refresh
 
 ## 📊 Data Models
 
@@ -228,9 +237,9 @@ interface CompanyData {
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - npm, yarn, pnpm, or bun
-- Firebase project setup
+- Firebase project setup with Firestore, Authentication, and Storage enabled
 
 ### Installation
 
@@ -252,8 +261,9 @@ interface CompanyData {
    ```
 
 3. **Environment Setup**
-   Create a `.env.local` file with your Firebase configuration:
+   Create a `.env.local` file with your Firebase configuration (see `.env.example`):
 
+   **Client-side variables:**
    ```env
    NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
@@ -264,7 +274,23 @@ interface CompanyData {
    NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
    ```
 
-4. **Run the development server**
+   **Server-side variables (for API routes):**
+   ```env
+   FIREBASE_PROJECT_ID=your_project_id
+   FIREBASE_CLIENT_EMAIL=your_service_account_email
+   FIREBASE_PRIVATE_KEY=your_private_key_here
+   FIREBASE_STORAGE_BUCKET=your_storage_bucket
+   ```
+
+   > **Note**: Get Firebase Admin credentials from Firebase Console > Project Settings > Service Accounts
+
+4. **Deploy Firestore and Storage Rules**
+
+   ```bash
+   firebase deploy --only firestore:rules,storage
+   ```
+
+5. **Run the development server**
 
    ```bash
    npm run dev
@@ -274,8 +300,12 @@ interface CompanyData {
    pnpm dev
    ```
 
-5. **Open your browser**
+6. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
+
+### Migration from Previous Versions
+
+If you're upgrading from a previous version, see [MIGRATION.md](./MIGRATION.md) for data migration steps.
 
 ## 🛠️ Development
 
@@ -290,8 +320,10 @@ interface CompanyData {
 
 - **Components**: Reusable UI components in `src/components/`
 - **Pages**: Next.js pages in `src/app/`
+- **API Routes**: Server-side API routes in `src/app/api/` (privileged operations)
 - **Services**: Business logic in `src/lib/services/`
 - **Contexts**: State management in `src/contexts/`
+- **Hooks**: Custom React hooks in `src/hooks/`
 - **Types**: TypeScript definitions throughout the codebase
 
 ### Key Features Implementation
@@ -301,20 +333,35 @@ interface CompanyData {
 - **State Management**: React Context for global state
 - **Data Fetching**: Firebase SDK with real-time updates
 - **Form Handling**: Controlled components with validation
+- **Security**: Server-side authorization via API routes with Firebase Admin SDK
+- **Audit Logging**: All privileged actions logged to `audit_logs` collection
 
 ## 🚀 Deployment
 
-### Vercel (Recommended)
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions.
+
+### Quick Start (Vercel)
 
 1. Connect your GitHub repository to Vercel
-2. Set environment variables in Vercel dashboard
-3. Deploy automatically on push to main branch
+2. Set all environment variables (see `.env.example`)
+3. Deploy Firestore and Storage rules: `firebase deploy --only firestore:rules,storage`
+4. Deploy automatically on push to main branch
 
 ### Other Platforms
 
-- **Netlify**: Compatible with Next.js static export
+- **Netlify**: Compatible with Next.js
 - **Firebase Hosting**: Direct integration with Firebase
 - **Docker**: Containerized deployment option
+
+### Post-Deployment
+
+- [ ] Verify Firestore rules are deployed
+- [ ] Verify Storage rules are deployed
+- [ ] Test authentication flows
+- [ ] Test public feedback portal
+- [ ] Verify API routes are working
+- [ ] Set up error monitoring (Sentry, etc.)
+- [ ] Enable Firebase App Check (recommended)
 
 ## 📈 Roadmap
 
@@ -344,7 +391,22 @@ interface CompanyData {
 
 ## 📄 License
 
-This project is private and proprietary. All rights reserved.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+
+## 🔒 Security
+
+For security vulnerabilities, please see [SECURITY.md](./SECURITY.md).
+
+## 📚 Additional Documentation
+
+- [Deployment Guide](./DEPLOYMENT.md) - Detailed deployment instructions
+- [Migration Guide](./MIGRATION.md) - Migrating from previous versions
+- [Contributing Guide](./CONTRIBUTING.md) - How to contribute
+- [Code of Conduct](./CODE_OF_CONDUCT.md) - Community guidelines
 
 ## 🆘 Support
 
