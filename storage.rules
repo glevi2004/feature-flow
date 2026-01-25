@@ -1,0 +1,43 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to get user ID
+    function getUserId() {
+      return request.auth.uid;
+    }
+    
+    // Helper function to check if user is a member of a company
+    function isCompanyMember(companyId) {
+      return isAuthenticated() && 
+             firestore.exists(/databases/(default)/documents/companies/$(companyId)) &&
+             getUserId() in firestore.get(/databases/(default)/documents/companies/$(companyId)).data.members;
+    }
+    
+    // Company logos - only company members can upload/delete
+    match /company-logos/{companyId}/{allPaths=**} {
+      // Read: public (for displaying logos)
+      allow read: if true;
+      
+      // Write: only company members
+      allow write: if isAuthenticated() && 
+                      isCompanyMember(companyId) &&
+                      // File size limit: 5MB
+                      request.resource.size < 5 * 1024 * 1024 &&
+                      // Only allow image types
+                      request.resource.contentType.matches('image/.*');
+      
+      // Delete: only company members
+      allow delete: if isAuthenticated() && isCompanyMember(companyId);
+    }
+    
+    // Deny all other paths
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
