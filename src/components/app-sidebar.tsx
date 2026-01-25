@@ -29,6 +29,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 
 export function AppSidebar() {
   const { user, signOut } = useAuth();
@@ -102,7 +103,10 @@ export function AppSidebar() {
                   )}/dashboard/notifications`}
                 >
                   <Bell className="h-4 w-4" />
-                  Notifications
+                  <span>Notifications</span>
+                  <Badge variant="secondary" className="ml-auto text-[10px] h-4 px-1 bg-blue-100 text-blue-700 border-blue-200">
+                    Soon
+                  </Badge>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -114,7 +118,10 @@ export function AppSidebar() {
                   )}/dashboard/analytics`}
                 >
                   <BarChart3 className="h-4 w-4" />
-                  Analytics
+                  <span>Analytics</span>
+                  <Badge variant="secondary" className="ml-auto text-[10px] h-4 px-1 bg-blue-100 text-blue-700 border-blue-200">
+                    Soon
+                  </Badge>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

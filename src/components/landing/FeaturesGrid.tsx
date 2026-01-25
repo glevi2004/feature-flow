@@ -2,12 +2,9 @@ import {
   MessageSquare,
   Users,
   BarChart3,
-  Target,
   Settings,
   CheckCircle,
-  ArrowRight,
   Kanban,
-  Bell,
   Tag,
 } from "lucide-react";
 

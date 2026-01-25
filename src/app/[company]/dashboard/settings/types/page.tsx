@@ -38,6 +38,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { FeedbackService, FeedbackType } from "@/lib/services/feedback";
+import { useAuthToken } from "@/hooks/use-auth-token";
 
 // Dynamic import to avoid SSR issues
 const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
@@ -98,6 +99,7 @@ const colorOptions = [
 
 export default function TypesSettingsPage() {
   const { user } = useAuth();
+  const { token } = useAuthToken();
   const [companyId, setCompanyId] = useState<string>("");
   const [types, setTypes] = useState<Type[]>([]);
   const [loading, setLoading] = useState(true);
@@ -164,7 +166,7 @@ export default function TypesSettingsPage() {
         name: newTypeName.trim(),
         emoji: newTypeEmoji,
         color: newTypeColor,
-      });
+      }, token || "");
 
       // Add the new type to the local state with count
       const newType: Type = {
@@ -209,7 +211,7 @@ export default function TypesSettingsPage() {
         name: newTypeName.trim(),
         emoji: newTypeEmoji,
         color: newTypeColor,
-      });
+      }, token || "");
 
       // Update the local state
       setTypes(
@@ -238,7 +240,7 @@ export default function TypesSettingsPage() {
   const handleDeleteType = async (typeId: string) => {
     try {
       // Delete the type using the service
-      await FeedbackService.deleteType(typeId, companyId);
+      await FeedbackService.deleteType(typeId, token || "");
 
       // Remove from local state
       setTypes(types.filter((type) => type.id !== typeId));

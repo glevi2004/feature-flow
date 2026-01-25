@@ -33,6 +33,8 @@ import {
 import { FeedbackService } from "@/lib/services/feedback";
 import { TagsService, FeedbackTag } from "@/lib/services/tags";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAuthToken } from "@/hooks/use-auth-token";
+import { useCompanyMembership } from "@/hooks/use-company-membership";
 
 interface PostModalProps {
   post: FeedbackPost | null;
@@ -60,6 +62,8 @@ export function PostModal({
   onPostUpdate,
 }: PostModalProps) {
   const { user, signInWithGoogle } = useAuth();
+  const { token } = useAuthToken();
+  const { isMember } = useCompanyMembership(companyId);
   const [currentPost, setCurrentPost] = useState<FeedbackPost | null>(null);
   const [comments, setComments] = useState<FeedbackComment[]>([]);
   const [newComment, setNewComment] = useState("");
@@ -153,11 +157,15 @@ export function PostModal({
   };
 
   const handleStatusChange = async (newStatus: FeedbackStatus) => {
-    if (!currentPost) return;
+    if (!currentPost || !token || !isMember) return;
 
     try {
       setUpdatingStatus(true);
-      await FeedbackService.updatePostStatus(currentPost.id!, newStatus);
+      await FeedbackService.updatePostStatus(
+        currentPost.id!,
+        newStatus,
+        token
+      );
       const updatedPost = { ...currentPost, status: newStatus };
       setCurrentPost(updatedPost);
       onPostUpdate(updatedPost);
@@ -170,11 +178,11 @@ export function PostModal({
   };
 
   const handleTagsChange = async (tagIds: string[]) => {
-    if (!currentPost) return;
+    if (!currentPost || !token || !isMember) return;
 
     try {
       setUpdatingTags(true);
-      await FeedbackService.updatePostTags(currentPost.id!, tagIds);
+      await FeedbackService.updatePostTags(currentPost.id!, tagIds, token);
       const updatedPost = { ...currentPost, tags: tagIds };
       setCurrentPost(updatedPost);
       onPostUpdate(updatedPost);
@@ -397,81 +405,82 @@ export function PostModal({
             </div>
           </div>
 
-          {/* Right Column - Manage Post */}
-          <div className="w-80 flex-shrink-0 border-l p-6">
-            <h3 className="font-semibold mb-4">Manage Post</h3>
+          {/* Right Column - Manage Post (only for company members) */}
+          {isMember && (
+            <div className="w-80 flex-shrink-0 border-l p-6">
+              <h3 className="font-semibold mb-4">Manage Post</h3>
 
-            <div className="space-y-4">
-              {/* Status */}
-              <div>
-                <Label className="text-sm font-medium">Status</Label>
-                <Select
-                  value={currentPost.status || "Under Review"}
-                  onValueChange={handleStatusChange}
-                  disabled={updatingStatus}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {STATUS_OPTIONS.map((status) => (
-                      <SelectItem key={status.value} value={status.value}>
-                        <div className="flex items-center gap-2">
-                          <div
-                            className={`w-2 h-2 rounded-full ${status.color}`}
-                          />
-                          <span>{status.label}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <div className="space-y-4">
+                {/* Status */}
+                <div>
+                  <Label className="text-sm font-medium">Status</Label>
+                  <Select
+                    value={currentPost.status || "Under Review"}
+                    onValueChange={handleStatusChange}
+                    disabled={updatingStatus || !token}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {STATUS_OPTIONS.map((status) => (
+                        <SelectItem key={status.value} value={status.value}>
+                          <div className="flex items-center gap-2">
+                            <div
+                              className={`w-2 h-2 rounded-full ${status.color}`}
+                            />
+                            <span>{status.label}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              {/* Tags */}
-              <div>
-                <Label className="text-sm font-medium">Tags</Label>
-                <Select
-                  value=""
-                  onValueChange={(tagId) => {
-                    const currentTags = currentPost.tags || [];
-                    if (!currentTags.includes(tagId)) {
-                      handleTagsChange([...currentTags, tagId]);
-                    }
-                  }}
-                  disabled={updatingTags || loadingTags}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Add a tag..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {loadingTags ? (
-                      <SelectItem value="loading" disabled>
-                        Loading tags...
-                      </SelectItem>
-                    ) : tags.length === 0 ? (
-                      <SelectItem value="no-tags" disabled>
-                        No tags available
-                      </SelectItem>
-                    ) : (
-                      tags
-                        .filter(
-                          (tag) => !(currentPost.tags || []).includes(tag.id!)
-                        )
-                        .map((tag) => (
-                          <SelectItem key={tag.id} value={tag.id!}>
-                            <div className="flex items-center gap-2">
-                              <div
-                                className="w-3 h-3 rounded-full flex-shrink-0"
-                                style={{ backgroundColor: tag.color }}
-                              />
-                              <span>{tag.name}</span>
-                            </div>
-                          </SelectItem>
-                        ))
-                    )}
-                  </SelectContent>
-                </Select>
+                {/* Tags */}
+                <div>
+                  <Label className="text-sm font-medium">Tags</Label>
+                  <Select
+                    value=""
+                    onValueChange={(tagId) => {
+                      const currentTags = currentPost.tags || [];
+                      if (!currentTags.includes(tagId)) {
+                        handleTagsChange([...currentTags, tagId]);
+                      }
+                    }}
+                    disabled={updatingTags || loadingTags || !token}
+                  >
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Add a tag..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {loadingTags ? (
+                        <SelectItem value="loading" disabled>
+                          Loading tags...
+                        </SelectItem>
+                      ) : tags.length === 0 ? (
+                        <SelectItem value="no-tags" disabled>
+                          No tags available
+                        </SelectItem>
+                      ) : (
+                        tags
+                          .filter(
+                            (tag) => !(currentPost.tags || []).includes(tag.id!)
+                          )
+                          .map((tag) => (
+                            <SelectItem key={tag.id} value={tag.id!}>
+                              <div className="flex items-center gap-2">
+                                <div
+                                  className="w-3 h-3 rounded-full flex-shrink-0"
+                                  style={{ backgroundColor: tag.color }}
+                                />
+                                <span>{tag.name}</span>
+                              </div>
+                            </SelectItem>
+                          ))
+                      )}
+                    </SelectContent>
+                  </Select>
 
                 {/* Display current tags */}
                 {(currentPost.tags || []).length > 0 && (
@@ -566,6 +575,7 @@ export function PostModal({
               </div>
             </div>
           </div>
+          )}
         </div>
       </div>
     </div>

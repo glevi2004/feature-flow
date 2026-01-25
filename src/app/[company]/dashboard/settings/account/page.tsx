@@ -16,7 +16,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   User,
-  Settings,
   Building2,
   Users,
   Edit3,
@@ -311,7 +310,7 @@ export default function AccountSettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Settings className="h-5 w-5 text-muted-foreground" />
+            <User className="h-5 w-5 text-muted-foreground" />
             Account Information
           </CardTitle>
           <CardDescription>
@@ -337,7 +336,7 @@ export default function AccountSettingsPage() {
           </div>
 
           {/* Delete Account Section */}
-          {/* <div className="pt-4 border-t">
+          <div className="pt-4 border-t">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <h4 className="text-sm font-medium text-destructive">
@@ -397,7 +396,7 @@ export default function AccountSettingsPage() {
                 </AlertDialogContent>
               </AlertDialog>
             </div>
-          </div> */}
+          </div>
         </CardContent>
       </Card>
     </div>

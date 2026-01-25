@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Loader2 } from "lucide-react";
 import { TagsService } from "@/lib/services/tags";
+import { useAuthToken } from "@/hooks/use-auth-token";
 
 interface AddTagDialogProps {
   companyId: string;
@@ -42,10 +43,17 @@ export function AddTagDialog({ companyId, onTagAdded }: AddTagDialogProps) {
   const [color, setColor] = useState("#3B82F6");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { token } = useAuthToken();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    if (!token) {
+      setError("You must be logged in to create a tag");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -58,11 +66,14 @@ export function AddTagDialog({ companyId, onTagAdded }: AddTagDialogProps) {
       }
 
       // Create the tag
-      await TagsService.createTag({
-        companyId,
-        name: name.trim(),
-        color,
-      });
+      await TagsService.createTag(
+        {
+          companyId,
+          name: name.trim(),
+          color,
+        },
+        token
+      );
 
       // Reset form and close dialog
       setName("");

@@ -1,9 +1,7 @@
 import {
-  ArrowRight,
   MessageSquare,
   Users,
   CheckCircle,
-  BarChart3,
 } from "lucide-react";
 
 export function WorkflowSection() {

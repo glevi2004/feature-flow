@@ -42,6 +42,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { ToastContainer, useToast } from "@/components/ui/toast";
 import { usePublicAuth } from "@/contexts/PublicAuthContext";
+import { useAuthToken } from "@/hooks/use-auth-token";
 
 import Image from "next/image";
 import { capitalizeCompanyName } from "@/lib/utils";
@@ -51,6 +52,7 @@ export default function PublicFeedbackPage() {
   const companyName = decodeURIComponent(params.company as string);
   const { toasts, removeToast, showSuccess, showError } = useToast();
   const { user, signInWithGoogle, signOut } = usePublicAuth();
+  const { token } = useAuthToken();
 
   const [posts, setPosts] = useState<FeedbackPost[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<FeedbackPost[]>([]);
@@ -246,22 +248,22 @@ export default function PublicFeedbackPage() {
       return;
     }
 
-    try {
-      const userId = user.uid;
-      await FeedbackService.toggleUpvote(postId, userId);
+    if (!token) {
+      showError("Error", "Unable to authenticate. Please try again.");
+      return;
+    }
 
-      // Update posts array
+    try {
+      const result = await FeedbackService.toggleUpvote(postId, user.uid, token);
+
+      // Update posts array (upvote count is now managed server-side)
       const updatedPosts = posts.map((post) => {
         if (post.id === postId) {
-          const isUpvoted = post.upvotes.includes(userId);
           return {
             ...post,
-            upvotes: isUpvoted
-              ? post.upvotes.filter((id: string) => id !== userId)
-              : [...post.upvotes, userId],
-            upvotesCount: isUpvoted
-              ? post.upvotesCount - 1
-              : post.upvotesCount + 1,
+            upvotesCount: result.upvoted
+              ? post.upvotesCount + 1
+              : post.upvotesCount - 1,
           };
         }
         return post;
@@ -270,15 +272,11 @@ export default function PublicFeedbackPage() {
       // Update filteredPosts array with the same changes
       const updatedFilteredPosts = filteredPosts.map((post) => {
         if (post.id === postId) {
-          const isUpvoted = post.upvotes.includes(userId);
           return {
             ...post,
-            upvotes: isUpvoted
-              ? post.upvotes.filter((id: string) => id !== userId)
-              : [...post.upvotes, userId],
-            upvotesCount: isUpvoted
-              ? post.upvotesCount - 1
-              : post.upvotesCount + 1,
+            upvotesCount: result.upvoted
+              ? post.upvotesCount + 1
+              : post.upvotesCount - 1,
           };
         }
         return post;

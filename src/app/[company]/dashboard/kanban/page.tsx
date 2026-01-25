@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDashboardFilters } from "@/contexts/DashboardFilterContext";
+import { useAuthToken } from "@/hooks/use-auth-token";
 import { CompanyService } from "@/lib/services/company";
 import {
   FeedbackService,
@@ -104,6 +105,7 @@ const BOARD_COLUMNS = [
 
 function BoardPage() {
   const { user } = useAuth();
+  const { token } = useAuthToken();
   const { tagFilter } = useDashboardFilters();
   const [posts, setPosts] = useState<FeedbackPost[]>([]);
   const [types, setTypes] = useState<FeedbackType[]>([]);
@@ -211,11 +213,21 @@ function BoardPage() {
       return;
     }
 
+    if (!token) {
+      console.error("No auth token available");
+      setDraggedPost(null);
+      return;
+    }
+
     try {
       setUpdatingStatus(draggedPost.id!);
 
       // Update the post status
-      await FeedbackService.updatePostStatus(draggedPost.id!, targetStatus);
+      await FeedbackService.updatePostStatus(
+        draggedPost.id!,
+        targetStatus,
+        token
+      );
 
       // Update local state
       setPosts(

@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDashboardFilters } from "@/contexts/DashboardFilterContext";
+import { useAuthToken } from "@/hooks/use-auth-token";
 
 import { CompanyService } from "@/lib/services/company";
 import {
@@ -77,6 +78,7 @@ const STATUS_OPTIONS = [
 
 function DashboardPage() {
   const { user } = useAuth();
+  const { token } = useAuthToken();
   const {
     statusFilter,
     typeFilter,
@@ -312,9 +314,14 @@ function DashboardPage() {
     postId: string,
     newStatus: FeedbackStatus
   ) => {
+    if (!token) {
+      console.error("No auth token available");
+      return;
+    }
+
     try {
       setUpdatingStatus(postId);
-      await FeedbackService.updatePostStatus(postId, newStatus);
+      await FeedbackService.updatePostStatus(postId, newStatus, token);
 
       // Update local state
       const updatedPosts = posts.map((post) =>

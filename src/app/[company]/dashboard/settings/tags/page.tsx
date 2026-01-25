@@ -34,6 +34,7 @@ import {
 import { TagsService, FeedbackTag } from "@/lib/services/tags";
 import { useAuth } from "@/contexts/AuthContext";
 import { CompanyService } from "@/lib/services/company";
+import { useAuthToken } from "@/hooks/use-auth-token";
 
 interface Tag extends FeedbackTag {
   count: number;
@@ -56,6 +57,7 @@ const colorOptions = [
 
 export default function TagsSettingsPage() {
   const { user } = useAuth();
+  const { token } = useAuthToken();
   const [companyId, setCompanyId] = useState<string>("");
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
@@ -112,7 +114,7 @@ export default function TagsSettingsPage() {
         companyId,
         name: newTagName.trim(),
         color: newTagColor,
-      });
+      }, token || "");
 
       // Add the new tag to the local state
       const newTag: Tag = {
@@ -154,7 +156,7 @@ export default function TagsSettingsPage() {
       await TagsService.updateTag(editingTag.id, {
         name: newTagName.trim(),
         color: newTagColor,
-      });
+      }, token || "");
 
       // Update the local state
       setTags(
@@ -177,7 +179,7 @@ export default function TagsSettingsPage() {
   const handleDeleteTag = async (tagId: string) => {
     try {
       // Delete the tag using the service
-      await TagsService.deleteTag(tagId, companyId);
+      await TagsService.deleteTag(tagId, token || "");
 
       // Remove from local state
       setTags(tags.filter((tag) => tag.id !== tagId));
