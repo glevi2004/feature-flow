@@ -90,13 +90,23 @@ export default function PublicFeedbackPage() {
       setCompanyId(companyData.id);
       setCompanyData(companyData);
 
-      const [initialPostsData, typesData] = await Promise.all([
-        FeedbackService.getCompanyPosts(companyData.id),
-        FeedbackService.getCompanyTypes(companyData.id),
-      ]);
+      // Load posts
+      let initialPostsData: FeedbackPost[] = [];
+      try {
+        initialPostsData = await FeedbackService.getCompanyPosts(companyData.id);
+        setPosts(initialPostsData);
+      } catch (postsError) {
+        console.error("Error loading posts:", postsError);
+      }
 
-      setPosts(initialPostsData);
-      setTypes(typesData);
+      // Load types separately to isolate errors
+      let typesData: FeedbackType[] = [];
+      try {
+        typesData = await FeedbackService.getCompanyTypes(companyData.id);
+        setTypes(typesData);
+      } catch (typesError) {
+        console.error("Error loading types:", typesError);
+      }
     } catch (error) {
       console.error("Error loading company data:", error);
     } finally {

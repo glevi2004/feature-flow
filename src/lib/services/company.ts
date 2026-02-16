@@ -170,12 +170,16 @@ export class CompanyService {
       );
       if (directoryDoc.exists()) {
         const directoryData = directoryDoc.data() as CompanyDirectoryEntry;
-        // Get full company data if user is a member
-        const company = await this.getCompany(directoryData.companyId);
-        if (company) {
-          return company;
+        // Try to get full company data (will succeed if user is member or portal is public)
+        try {
+          const company = await this.getCompany(directoryData.companyId);
+          if (company) {
+            return company;
+          }
+        } catch (companyError) {
+          // Permission denied or other error - return minimal public data from directory
         }
-        // If not a member, return minimal public data
+        // Return minimal public data from directory
         return {
           id: directoryData.companyId,
           name: directoryData.slug,
@@ -184,15 +188,35 @@ export class CompanyService {
         } as Partial<CompanyData> as CompanyData;
       }
 
-      // Fallback: Query companies collection (for backward compatibility)
+      // Fallback: Query companies collection with publicPortalEnabled constraint
+      // (required by Firestore security rules for non-member access)
       const q = query(
         collection(db, "companies"),
-        where("name", "==", normalizedName)
+        where("name", "==", normalizedName),
+        where("publicPortalEnabled", "==", true)
       );
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
-        const doc = querySnapshot.docs[0];
-        return { id: doc.id, ...doc.data() } as CompanyData;
+        const companyDoc = querySnapshot.docs[0];
+        const companyData = {
+          id: companyDoc.id,
+          ...companyDoc.data(),
+        } as CompanyData;
+
+        // Self-heal: create missing directory entry for future lookups
+        try {
+          await setDoc(doc(db, "company_directory", normalizedName), {
+            slug: normalizedName,
+            companyId: companyDoc.id,
+            displayName: companyData.name,
+            logoUrl: companyData.logo || null,
+            publicPortalEnabled: true,
+          });
+        } catch {
+          // May fail for unauthenticated users - that's OK
+        }
+
+        return companyData;
       }
       return null;
     } catch (error) {

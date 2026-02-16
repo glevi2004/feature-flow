@@ -12,204 +12,68 @@ service cloud.firestore {
       return request.auth.uid;
     }
 
-    // Helper function to check if user is a member of a company
-    function isCompanyMember(companyId) {
-      return isAuthenticated() &&
-             exists(/databases/$(database)/documents/companies/$(companyId)) &&
-             getUserId() in get(/databases/$(database)/documents/companies/$(companyId)).data.members;
-    }
-
-    // Helper function to check if user is the creator/owner of a company
-    function isCompanyOwner(companyId) {
-      return isAuthenticated() &&
-             exists(/databases/$(database)/documents/companies/$(companyId)) &&
-             get(/databases/$(database)/documents/companies/$(companyId)).data.createdBy == getUserId();
-    }
-
-    // Helper function to check if company portal is enabled (for public reads)
-    function isCompanyPortalEnabled(companyId) {
-      return exists(/databases/$(database)/documents/companies/$(companyId)) &&
-             get(/databases/$(database)/documents/companies/$(companyId)).data.publicPortalEnabled == true;
-    }
-
-    // Helper function to validate post schema
-    function isValidPost(data) {
-      return data.keys().hasAll(['companyId', 'userId', 'title', 'description', 'types', 'tags', 'status']) &&
-             data.companyId is string &&
-             data.userId is string &&
-             data.title is string &&
-             data.description is string &&
-             data.types is list &&
-             data.tags is list &&
-             data.status is string &&
-             data.title.size() > 0 &&
-             data.title.size() <= 200 &&
-             data.description.size() > 0 &&
-             data.description.size() <= 5000 &&
-             data.types.size() <= 5 &&
-             data.tags.size() <= 10 &&
-             data.status in ['Under Review', 'Accepted', 'Rejected', 'Planned', 'Completed'];
-    }
-
-    // Helper function to validate comment schema
-    function isValidComment(data) {
-      return data.keys().hasAll(['postId', 'companyId', 'userId', 'userName', 'content']) &&
-             data.postId is string &&
-             data.companyId is string &&
-             data.userId is string &&
-             data.userName is string &&
-             data.content is string &&
-             data.content.size() > 0 &&
-             data.content.size() <= 2000;
-    }
-
     // Users can only read/write their own user document
     match /users/{userId} {
       allow read: if isAuthenticated() && getUserId() == userId;
       allow write: if isAuthenticated() && getUserId() == userId;
     }
 
-    // Onboarding data - users can only read/write their own onboarding data
-    match /onboarding/{onboardingId} {
-      allow read: if isAuthenticated() &&
-                     exists(/databases/$(database)/documents/onboarding/$(onboardingId)) &&
-                     get(/databases/$(database)/documents/onboarding/$(onboardingId)).data.userId == getUserId();
-      allow create: if isAuthenticated() &&
-                       request.resource.data.userId == getUserId();
-      allow update, delete: if isAuthenticated() &&
-                               get(/databases/$(database)/documents/onboarding/$(onboardingId)).data.userId == getUserId();
-    }
-
-    // Company directory - public read for name validation, write by authenticated users
+    // Company directory - public read
     match /company_directory/{slug} {
       allow read: if true;
-      allow create: if isAuthenticated();
-      allow update, delete: if isAuthenticated() &&
-                               exists(/databases/$(database)/documents/company_directory/$(slug)) &&
-                               exists(/databases/$(database)/documents/companies/$(resource.data.companyId)) &&
-                               isCompanyMember(resource.data.companyId);
+      allow write: if isAuthenticated();
     }
 
-    // Companies - readable by members OR public if portal enabled
+    // Companies - public read if portal enabled, authenticated users can read all
     match /companies/{companyId} {
-      allow read: if isCompanyMember(companyId) ||
-                     isCompanyPortalEnabled(companyId);
-      allow create: if isAuthenticated() &&
-                       request.resource.data.createdBy == getUserId() &&
-                       request.resource.data.members.hasOnly([getUserId()]);
-      allow update: if isCompanyMember(companyId);
-      allow delete: if isCompanyOwner(companyId);
+      allow read: if isAuthenticated() || resource.data.publicPortalEnabled == true;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAuthenticated();
     }
 
-    // Organizations - private, members only
+    // Organizations - authenticated users only
     match /organizations/{organizationId} {
-      allow read: if isAuthenticated() &&
-                     exists(/databases/$(database)/documents/organizations/$(organizationId)) &&
-                     (getUserId() in get(/databases/$(database)/documents/organizations/$(organizationId)).data.members ||
-                      get(/databases/$(database)/documents/organizations/$(organizationId)).data.owner == getUserId());
-      allow create: if isAuthenticated() &&
-                       request.resource.data.owner == getUserId() &&
-                       request.resource.data.members.hasOnly([getUserId()]);
-      allow update: if isAuthenticated() &&
-                       exists(/databases/$(database)/documents/organizations/$(organizationId)) &&
-                       (getUserId() in get(/databases/$(database)/documents/organizations/$(organizationId)).data.members ||
-                        get(/databases/$(database)/documents/organizations/$(organizationId)).data.owner == getUserId());
-      allow delete: if isAuthenticated() &&
-                       exists(/databases/$(database)/documents/organizations/$(organizationId)) &&
-                       get(/databases/$(database)/documents/organizations/$(organizationId)).data.owner == getUserId();
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
     }
 
-    // Feedback posts - readable by company members OR public if portal enabled
+    // Feedback posts - public read, authenticated create
     match /feedback_posts/{postId} {
-      allow read: if isCompanyMember(resource.data.companyId) ||
-                     isCompanyPortalEnabled(resource.data.companyId);
-
-      allow create: if isAuthenticated() &&
-                       isValidPost(request.resource.data) &&
-                       request.resource.data.userId == getUserId() &&
-                       exists(/databases/$(database)/documents/companies/$(request.resource.data.companyId)) &&
-                       !request.resource.data.keys().hasAny(['upvotesCount', 'commentsCount', 'upvotes']);
-
-      allow update: if isAuthenticated() &&
-                       exists(/databases/$(database)/documents/feedback_posts/$(postId)) &&
-                       (
-                         (resource.data.userId == getUserId() &&
-                          resource.data.status == 'Under Review' &&
-                          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['title', 'description', 'types', 'updatedAt'])) ||
-                         (isCompanyMember(resource.data.companyId) &&
-                          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'tags', 'updatedAt']) &&
-                          (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['status']) ||
-                           request.resource.data.status in ['Under Review', 'Accepted', 'Rejected', 'Planned', 'Completed']))
-                       ) &&
-                       !request.resource.data.diff(resource.data).affectedKeys().hasAny(['upvotesCount', 'commentsCount', 'upvotes']);
-
-      allow delete: if isAuthenticated() &&
-                        exists(/databases/$(database)/documents/feedback_posts/$(postId)) &&
-                        resource.data.userId == getUserId() &&
-                        resource.data.status == 'Under Review';
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAuthenticated();
     }
 
-    // Feedback comments - readable by company members OR public if portal enabled
+    // Feedback comments - public read, authenticated create
     match /feedback_comments/{commentId} {
-      allow read: if isCompanyMember(resource.data.companyId) ||
-                     isCompanyPortalEnabled(resource.data.companyId);
-
-      allow create: if isAuthenticated() &&
-                       isValidComment(request.resource.data) &&
-                       request.resource.data.userId == getUserId() &&
-                       exists(/databases/$(database)/documents/feedback_posts/$(request.resource.data.postId));
-
-      allow update, delete: if isAuthenticated() &&
-                               exists(/databases/$(database)/documents/feedback_comments/$(commentId)) &&
-                               resource.data.userId == getUserId();
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAuthenticated();
     }
 
-    // Feedback types - readable by company members OR public if portal enabled
+    // Feedback types - public read, authenticated create
     match /feedback_types/{typeId} {
-      allow read: if isCompanyMember(resource.data.companyId) ||
-                     isCompanyPortalEnabled(resource.data.companyId);
-
-      allow update, delete: if isAuthenticated() &&
-                      isCompanyMember(resource.data.companyId);
-
-      allow create: if isAuthenticated() &&
-                       request.resource.data.keys().hasAll(['companyId', 'name', 'emoji']) &&
-                       request.resource.data.companyId is string &&
-                       request.resource.data.name is string &&
-                       request.resource.data.emoji is string &&
-                       request.resource.data.name.size() > 0 &&
-                       request.resource.data.name.size() <= 50 &&
-                       exists(/databases/$(database)/documents/companies/$(request.resource.data.companyId)) &&
-                       isCompanyMember(request.resource.data.companyId);
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAuthenticated();
     }
 
-    // Feedback tags - readable by company members OR public if portal enabled
+    // Feedback tags - public read, authenticated create
     match /feedback_tags/{tagId} {
-      allow read: if !resource.data.keys().hasAny(['companyId']) ||
-                     isCompanyMember(resource.data.companyId) ||
-                     isCompanyPortalEnabled(resource.data.companyId);
-
-      allow update, delete: if isAuthenticated() &&
-                      (!resource.data.keys().hasAny(['companyId']) ||
-                       isCompanyMember(resource.data.companyId));
-
-      allow create: if isAuthenticated() &&
-                       request.resource.data.keys().hasAll(['name', 'color']) &&
-                       request.resource.data.name is string &&
-                       request.resource.data.color is string &&
-                       request.resource.data.name.size() > 0 &&
-                       request.resource.data.name.size() <= 50 &&
-                       (!request.resource.data.keys().hasAny(['companyId']) ||
-                        (request.resource.data.companyId is string &&
-                         exists(/databases/$(database)/documents/companies/$(request.resource.data.companyId)) &&
-                         isCompanyMember(request.resource.data.companyId)));
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+      allow delete: if isAuthenticated();
     }
 
-    // Upvotes subcollection - for tracking individual upvotes
+    // Upvotes subcollection
     match /feedback_posts/{postId}/upvotes/{userId} {
       allow read: if true;
-      allow create: if isAuthenticated() && getUserId() == userId;
-      allow delete: if isAuthenticated() && getUserId() == userId;
+      allow write: if isAuthenticated() && getUserId() == userId;
     }
   }
 }
