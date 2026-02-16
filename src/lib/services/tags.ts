@@ -189,9 +189,19 @@ export class TagsService {
   // Initialize default tags for a company if none exist
   static async initializeDefaultTags(companyId: string, authToken?: string) {
     try {
-      // Check if company already has tags
-      const existing = await this.getCompanyTags(companyId);
-      if (existing.length > 0) return existing;
+      // Check if company already has tags (simple query without orderBy to avoid index requirement)
+      const existingQuery = query(
+        collection(db, "feedback_tags"),
+        where("companyId", "==", companyId)
+      );
+      const existingSnapshot = await getDocs(existingQuery);
+      if (!existingSnapshot.empty) {
+        const existing: FeedbackTag[] = [];
+        existingSnapshot.forEach((doc) => {
+          existing.push({ id: doc.id, ...doc.data() } as FeedbackTag);
+        });
+        return existing;
+      }
 
       const defaultTags: Array<Pick<FeedbackTag, "name" | "color">> = [
         { name: "High Priority", color: "#ef4444" },
