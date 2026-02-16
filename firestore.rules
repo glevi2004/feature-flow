@@ -1,37 +1,37 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
+
     // Helper function to check if user is authenticated
     function isAuthenticated() {
       return request.auth != null;
     }
-    
+
     // Helper function to get user ID
     function getUserId() {
       return request.auth.uid;
     }
-    
+
     // Helper function to check if user is a member of a company
     function isCompanyMember(companyId) {
-      return isAuthenticated() && 
+      return isAuthenticated() &&
              exists(/databases/$(database)/documents/companies/$(companyId)) &&
              getUserId() in get(/databases/$(database)/documents/companies/$(companyId)).data.members;
     }
-    
+
     // Helper function to check if user is the creator/owner of a company
     function isCompanyOwner(companyId) {
-      return isAuthenticated() && 
+      return isAuthenticated() &&
              exists(/databases/$(database)/documents/companies/$(companyId)) &&
              get(/databases/$(database)/documents/companies/$(companyId)).data.createdBy == getUserId();
     }
-    
+
     // Helper function to check if company portal is enabled (for public reads)
     function isCompanyPortalEnabled(companyId) {
-      let company = get(/databases/$(database)/documents/companies/$(companyId)).data;
-      return company.publicPortalEnabled == true;
+      return exists(/databases/$(database)/documents/companies/$(companyId)) &&
+             get(/databases/$(database)/documents/companies/$(companyId)).data.publicPortalEnabled == true;
     }
-    
+
     // Helper function to validate post schema
     function isValidPost(data) {
       return data.keys().hasAll(['companyId', 'userId', 'title', 'description', 'types', 'tags', 'status']) &&
@@ -50,7 +50,7 @@ service cloud.firestore {
              data.tags.size() <= 10 &&
              data.status in ['Under Review', 'Accepted', 'Rejected', 'Planned', 'Completed'];
     }
-    
+
     // Helper function to validate comment schema
     function isValidComment(data) {
       return data.keys().hasAll(['postId', 'companyId', 'userId', 'userName', 'content']) &&
@@ -62,143 +62,115 @@ service cloud.firestore {
              data.content.size() > 0 &&
              data.content.size() <= 2000;
     }
-    
+
     // Users can only read/write their own user document
     match /users/{userId} {
       allow read: if isAuthenticated() && getUserId() == userId;
       allow write: if isAuthenticated() && getUserId() == userId;
     }
-    
+
     // Onboarding data - users can only read/write their own onboarding data
     match /onboarding/{onboardingId} {
-      allow read: if isAuthenticated() && 
+      allow read: if isAuthenticated() &&
                      exists(/databases/$(database)/documents/onboarding/$(onboardingId)) &&
                      get(/databases/$(database)/documents/onboarding/$(onboardingId)).data.userId == getUserId();
-      allow create: if isAuthenticated() && 
+      allow create: if isAuthenticated() &&
                        request.resource.data.userId == getUserId();
-      allow update, delete: if isAuthenticated() && 
+      allow update, delete: if isAuthenticated() &&
                                get(/databases/$(database)/documents/onboarding/$(onboardingId)).data.userId == getUserId();
     }
-    
+
     // Company directory - public read for name validation, write by authenticated users
     match /company_directory/{slug} {
-      allow read: if true; // Public read for name validation
+      allow read: if true;
       allow create: if isAuthenticated();
       allow update, delete: if isAuthenticated() &&
                                exists(/databases/$(database)/documents/company_directory/$(slug)) &&
                                exists(/databases/$(database)/documents/companies/$(resource.data.companyId)) &&
                                isCompanyMember(resource.data.companyId);
     }
-    
+
     // Companies - private, members only
     match /companies/{companyId} {
-      // Only members can read company data
       allow read: if isCompanyMember(companyId);
-      // Only authenticated users can create companies (they become owner)
-      allow create: if isAuthenticated() && 
+      allow create: if isAuthenticated() &&
                        request.resource.data.createdBy == getUserId() &&
                        request.resource.data.members.hasOnly([getUserId()]);
-      // Only members can update, but only owner can delete
       allow update: if isCompanyMember(companyId);
       allow delete: if isCompanyOwner(companyId);
     }
-    
+
     // Organizations - private, members only
     match /organizations/{organizationId} {
-      allow read: if isAuthenticated() && 
+      allow read: if isAuthenticated() &&
                      exists(/databases/$(database)/documents/organizations/$(organizationId)) &&
                      (getUserId() in get(/databases/$(database)/documents/organizations/$(organizationId)).data.members ||
                       get(/databases/$(database)/documents/organizations/$(organizationId)).data.owner == getUserId());
-      allow create: if isAuthenticated() && 
+      allow create: if isAuthenticated() &&
                        request.resource.data.owner == getUserId() &&
                        request.resource.data.members.hasOnly([getUserId()]);
-      allow update: if isAuthenticated() && 
+      allow update: if isAuthenticated() &&
                        exists(/databases/$(database)/documents/organizations/$(organizationId)) &&
                        (getUserId() in get(/databases/$(database)/documents/organizations/$(organizationId)).data.members ||
                         get(/databases/$(database)/documents/organizations/$(organizationId)).data.owner == getUserId());
-      allow delete: if isAuthenticated() && 
+      allow delete: if isAuthenticated() &&
                        exists(/databases/$(database)/documents/organizations/$(organizationId)) &&
                        get(/databases/$(database)/documents/organizations/$(organizationId)).data.owner == getUserId();
     }
-    
-    // Feedback posts
+
+    // Feedback posts - readable by company members OR public if portal enabled
     match /feedback_posts/{postId} {
-      // Public read if company portal is enabled
-      allow read: if !exists(/databases/$(database)/documents/feedback_posts/$(postId)) ||
-                     (exists(/databases/$(database)/documents/feedback_posts/$(postId)) &&
-                      exists(/databases/$(database)/documents/companies/$(resource.data.companyId)) &&
-                      isCompanyPortalEnabled(resource.data.companyId));
-      
-      // Create: authenticated users, valid schema, must be for valid company
+      allow read: if isCompanyMember(resource.data.companyId) ||
+                     isCompanyPortalEnabled(resource.data.companyId);
+
       allow create: if isAuthenticated() &&
                        isValidPost(request.resource.data) &&
                        request.resource.data.userId == getUserId() &&
                        exists(/databases/$(database)/documents/companies/$(request.resource.data.companyId)) &&
-                       // Don't allow setting upvotesCount/commentsCount on create
                        !request.resource.data.keys().hasAny(['upvotesCount', 'commentsCount', 'upvotes']);
-      
-      // Update: author can edit title/description/types when status is "Under Review"
-      //         company members can update status/tags
+
       allow update: if isAuthenticated() &&
                        exists(/databases/$(database)/documents/feedback_posts/$(postId)) &&
                        (
-                         // Author can edit their own post if under review
                          (resource.data.userId == getUserId() &&
                           resource.data.status == 'Under Review' &&
-                          // Only allow updating title, description, types
                           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['title', 'description', 'types', 'updatedAt'])) ||
-                         // Company members can update status and tags
                          (isCompanyMember(resource.data.companyId) &&
                           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'tags', 'updatedAt']) &&
-                          // Validate status value
                           (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['status']) ||
                            request.resource.data.status in ['Under Review', 'Accepted', 'Rejected', 'Planned', 'Completed']))
                        ) &&
-                       // Prevent tampering with counters
                        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['upvotesCount', 'commentsCount', 'upvotes']);
-      
-      // Delete: only author when status is "Under Review"
+
       allow delete: if isAuthenticated() &&
                         exists(/databases/$(database)/documents/feedback_posts/$(postId)) &&
                         resource.data.userId == getUserId() &&
                         resource.data.status == 'Under Review';
     }
-    
-    // Feedback comments
+
+    // Feedback comments - readable by company members OR public if portal enabled
     match /feedback_comments/{commentId} {
-      // Public read if company portal is enabled
-      allow read: if !exists(/databases/$(database)/documents/feedback_comments/$(commentId)) ||
-                     (exists(/databases/$(database)/documents/feedback_comments/$(commentId)) &&
-                      exists(/databases/$(database)/documents/feedback_posts/$(resource.data.postId)) &&
-                      exists(/databases/$(database)/documents/companies/$(resource.data.companyId)) &&
-                      isCompanyPortalEnabled(resource.data.companyId));
-      
-      // Create: authenticated users, valid schema
+      allow read: if isCompanyMember(resource.data.companyId) ||
+                     isCompanyPortalEnabled(resource.data.companyId);
+
       allow create: if isAuthenticated() &&
                        isValidComment(request.resource.data) &&
                        request.resource.data.userId == getUserId() &&
                        exists(/databases/$(database)/documents/feedback_posts/$(request.resource.data.postId));
-      
-      // Update/Delete: only author
+
       allow update, delete: if isAuthenticated() &&
                                exists(/databases/$(database)/documents/feedback_comments/$(commentId)) &&
                                resource.data.userId == getUserId();
     }
-    
-    // Feedback types - public read if portal enabled, write only by company members
+
+    // Feedback types - readable by company members OR public if portal enabled
     match /feedback_types/{typeId} {
-      // Public read if company portal is enabled
-      allow read: if !exists(/databases/$(database)/documents/feedback_types/$(typeId)) ||
-                     (exists(/databases/$(database)/documents/feedback_types/$(typeId)) &&
-                      exists(/databases/$(database)/documents/companies/$(resource.data.companyId)) &&
-                      isCompanyPortalEnabled(resource.data.companyId));
-      
-      // Write: only company members
-      allow write: if isAuthenticated() &&
-                      exists(/databases/$(database)/documents/feedback_types/$(typeId)) &&
+      allow read: if isCompanyMember(resource.data.companyId) ||
+                     isCompanyPortalEnabled(resource.data.companyId);
+
+      allow update, delete: if isAuthenticated() &&
                       isCompanyMember(resource.data.companyId);
-      
-      // Create: only company members, valid schema
+
       allow create: if isAuthenticated() &&
                        request.resource.data.keys().hasAll(['companyId', 'name', 'emoji']) &&
                        request.resource.data.companyId is string &&
@@ -209,23 +181,17 @@ service cloud.firestore {
                        exists(/databases/$(database)/documents/companies/$(request.resource.data.companyId)) &&
                        isCompanyMember(request.resource.data.companyId);
     }
-    
-    // Feedback tags - public read if portal enabled, write only by company members
+
+    // Feedback tags - readable by company members OR public if portal enabled
     match /feedback_tags/{tagId} {
-      // Public read if company portal is enabled (or if no companyId - default tags)
-      allow read: if !exists(/databases/$(database)/documents/feedback_tags/$(tagId)) ||
-                     (exists(/databases/$(database)/documents/feedback_tags/$(tagId)) &&
-                      (!resource.data.keys().hasAny(['companyId']) ||
-                       (exists(/databases/$(database)/documents/companies/$(resource.data.companyId)) &&
-                        isCompanyPortalEnabled(resource.data.companyId))));
-      
-      // Write: only company members (or server for default tags)
-      allow write: if isAuthenticated() &&
-                      exists(/databases/$(database)/documents/feedback_tags/$(tagId)) &&
+      allow read: if !resource.data.keys().hasAny(['companyId']) ||
+                     isCompanyMember(resource.data.companyId) ||
+                     isCompanyPortalEnabled(resource.data.companyId);
+
+      allow update, delete: if isAuthenticated() &&
                       (!resource.data.keys().hasAny(['companyId']) ||
                        isCompanyMember(resource.data.companyId));
-      
-      // Create: only company members, valid schema
+
       allow create: if isAuthenticated() &&
                        request.resource.data.keys().hasAll(['name', 'color']) &&
                        request.resource.data.name is string &&
@@ -237,10 +203,10 @@ service cloud.firestore {
                          exists(/databases/$(database)/documents/companies/$(request.resource.data.companyId)) &&
                          isCompanyMember(request.resource.data.companyId)));
     }
-    
+
     // Upvotes subcollection - for tracking individual upvotes
     match /feedback_posts/{postId}/upvotes/{userId} {
-      allow read: if true; // Public read for upvote status
+      allow read: if true;
       allow create: if isAuthenticated() && getUserId() == userId;
       allow delete: if isAuthenticated() && getUserId() == userId;
     }

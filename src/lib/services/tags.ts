@@ -71,20 +71,18 @@ export class TagsService {
     }
   }
 
-  // Get all tags (including default ones without companyId)
+  // Get all tags for a company
   static async getAllTags(companyId: string) {
     try {
-      // Get all tags and filter for default ones (without companyId)
-      const allTagsQuery = query(collection(db, "feedback_tags"));
-      const allTagsSnapshot = await getDocs(allTagsQuery);
+      const companyTagsQuery = query(
+        collection(db, "feedback_tags"),
+        where("companyId", "==", companyId)
+      );
+      const companyTagsSnapshot = await getDocs(companyTagsQuery);
       const allTags: FeedbackTag[] = [];
 
-      allTagsSnapshot.forEach((doc) => {
-        const tagData = doc.data() as FeedbackTag;
-        // Include tags that are either default (no companyId) or belong to this company
-        if (!tagData.companyId || tagData.companyId === companyId) {
-          allTags.push({ id: doc.id, ...tagData });
-        }
+      companyTagsSnapshot.forEach((doc) => {
+        allTags.push({ id: doc.id, ...doc.data() } as FeedbackTag);
       });
 
       // Sort by name
@@ -98,17 +96,15 @@ export class TagsService {
   // Check if a tag name already exists for a company
   static async isTagNameExists(companyId: string, name: string) {
     try {
-      // Get all tags and check for name conflicts
-      const allTagsQuery = query(collection(db, "feedback_tags"));
-      const allTagsSnapshot = await getDocs(allTagsQuery);
+      const companyTagsQuery = query(
+        collection(db, "feedback_tags"),
+        where("companyId", "==", companyId)
+      );
+      const companyTagsSnapshot = await getDocs(companyTagsQuery);
 
-      for (const doc of allTagsSnapshot.docs) {
+      for (const doc of companyTagsSnapshot.docs) {
         const tagData = doc.data() as FeedbackTag;
-        // Check if name exists in default tags or company-specific tags
-        if (
-          tagData.name.toLowerCase() === name.toLowerCase() &&
-          (!tagData.companyId || tagData.companyId === companyId)
-        ) {
+        if (tagData.name.toLowerCase() === name.toLowerCase()) {
           return true;
         }
       }
