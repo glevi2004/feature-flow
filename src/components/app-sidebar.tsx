@@ -21,8 +21,7 @@ import {
   Kanban,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState, useEffect, useCallback } from "react";
-import { OnboardingService } from "@/lib/services/onboarding";
+import { useParams } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,26 +32,9 @@ import { Badge } from "@/components/ui/badge";
 
 export function AppSidebar() {
   const { user, signOut } = useAuth();
-  const [companyName, setCompanyName] = useState("");
-
-  const loadCompanyName = useCallback(async () => {
-    try {
-      const onboardingData = await OnboardingService.getOnboardingData(
-        user!.uid
-      );
-      if (onboardingData?.companyName) {
-        setCompanyName(onboardingData.companyName);
-      }
-    } catch (error) {
-      console.error("Error loading company name:", error);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (user) {
-      loadCompanyName();
-    }
-  }, [user, loadCompanyName]);
+  const params = useParams();
+  const companySlug = typeof params.company === "string" ? params.company : "";
+  const encodedCompany = encodeURIComponent(companySlug);
 
   return (
     <Sidebar>
@@ -71,9 +53,7 @@ export function AppSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <Link
-                  href={`/${encodeURIComponent(
-                    companyName || ""
-                  )}/dashboard/kanban`}
+                  href={`/${encodedCompany}/dashboard/kanban`}
                 >
                   <Kanban className="h-4 w-4" />
                   Kanban
@@ -83,7 +63,7 @@ export function AppSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <Link
-                  href={`/${encodeURIComponent(companyName || "")}`}
+                  href={`/${encodedCompany}`}
                   target="_blank"
                 >
                   <Globe className="h-4 w-4" />
@@ -98,9 +78,7 @@ export function AppSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <Link
-                  href={`/${encodeURIComponent(
-                    companyName || ""
-                  )}/dashboard/notifications`}
+                  href={`/${encodedCompany}/dashboard/notifications`}
                 >
                   <Bell className="h-4 w-4" />
                   <span>Notifications</span>
@@ -113,9 +91,7 @@ export function AppSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <Link
-                  href={`/${encodeURIComponent(
-                    companyName || ""
-                  )}/dashboard/analytics`}
+                  href={`/${encodedCompany}/dashboard/analytics`}
                 >
                   <BarChart3 className="h-4 w-4" />
                   <span>Analytics</span>
@@ -128,9 +104,7 @@ export function AppSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <Link
-                  href={`/${encodeURIComponent(
-                    companyName || ""
-                  )}/dashboard/settings`}
+                  href={`/${encodedCompany}/dashboard/settings`}
                 >
                   <Settings className="h-4 w-4" />
                   Settings
@@ -170,9 +144,7 @@ export function AppSidebar() {
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuItem asChild>
               <Link
-                href={`/${encodeURIComponent(
-                  companyName || ""
-                )}/dashboard/settings/account`}
+                href={`/${encodedCompany}/dashboard/settings/account`}
                 className="flex items-center gap-2"
               >
                 <User className="h-4 w-4" />

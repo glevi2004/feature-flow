@@ -18,18 +18,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useParams } from "next/navigation";
 
 export default function SettingsPage() {
-  const pathname = usePathname();
-  const companyName = pathname.split("/")[1]; // Extract company name from URL
+  const params = useParams();
+  const companySlug = typeof params.company === "string" ? params.company : "";
+  const encodedCompany = encodeURIComponent(companySlug);
 
   const settingsOptions = [
     {
       title: "Company",
       description: "Manage company information, branding, and general settings",
       icon: Building2,
-      href: `/${companyName}/dashboard/settings/company`,
+      href: `/${encodedCompany}/dashboard/settings/company`,
       color: "text-blue-500",
       bgColor: "bg-blue-500/10",
     },
@@ -37,7 +38,7 @@ export default function SettingsPage() {
       title: "Organization",
       description: "Manage team members, roles, and permissions",
       icon: Users,
-      href: `/${companyName}/dashboard/settings/organization`,
+      href: `/${encodedCompany}/dashboard/settings/organization`,
       color: "text-green-500",
       bgColor: "bg-green-500/10",
     },
@@ -45,7 +46,7 @@ export default function SettingsPage() {
       title: "Feedback Site",
       description: "Customize your public feedback portal and branding",
       icon: Globe,
-      href: `/${companyName}/dashboard/settings/feedback-site`,
+      href: `/${encodedCompany}/dashboard/settings/feedback-site`,
       color: "text-purple-500",
       bgColor: "bg-purple-500/10",
     },
@@ -53,7 +54,7 @@ export default function SettingsPage() {
       title: "Statuses",
       description: "Configure workflow statuses and their colors",
       icon: Radio,
-      href: `/${companyName}/dashboard/settings/statuses`,
+      href: `/${encodedCompany}/dashboard/settings/statuses`,
       color: "text-orange-500",
       bgColor: "bg-orange-500/10",
     },
@@ -61,7 +62,7 @@ export default function SettingsPage() {
       title: "Types",
       description: "Manage feedback types and categories",
       icon: FileText,
-      href: `/${companyName}/dashboard/settings/types`,
+      href: `/${encodedCompany}/dashboard/settings/types`,
       color: "text-indigo-500",
       bgColor: "bg-indigo-500/10",
     },
@@ -69,7 +70,7 @@ export default function SettingsPage() {
       title: "Tags",
       description: "Create and manage tags for organizing feedback",
       icon: Tag,
-      href: `/${companyName}/dashboard/settings/tags`,
+      href: `/${encodedCompany}/dashboard/settings/tags`,
       color: "text-pink-500",
       bgColor: "bg-pink-500/10",
     },
@@ -77,7 +78,7 @@ export default function SettingsPage() {
       title: "Notifications",
       description: "Configure email alerts and notification preferences",
       icon: Bell,
-      href: `/${companyName}/dashboard/settings/notifications`,
+      href: `/${encodedCompany}/dashboard/settings/notifications`,
       color: "text-cyan-500",
       bgColor: "bg-cyan-500/10",
     },

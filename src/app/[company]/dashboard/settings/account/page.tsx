@@ -103,11 +103,11 @@ export default function AccountSettingsPage() {
   };
 
   const navigateToCompanySettings = () => {
-    router.push(`/${companySlugName}/dashboard/settings/company`);
+    router.push(`/${encodeURIComponent(companySlugName)}/dashboard/settings/company`);
   };
 
   const navigateToOrganizationSettings = () => {
-    router.push(`/${companySlugName}/dashboard/settings/organization`);
+    router.push(`/${encodeURIComponent(companySlugName)}/dashboard/settings/organization`);
   };
 
   const handleDeleteAccount = async () => {

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useParams } from "next/navigation";
 import {
   House,
   Kanban,
@@ -73,6 +73,17 @@ interface QuickLinks {
   sections: QuickLinkSection[];
 }
 
+// Map settings item labels to their route slugs
+const settingsRouteMap: Record<string, string> = {
+  Account: "account",
+  Company: "company",
+  Organization: "organization",
+  "Feedback Site": "feedback-site",
+  Statuses: "statuses",
+  Types: "types",
+  Tags: "tags",
+};
+
 export function SideNav({ onClose }: SideNavProps) {
   const { user, signOut } = useAuth();
   const {
@@ -84,7 +95,10 @@ export function SideNav({ onClose }: SideNavProps) {
     setTagFilter,
   } = useDashboardFilters();
   const pathname = usePathname();
-  const [companyName, setCompanyName] = useState("");
+  const params = useParams();
+  const companySlug = typeof params.company === "string" ? params.company : "";
+  const encodedCompany = encodeURIComponent(companySlug);
+
   const [companyId, setCompanyId] = useState("");
   const [tags, setTags] = useState<FeedbackTag[]>([]);
   const [types, setTypes] = useState<FeedbackType[]>([]);
@@ -114,24 +128,38 @@ export function SideNav({ onClose }: SideNavProps) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const loadCompanyData = useCallback(async () => {
+  const loadTags = useCallback(async (id: string) => {
     try {
-      const userCompanies = await CompanyService.getUserCompanies(user!.uid);
+      const allTags = await TagsService.getAllTags(id);
+      setTags(allTags);
+    } catch (error) {
+      console.error("Error loading tags:", error);
+    }
+  }, []);
+
+  const loadTypes = useCallback(async (id: string) => {
+    try {
+      const allTypes = await FeedbackService.getCompanyTypes(id);
+      setTypes(allTypes);
+    } catch (error) {
+      console.error("Error loading types:", error);
+    }
+  }, []);
+
+  const loadCompanyData = useCallback(async () => {
+    if (!user) return;
+    try {
+      const userCompanies = await CompanyService.getUserCompanies(user.uid);
       if (userCompanies.length > 0) {
-        const companyId = userCompanies[0];
-        const companyData = await CompanyService.getCompany(companyId);
-        if (companyData) {
-          setCompanyName(companyData.name);
-          setCompanyId(companyId);
-          // Load tags and types after company data is loaded
-          loadTags(companyId);
-          loadTypes(companyId);
-        }
+        const id = userCompanies[0];
+        setCompanyId(id);
+        loadTags(id);
+        loadTypes(id);
       }
     } catch (error) {
       console.error("Error loading company data:", error);
     }
-  }, [user]);
+  }, [user, loadTags, loadTypes]);
 
   useEffect(() => {
     if (user) {
@@ -139,37 +167,40 @@ export function SideNav({ onClose }: SideNavProps) {
     }
   }, [user, loadCompanyData]);
 
-  const loadTags = async (companyId: string) => {
-    try {
-      const allTags = await TagsService.getAllTags(companyId);
-      setTags(allTags);
-    } catch (error) {
-      console.error("Error loading tags:", error);
-    }
-  };
-
+  // Check if a given path segment is the current active page
   const isActive = useCallback(
     (path: string) => {
-      return pathname.includes(path);
+      // Split pathname into segments and check if the path appears as a segment boundary
+      const segments = pathname.split("/");
+      const targetSegments = path.split("/").filter(Boolean);
+      if (targetSegments.length === 0) return false;
+
+      // Check if the target segments appear consecutively in the pathname segments
+      for (let i = 0; i <= segments.length - targetSegments.length; i++) {
+        const match = targetSegments.every(
+          (seg, j) => segments[i + j] === seg
+        );
+        if (match) return true;
+      }
+      return false;
     },
     [pathname]
   );
 
+  // Determine if the current page is exactly the dashboard home (not a sub-page)
+  const isDashboardHome =
+    isActive("dashboard") &&
+    !isActive("kanban") &&
+    !isActive("analytics") &&
+    !isActive("notifications") &&
+    !isActive("settings");
+
   // Add effect to reload tags when the dropdown is opened
   useEffect(() => {
-    if (companyId && isActive("/settings/tags")) {
+    if (companyId && isActive("settings")) {
       loadTags(companyId);
     }
-  }, [companyId, pathname, isActive]);
-
-  const loadTypes = async (companyId: string) => {
-    try {
-      const allTypes = await FeedbackService.getCompanyTypes(companyId);
-      setTypes(allTypes);
-    } catch (error) {
-      console.error("Error loading types:", error);
-    }
-  };
+  }, [companyId, pathname, isActive, loadTags]);
 
   // Page-specific configurations
   const pageConfigs = {
@@ -207,39 +238,6 @@ export function SideNav({ onClose }: SideNavProps) {
         },
       ],
     },
-    // analytics: {
-    //   title: "Analytics",
-    //   sections: [
-    //     {
-    //       title: "Metrics",
-    //       items: [
-    //         { label: "Overview", icon: BarChart3 },
-    //         { label: "Trends", icon: Activity },
-    //         { label: "Reports", icon: FileText },
-    //       ],
-    //     },
-    //   ],
-    // },
-    // notifications: {
-    //   title: "Notifications",
-    //   sections: [
-    //     {
-    //       title: "Filters",
-    //       items: [
-    //         { label: "All", icon: Bell },
-    //         { label: "Unread", icon: Circle },
-    //         { label: "Important", icon: Activity },
-    //       ],
-    //     },
-    //     {
-    //       title: "Settings",
-    //       items: [
-    //         { label: "Preferences", icon: Settings },
-    //         { label: "Email Alerts", icon: Bell },
-    //       ],
-    //     },
-    //   ],
-    // },
     settings: {
       title: "Settings",
       sections: [
@@ -255,42 +253,20 @@ export function SideNav({ onClose }: SideNavProps) {
         {
           title: "Dashboard & Boards",
           items: [
-            // { label: "Statuses", icon: Radio },
             { label: "Types", icon: FileText },
             { label: "Tags", icon: Tag },
           ],
         },
-        // {
-        //   title: "Integrations",
-        //   items: [
-        //     { label: "Slack", icon: Settings },
-        //     { label: "Email", icon: Settings },
-        //     { label: "API Keys", icon: Settings },
-        //   ],
-        // },
       ],
     },
   };
 
   const getQuickLinks = (): QuickLinks => {
-    if (isActive("/kanban")) {
+    if (isActive("kanban")) {
       return pageConfigs.kanban;
-    }
-    // else if (isActive("/analytics")) {
-    //   return pageConfigs.analytics;
-    // }
-    // else if (isActive("/notifications")) {
-    //   return pageConfigs.notifications;
-    // }
-    else if (isActive("/settings")) {
+    } else if (isActive("settings")) {
       return pageConfigs.settings;
-    } else if (
-      isActive("/dashboard") &&
-      !isActive("/kanban") &&
-      // !isActive("/analytics") &&
-      // !isActive("/notifications") &&
-      !isActive("/settings")
-    ) {
+    } else if (isDashboardHome) {
       return pageConfigs.dashboard;
     }
 
@@ -299,6 +275,23 @@ export function SideNav({ onClose }: SideNavProps) {
   };
 
   const quickLinks = getQuickLinks();
+
+  const renderSettingsLink = (item: QuickLinkItem) => {
+    const routeSlug = settingsRouteMap[item.label];
+    if (!routeSlug) return null;
+
+    return (
+      <Link
+        href={`/${encodedCompany}/dashboard/settings/${routeSlug}`}
+        className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
+      >
+        <div className="flex items-center gap-3">
+          <item.icon className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm">{item.label}</span>
+        </div>
+      </Link>
+    );
+  };
 
   return (
     <div className="flex h-full bg-background">
@@ -322,24 +315,16 @@ export function SideNav({ onClose }: SideNavProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/${encodeURIComponent(companyName || "")}/dashboard`}
+                  href={`/${encodedCompany}/dashboard`}
                   className={`p-2 rounded-lg transition-colors ${
-                    isActive("/dashboard") &&
-                    !isActive("/kanban") &&
-                    !isActive("/analytics") &&
-                    !isActive("/notifications") &&
-                    !isActive("/settings")
+                    isDashboardHome
                       ? "bg-blue-100 dark:bg-blue-900/20"
                       : "hover:bg-muted"
                   }`}
                 >
                   <House
                     className={`h-5 w-5 ${
-                      isActive("/dashboard") &&
-                      !isActive("/kanban") &&
-                      !isActive("/analytics") &&
-                      !isActive("/notifications") &&
-                      !isActive("/settings")
+                      isDashboardHome
                         ? "text-blue-600 dark:text-blue-400"
                         : "text-gray-500 dark:text-gray-400"
                     }`}
@@ -357,18 +342,16 @@ export function SideNav({ onClose }: SideNavProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/${encodeURIComponent(
-                    companyName || ""
-                  )}/dashboard/kanban`}
+                  href={`/${encodedCompany}/dashboard/kanban`}
                   className={`p-2 rounded-lg transition-colors ${
-                    isActive("/kanban")
+                    isActive("kanban")
                       ? "bg-blue-100 dark:bg-blue-900/20"
                       : "hover:bg-muted"
                   }`}
                 >
                   <Kanban
                     className={`h-5 w-5 ${
-                      isActive("/kanban")
+                      isActive("kanban")
                         ? "text-blue-600 dark:text-blue-400"
                         : "text-gray-500 dark:text-gray-400"
                     }`}
@@ -386,7 +369,7 @@ export function SideNav({ onClose }: SideNavProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/${encodeURIComponent(companyName || "")}`}
+                  href={`/${encodedCompany}`}
                   target="_blank"
                   className="p-2 rounded-lg transition-colors hover:bg-muted"
                 >
@@ -401,79 +384,19 @@ export function SideNav({ onClose }: SideNavProps) {
               </TooltipContent>
             </Tooltip>
 
-            {/* <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href={`/${encodeURIComponent(
-                    companyName || ""
-                  )}/dashboard/notifications`}
-                  className={`p-2 rounded-lg transition-colors ${
-                    isActive("/notifications")
-                      ? "bg-blue-100 dark:bg-blue-900/20"
-                      : "hover:bg-muted"
-                  }`}
-                >
-                  <Bell
-                    className={`h-5 w-5 ${
-                      isActive("/notifications")
-                        ? "text-blue-600 dark:text-blue-400"
-                        : "text-gray-500 dark:text-gray-400"
-                    }`}
-                  />
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent
-                side="right"
-                className="bg-gray-800 text-gray-200 border-gray-700"
-              >
-                Notifications
-              </TooltipContent>
-            </Tooltip> */}
-
-            {/* <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href={`/${encodeURIComponent(
-                    companyName || ""
-                  )}/dashboard/analytics`}
-                  className={`p-2 rounded-lg transition-colors ${
-                    isActive("/analytics")
-                      ? "bg-blue-100 dark:bg-blue-900/20"
-                      : "hover:bg-muted"
-                  }`}
-                >
-                  <BarChart3
-                    className={`h-5 w-5 ${
-                      isActive("/analytics")
-                        ? "text-blue-600 dark:text-blue-400"
-                        : "text-gray-500 dark:text-gray-400"
-                    }`}
-                  />
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent
-                side="right"
-                className="bg-gray-800 text-gray-200 border-gray-700"
-              >
-                Analytics
-              </TooltipContent>
-            </Tooltip> */}
-
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/${encodeURIComponent(
-                    companyName || ""
-                  )}/dashboard/settings`}
+                  href={`/${encodedCompany}/dashboard/settings`}
                   className={`p-2 rounded-lg transition-colors ${
-                    isActive("/settings")
+                    isActive("settings")
                       ? "bg-blue-100 dark:bg-blue-900/20"
                       : "hover:bg-muted"
                   }`}
                 >
                   <Settings
                     className={`h-5 w-5 ${
-                      isActive("/settings")
+                      isActive("settings")
                         ? "text-blue-600 dark:text-blue-400"
                         : "text-gray-500 dark:text-gray-400"
                     }`}
@@ -517,9 +440,7 @@ export function SideNav({ onClose }: SideNavProps) {
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem asChild>
                 <Link
-                  href={`/${encodeURIComponent(
-                    companyName || ""
-                  )}/dashboard/settings/account`}
+                  href={`/${encodedCompany}/dashboard/settings/account`}
                   className="flex items-center gap-2"
                 >
                   <User className="h-4 w-4" />
@@ -571,7 +492,7 @@ export function SideNav({ onClose }: SideNavProps) {
                 <div className="space-y-1">
                   {section.items.map((item, itemIndex) => (
                     <div key={itemIndex}>
-                      {item.label === "Tags" && !isActive("/settings") ? (
+                      {item.label === "Tags" && !isActive("settings") ? (
                         <DropdownButton
                           label="Tags"
                           icon={Tag}
@@ -580,9 +501,7 @@ export function SideNav({ onClose }: SideNavProps) {
                           {tags.length === 0 ? (
                             <div className="p-2">
                               <Link
-                                href={`/${encodeURIComponent(
-                                  companyName || ""
-                                )}/dashboard/settings/tags`}
+                                href={`/${encodedCompany}/dashboard/settings/tags`}
                                 className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
                               >
                                 <span className="text-sm">Add Tags</span>
@@ -614,9 +533,7 @@ export function SideNav({ onClose }: SideNavProps) {
                                 </button>
                               ))}
                               <Link
-                                href={`/${encodeURIComponent(
-                                  companyName || ""
-                                )}/dashboard/settings/tags`}
+                                href={`/${encodedCompany}/dashboard/settings/tags`}
                                 className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
                               >
                                 <span className="text-sm">Manage Tags</span>
@@ -624,7 +541,7 @@ export function SideNav({ onClose }: SideNavProps) {
                             </>
                           )}
                         </DropdownButton>
-                      ) : item.label === "Types" && !isActive("/settings") ? (
+                      ) : item.label === "Types" && !isActive("settings") ? (
                         <DropdownButton
                           label="Types"
                           icon={FileText}
@@ -633,9 +550,7 @@ export function SideNav({ onClose }: SideNavProps) {
                           {types.length === 0 ? (
                             <div className="p-2">
                               <Link
-                                href={`/${encodeURIComponent(
-                                  companyName || ""
-                                )}/dashboard/settings/types`}
+                                href={`/${encodedCompany}/dashboard/settings/types`}
                                 className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
                               >
                                 <span className="text-sm">Add Types</span>
@@ -666,9 +581,7 @@ export function SideNav({ onClose }: SideNavProps) {
                                 </button>
                               ))}
                               <Link
-                                href={`/${encodeURIComponent(
-                                  companyName || ""
-                                )}/dashboard/settings/types`}
+                                href={`/${encodedCompany}/dashboard/settings/types`}
                                 className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
                               >
                                 <span className="text-sm">Manage Types</span>
@@ -676,92 +589,9 @@ export function SideNav({ onClose }: SideNavProps) {
                             </>
                           )}
                         </DropdownButton>
-                      ) : item.label === "Tags" && isActive("/settings") ? (
-                        <Link
-                          href={`/${encodeURIComponent(
-                            companyName || ""
-                          )}/dashboard/settings/tags`}
-                          className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
-                        >
-                          <div className="flex items-center gap-3">
-                            <item.icon className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm">{item.label}</span>
-                          </div>
-                        </Link>
-                      ) : item.label === "Types" && isActive("/settings") ? (
-                        <Link
-                          href={`/${encodeURIComponent(
-                            companyName || ""
-                          )}/dashboard/settings/types`}
-                          className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
-                        >
-                          <div className="flex items-center gap-3">
-                            <item.icon className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm">{item.label}</span>
-                          </div>
-                        </Link>
-                      ) : item.label === "Company" && isActive("/settings") ? (
-                        <Link
-                          href={`/${encodeURIComponent(
-                            companyName || ""
-                          )}/dashboard/settings/company`}
-                          className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
-                        >
-                          <div className="flex items-center gap-3">
-                            <item.icon className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm">{item.label}</span>
-                          </div>
-                        </Link>
-                      ) : item.label === "Organization" &&
-                        isActive("/settings") ? (
-                        <Link
-                          href={`/${encodeURIComponent(
-                            companyName || ""
-                          )}/dashboard/settings/organization`}
-                          className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
-                        >
-                          <div className="flex items-center gap-3">
-                            <item.icon className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm">{item.label}</span>
-                          </div>
-                        </Link>
-                      ) : item.label === "Statuses" && isActive("/settings") ? (
-                        <Link
-                          href={`/${encodeURIComponent(
-                            companyName || ""
-                          )}/dashboard/settings/statuses`}
-                          className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
-                        >
-                          <div className="flex items-center gap-3">
-                            <item.icon className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm">{item.label}</span>
-                          </div>
-                        </Link>
-                      ) : item.label === "Feedback Site" &&
-                        isActive("/settings") ? (
-                        <Link
-                          href={`/${encodeURIComponent(
-                            companyName || ""
-                          )}/dashboard/settings/feedback-site`}
-                          className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
-                        >
-                          <div className="flex items-center gap-3">
-                            <item.icon className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm">{item.label}</span>
-                          </div>
-                        </Link>
-                      ) : item.label === "Account" && isActive("/settings") ? (
-                        <Link
-                          href={`/${encodeURIComponent(
-                            companyName || ""
-                          )}/dashboard/settings/account`}
-                          className="flex items-center justify-between w-full p-2 rounded-md hover:bg-muted transition-colors text-left"
-                        >
-                          <div className="flex items-center gap-3">
-                            <item.icon className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm">{item.label}</span>
-                          </div>
-                        </Link>
+                      ) : isActive("settings") &&
+                        item.label in settingsRouteMap ? (
+                        renderSettingsLink(item)
                       ) : "hasArrow" in item && item.hasArrow ? (
                         <DropdownButton label={item.label} icon={item.icon}>
                           <div className="p-2">
