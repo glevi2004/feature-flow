@@ -118,20 +118,24 @@ export class CompanyService {
       const docRef = await addDoc(collection(db, "companies"), companyData);
       const companyId = docRef.id;
 
-      // Create public directory entry
-      const directoryEntry: CompanyDirectoryEntry = {
-        slug: normalizedName,
-        companyId: companyId,
-        displayName: companyName.trim(), // Keep original capitalization for display
-        logoUrl: additionalData?.logo,
-        publicPortalEnabled: companyData.publicPortalEnabled ?? true,
-      };
-      await setDoc(doc(db, "company_directory", normalizedName), directoryEntry);
-
-      // Add company ID to user's companies array
+      // Add company ID to user's companies array (critical - must happen before directory)
       await updateDoc(doc(db, "users", userId), {
         companies: arrayUnion(companyId),
       });
+
+      // Create public directory entry (non-critical for core functionality)
+      try {
+        const directoryEntry: CompanyDirectoryEntry = {
+          slug: normalizedName,
+          companyId: companyId,
+          displayName: companyName.trim(), // Keep original capitalization for display
+          logoUrl: additionalData?.logo,
+          publicPortalEnabled: companyData.publicPortalEnabled ?? true,
+        };
+        await setDoc(doc(db, "company_directory", normalizedName), directoryEntry);
+      } catch (dirError) {
+        console.warn("Failed to create directory entry:", dirError);
+      }
 
       return { id: companyId, ...companyData };
     } catch (error) {

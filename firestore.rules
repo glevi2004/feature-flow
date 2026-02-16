@@ -80,10 +80,14 @@ service cloud.firestore {
                                get(/databases/$(database)/documents/onboarding/$(onboardingId)).data.userId == getUserId();
     }
     
-    // Company directory - public read for name validation, write only by company owners
+    // Company directory - public read for name validation, write by authenticated users
     match /company_directory/{slug} {
       allow read: if true; // Public read for name validation
-      allow write: if false; // Only server-side writes via Cloud Functions
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() &&
+                               exists(/databases/$(database)/documents/company_directory/$(slug)) &&
+                               exists(/databases/$(database)/documents/companies/$(resource.data.companyId)) &&
+                               isCompanyMember(resource.data.companyId);
     }
     
     // Companies - private, members only
